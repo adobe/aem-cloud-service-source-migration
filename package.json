@@ -1,0 +1,35 @@
+{
+    "name": "@adobe/aem-cloud-service-source-migration",
+    "description": "Code refactoring tools created for migrating customers to AEM as a Cloud Service",
+    "version": "0.0.0",
+    "repository": "adobe/aem-cloud-service-source-migration",
+    "author": "Adobe Inc.",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/adobe/aem-cloud-service-source-migration",
+    "scripts": {
+        "test": "lerna run test",
+        "test:ci": "lerna run test:ci",
+        "lint": "lerna run lint"
+    },
+    "pre-commit": [
+        "lint"
+    ],
+    "workspaces": [
+        "packages/*"
+    ],
+    "lint-staged": {
+        "*.{js,yaml,md}": [
+            "prettier --write",
+            "git add"
+        ]
+    },
+    "devDependencies": {
+        "eslint": "^7.7.0",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-plugin-prettier": "^3.1.4",
+        "lerna": "^3.22.1",
+        "lint-staged": "^7.3.0",
+        "pre-commit": "^1.2.2",
+        "prettier": "^2.0.5"
+    }
+}

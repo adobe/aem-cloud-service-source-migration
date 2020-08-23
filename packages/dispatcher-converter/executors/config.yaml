@@ -1,0 +1,19 @@
+dispatcherConverter:
+    # Absolute path to the src folder of the dispatcher sdk
+    sdkSrc:
+    onPremise:
+        # Absolute path to the dispatcher.any file
+        dispatcherAnySrc:
+        httpdSrc:
+        vhostsToConvert:
+        variablesToReplace:
+            TIER: "ENVIRONMENT_TYPE"
+            HOSTADDRESS: "hostAddress"
+            HOSTNAME: "hostName"
+            WWW_SSL_HOSTADDRESS: "www_ssl_hostAddress"
+        appendToVhosts:
+        pathToPrepend:
+        portsToMap:
+    ams:
+        # Absolute path to dispatcher config folder
+        cfg:

@@ -1,0 +1,35 @@
+{
+    "name": "@adobe/aem-cs-source-migration-dispatcher-converter",
+    "description": "AEM as a Cloud Service Dispatcher Converter tool",
+    "version": "0.0.0",
+    "repository": "adobe/aem-cloud-service-source-migration/packages/deispatcher-converter",
+    "author": "Adobe Inc.",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/adobe/aem-cloud-service-source-migration/packages/commons",
+    "bugs": "https://github.com/adobe/aem-cloud-service-source-migration/issues",
+    "main": "index.js",
+    "dependencies": {
+        "@adobe/aem-cs-source-migration-commons": "file:../commons",
+        "glob": "^7.1.6",
+        "js-yaml": "^3.14.0",
+        "log-timestamp": "^0.3.0",
+        "winston": "^3.2.1",
+        "yaml": "^1.10.0"
+    },
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "istanbul": "^0.4.5",
+        "jsdoc-to-markdown": "^5.0.3",
+        "mocha": "^7.1.2",
+        "mocha-sinon": "^2.1.2",
+        "nyc": "^15.1.0"
+    },
+    "scripts": {
+        "lint": "eslint src test executors  --ignore-pattern executors/target/",
+        "test": "nyc mocha",
+        "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
+        "convert": "node main.js",
+        "convertSingleFile": "node singleFileMain.js",
+        "generateDocumentation": "node docs.js"
+    }
+}
