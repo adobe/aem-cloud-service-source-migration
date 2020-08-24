@@ -2,7 +2,7 @@
     "name": "@adobe/aem-cloud-service-source-migration",
     "description": "Code refactoring tools created for migrating customers to AEM as a Cloud Service",
     "version": "0.0.0",
-    "repository": "adobe/aem-cloud-service-source-migration",
+    "repository": "https://github.com/adobe/aem-cloud-service-source-migration",
     "author": "Adobe Inc.",
     "license": "Apache-2.0",
     "homepage": "https://github.com/adobe/aem-cloud-service-source-migration",

@@ -2,12 +2,15 @@
     "name": "@adobe/aem-cs-source-migration-commons",
     "description": "Common helper utilities used by AEM as a Cloud Service code refactoring tools",
     "version": "0.0.0",
-    "repository": "adobe/aem-cloud-service-source-migration/packages/commons",
+    "repository": "https://github.com/adobe/aem-cloud-service-source-migration/packages/commons",
     "author": "Adobe Inc.",
     "license": "Apache-2.0",
     "homepage": "https://github.com/adobe/aem-cloud-service-source-migration/packages/commons",
     "bugs": "https://github.com/adobe/aem-cloud-service-source-migration/issues",
     "main": "index.js",
+    "engines": {
+        "node": ">=10.0.0"
+    },
     "dependencies": {
         "fs-extra": "^9.0.0",
         "glob": "^7.1.6",

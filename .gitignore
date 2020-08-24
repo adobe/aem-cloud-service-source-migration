@@ -3,7 +3,6 @@
 *.iml
 
 package-lock.json
-yarn.lock
 
 # output folder
 target

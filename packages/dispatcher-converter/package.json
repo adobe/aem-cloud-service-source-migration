@@ -2,12 +2,15 @@
     "name": "@adobe/aem-cs-source-migration-dispatcher-converter",
     "description": "AEM as a Cloud Service Dispatcher Converter tool",
     "version": "0.0.0",
-    "repository": "adobe/aem-cloud-service-source-migration/packages/deispatcher-converter",
+    "repository": "https://github.com/adobe/aem-cloud-service-source-migration/packages/dispatcher-converter",
     "author": "Adobe Inc.",
     "license": "Apache-2.0",
-    "homepage": "https://github.com/adobe/aem-cloud-service-source-migration/packages/commons",
+    "homepage": "https://github.com/adobe/aem-cloud-service-source-migration/packages/dispatcher-converter",
     "bugs": "https://github.com/adobe/aem-cloud-service-source-migration/issues",
     "main": "index.js",
+    "engines": {
+        "node": ">=10.0.0"
+    },
     "dependencies": {
         "@adobe/aem-cs-source-migration-commons": "file:../commons",
         "glob": "^7.1.6",
