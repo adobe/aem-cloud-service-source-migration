@@ -462,7 +462,7 @@ describe("FileOperations", function () {
         );
         let content = fileOperation.getContentFromFile(
             testFolder + "/newtestfile.farm",
-            true
+            false
         );
         assert.include(content, "../cache/rules.any");
     });
@@ -562,7 +562,8 @@ describe("FileOperations", function () {
         let result = fileOperation.getNamesOfRuleFilesIncluded(
             testFolder + "/newtestfile.farm",
             "test/newtest/newtfile.any",
-            constants.INCLUDE_SYNTAX_IN_FARM
+            constants.INCLUDE_SYNTAX_IN_FARM,
+            false
         );
 
         assert.isTrue(

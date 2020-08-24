@@ -36,7 +36,7 @@
     * [.checkForUndefinedVariables(directoryPath, definedVariablesList)](#FileOperations+checkForUndefinedVariables)
     * [.replaceIncludesInFarmAndVhostFile(dirPath, type, header, ruleFileToReplace, includePatternToReplaceWith, conversionStep)](#FileOperations+replaceIncludesInFarmAndVhostFile)
     * [.replaceFileIncludesInFarmFileAndVhostFile(filePath, type, header, ruleFilesToReplace, includePatternToReplaceWith, conversionStep)](#FileOperations+replaceFileIncludesInFarmFileAndVhostFile)
-    * [.getNamesOfRuleFilesIncluded(filePath, ruleFilesToCheck, includeSyntax)](#FileOperations+getNamesOfRuleFilesIncluded) ⇒
+    * [.getNamesOfRuleFilesIncluded(filePath, ruleFilesToCheck, includeSyntax, recursive)](#FileOperations+getNamesOfRuleFilesIncluded) ⇒
     * [.consolidateAllRuleFilesIntoSingleRuleFile(ruleFiles, consolidatedRuleFilePath, conversionStep)](#FileOperations+consolidateAllRuleFilesIntoSingleRuleFile)
     * [.getFileContentsArray(file)](#FileOperations+getFileContentsArray)
     * [.getPath(file)](#FileOperations+getPath) ⇒ <code>string</code>
@@ -480,16 +480,17 @@ Replace Includes by reading directories and passing file to include the file con
 
 <a name="FileOperations+getNamesOfRuleFilesIncluded"></a>
 
-### fileOperations.getNamesOfRuleFilesIncluded(filePath, ruleFilesToCheck, includeSyntax) ⇒
+### fileOperations.getNamesOfRuleFilesIncluded(filePath, ruleFilesToCheck, includeSyntax, recursive) ⇒
 Returns rules file included based on includeSyntax
 
 **Kind**: instance method of [<code>FileOperations</code>](#FileOperations)  
 
-| Param |
-| --- |
-| filePath | 
-| ruleFilesToCheck | 
-| includeSyntax | 
+| Param | Default |
+| --- | --- |
+| filePath |  | 
+| ruleFilesToCheck |  | 
+| includeSyntax |  | 
+| recursive | <code>true</code> | 
 
 <a name="FileOperations+consolidateAllRuleFilesIntoSingleRuleFile"></a>
 
@@ -523,4 +524,3 @@ Returns path for a file
 | Param |
 | --- |
 | file | 
-

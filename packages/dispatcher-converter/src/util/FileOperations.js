@@ -1735,13 +1735,22 @@ class FileOperations {
      * @param filePath
      * @param ruleFilesToCheck
      * @param includeSyntax
+     * @param recursive
      * @returns {}
      */
-    getNamesOfRuleFilesIncluded(filePath, ruleFilesToCheck, includeSyntax) {
+    getNamesOfRuleFilesIncluded(
+        filePath,
+        ruleFilesToCheck,
+        includeSyntax,
+        recursive = true
+    ) {
         if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
             let ruleFilesIncluded = [];
 
-            let fileContentsArray = this.getFileContentsArray(filePath);
+            let fileContentsArray = this.getFileContentsArray(
+                filePath,
+                recursive
+            );
             fileContentsArray.forEach((line) => {
                 let strippedLine = line.trim();
                 if (strippedLine.startsWith(includeSyntax)) {
@@ -1753,7 +1762,7 @@ class FileOperations {
                         );
                         includedFileName = includedFileName.substring(
                             0,
-                            includedFileName.length - 1
+                            includedFileName.length
                         );
 
                         if (ruleFilesToCheck.includes(includedFileName)) {
