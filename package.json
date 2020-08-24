@@ -6,9 +6,9 @@
     "author": "Adobe Inc.",
     "license": "Apache-2.0",
     "homepage": "https://github.com/adobe/aem-cloud-service-source-migration",
+    "private": true,
     "scripts": {
         "test": "lerna run test",
-        "test:ci": "lerna run test:ci",
         "lint": "lerna run lint"
     },
     "pre-commit": [

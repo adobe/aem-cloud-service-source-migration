@@ -19,6 +19,17 @@ This monorepo contains the code refactoring tools that help customers to migrate
  Adobe Managed Services (AMS) dispatcher configurations to AEM as a Cloud Service compatible
  dispatcher configuration.
 
+## Setup
+```
+    npm install yarn lerna -g
+    yarn install
+```
+        
+## Test
+```
+    yarn test
+```
+
 # Contributing
 
 Contributions are welcomed! Refer to [Contributing Guide](../../CONTRIBUTING.md) for more information.

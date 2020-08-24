@@ -8,6 +8,9 @@
     "homepage": "https://github.com/adobe/aem-cloud-service-source-migration/packages/commons",
     "bugs": "https://github.com/adobe/aem-cloud-service-source-migration/issues",
     "main": "index.js",
+    "publishConfig": {
+        "access": "public"
+    },
     "engines": {
         "node": ">=10.0.0"
     },
