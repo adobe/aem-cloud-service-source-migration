@@ -10,10 +10,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 -->
 
-[![Version](https://img.shields.io/npm/v/@adobe/aem-cs-source-migration-dispatcher-converter.svg)](https://npmjs.org/package/@adobe/aio-cli-plugin-cloud-service-migration)
-[![Downloads/week](https://img.shields.io/npm/dw/@adobe/aem-cs-source-migration-dispatcher-converter.svg)](https://npmjs.org/package/@adobe/aio-cli-plugin-cloud-service-migration)
+[![Version](https://img.shields.io/npm/v/@adobe/aem-cs-source-migration-dispatcher-converter.svg)](https://npmjs.org/package/@adobe/aem-cs-source-migration-dispatcher-converter)
+[![Downloads/week](https://img.shields.io/npm/dw/@adobe/aem-cs-source-migration-dispatcher-converter.svg)](https://npmjs.org/package/@adobe/aem-cs-source-migration-dispatcher-converter)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/adobe/aem-cs-source-migration-dispatcher-converter/master.svg?style=flat-square)](https://codecov.io/gh/adobe/aio-cli-plugin-cloud-service-migration/)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/adobe/aem-cs-source-migration-dispatcher-converter/master.svg?style=flat-square)](https://codecov.io/gh/adobe/aem-cs-source-migration-dispatcher-converter/)
 
 # @adobe/aem-cs-source-migration-dispatcher-converter
 
