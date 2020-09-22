@@ -18,8 +18,8 @@ class ConversionStep {
 
     /**
      *
-     * @param {String} rule The rule that is being executed/followed.
-     * @param {String} description The details of the rule that is being followed for conversion.
+     * @param {String} rule The rule that is being followed while executing the particular ConversionStep.
+     * @param {String} description The details of the rule that is being followed for ConversionStep.
      *
      */
     constructor(rule = "", description = "") {
@@ -33,7 +33,7 @@ class ConversionStep {
      * @param {ConversionOperation}
      * @private
      *
-     * Add an operation to the list of operations performed while executing the step
+     * Add an operation that was performed while executing the ConversionStep
      */
     addOperation(operation) {
         this.operations_performed.push(operation);
@@ -44,7 +44,7 @@ class ConversionStep {
      * @returns {String}
      * @private
      *
-     * Get the rule that is being executed/followed.
+     * Get the rule that is being followed while executing the particular ConversionStep.
      */
     getRule() {
         return this.rule;
@@ -55,7 +55,7 @@ class ConversionStep {
      * @returns {String}
      * @private
      *
-     * Get the details of the rule that is being followed for conversion.
+     * Get the details of the rule that is being followed while executing the particular ConversionStep.
      */
     getDescription() {
         return this.description;
@@ -66,7 +66,7 @@ class ConversionStep {
      * @returns {[List[ConversionOperation]]}
      * @private
      *
-     * Get the list of operations performed while executing the step
+     * Get the list of operations performed while executing the particular ConversionStep
      */
     getOperations() {
         return this.operations_performed;
@@ -77,10 +77,10 @@ class ConversionStep {
      * @returns {boolean}
      * @private
      *
-     * Find whether some operation (under the given step) has been performed on target dispatcher configurations
+     * Find whether any operation has been performed while executing the particular ConversionStep
      *
      * Return:
-     * bool: `true` if at least one operation has been performed, else `false`
+     * boolean: `true` if at least one operation has been performed, else `false`
      */
     isPerformed() {
         return this.operations_performed.length > 0;

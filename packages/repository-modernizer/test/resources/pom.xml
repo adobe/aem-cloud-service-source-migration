@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <!-- ====================================================================== -->
+  <!-- P A R E N T P R O J E C T D E S C R I P T I O N -->
+  <!-- ====================================================================== -->
+
+  <parent>
+    <groupId>com.ni.apps.aem</groupId>
+    <artifactId>ni-parent</artifactId>
+    <version>2</version>
+  </parent>
+
+  <groupId>com.ni.apps.aem</groupId>
+  <artifactId>content-parent</artifactId>
+  <version>3.4-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>AEM Repository for the Content Team - Reactor Project</name>
+  <description>Maven Multimodule project for building the Content Team tenant.</description>
+
+    <scm>
+        <connection>scm:git:https://ni@dev.azure.com/ni/IT/_git/content-aem</connection>
+        <developerConnection>scm:git:https://ni@dev.azure.com/ni/IT/_git/content-aem</developerConnection>
+        <url>https://dev.azure.com/ni/IT/_git/content-aem</url>
+    </scm>
+
+  <!-- ====================================================================== -->
+  <!-- P R O P E R T I E S -->
+  <!-- ====================================================================== -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.apps.aem</groupId>
+        <artifactId>test.apps</artifactId>
+        <version>1.3-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.apps.aem</groupId>
+        <artifactId>test.core</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.github.zlika</groupId>
+        <artifactId>reproducible-build-maven-plugin</artifactId>
+        <version>0.11</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>strip-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>jaxws-maven-plugin</artifactId>
+          <version>2.5</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>with-content</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>content</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>with-tests</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>content</module>
+        <module>integration-tests</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>it-only</id>
+      <properties>
+        <maven.test.skip>true</maven.test.skip>
+      </properties>
+    </profile>
+  </profiles>
+  <modules>
+    <module>helpers-bundle</module>
+    <module>widgets-bundle</module>
+    <module>workflows-bundle</module>
+    <module>components-bundle</module>
+    <module>commerce-bundle</module>
+    <module>workflow</module>
+    <module>vcm-migration-bundle</module>
+  </modules>
+  <distributionManagement>
+    <site>
+      <id>website</id>
+      <url>file:///tmp/fake.com/</url>
+    </site>
+  </distributionManagement>
+</project>

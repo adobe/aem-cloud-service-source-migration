@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="14" failures="0" time="4.508">
+  <testsuite name="pom manipulation" errors="0" failures="0" skipped="0" timestamp="2020-09-22T10:12:04" time="1.845" tests="2">
+    <testcase classname="pom manipulation removeDuplicates" name="pom manipulation removeDuplicates" time="0.004">
+    </testcase>
+    <testcase classname="pom manipulation verifyArtifactPackagingTyperemoveDuplicates" name="pom manipulation verifyArtifactPackagingTyperemoveDuplicates" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name=" restructure filter" errors="0" failures="0" skipped="0" timestamp="2020-09-22T10:12:04" time="2.143" tests="4">
+    <testcase classname=" restructure filter exports" name=" restructure filter exports" time="0.005">
+    </testcase>
+    <testcase classname=" restructure filter restructure" name=" restructure filter restructure" time="0.004">
+    </testcase>
+    <testcase classname=" restructure filter Segregate Filter Paths" name=" restructure filter Segregate Filter Paths" time="0.002">
+    </testcase>
+    <testcase classname=" restructure filter isImmutableContentFilter" name=" restructure filter isImmutableContentFilter" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="create-base-project-structure" errors="0" failures="0" skipped="0" timestamp="2020-09-22T10:12:04" time="2.7" tests="2">
+    <testcase classname="create-base-project-structure check type" name="create-base-project-structure check type" time="0.007">
+    </testcase>
+    <testcase classname="create-base-project-structure create" name="create-base-project-structure create" time="0.008">
+    </testcase>
+  </testsuite>
+  <testsuite name="restructure pom" errors="0" failures="0" skipped="0" timestamp="2020-09-22T10:12:04" time="4.035" tests="6">
+    <testcase classname="restructure pom restructure pom" name="restructure pom restructure pom" time="1.33">
+    </testcase>
+    <testcase classname="restructure pom get dependencies" name="restructure pom get dependencies" time="0.001">
+    </testcase>
+    <testcase classname="restructure pom get 3rd party dependencies" name="restructure pom get 3rd party dependencies" time="0.001">
+    </testcase>
+    <testcase classname="restructure pom exports" name="restructure pom exports" time="0.001">
+    </testcase>
+    <testcase classname="restructure pom get plugins from pom" name="restructure pom get plugins from pom" time="0.001">
+    </testcase>
+    <testcase classname="restructure pom fetch sdk version" name="restructure pom fetch sdk version" time="0.894">
+    </testcase>
+  </testsuite>
+</testsuites>

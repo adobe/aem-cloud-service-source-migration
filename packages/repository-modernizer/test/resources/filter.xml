@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/apps/dam/cfm"/>
+	<filter root="/apps/dam/content/schemaeditors/reports"/>
+    <filter root="/etc/dam/viewers/s7viewers/libs"/>
+	<filter root="/etc/map/non-migrated-ddp-results-lm"/>
+    <filter root="/home/users/system/ni/content"/>
+    <filter root="/content/configuration"/>
+</workspaceFilter>

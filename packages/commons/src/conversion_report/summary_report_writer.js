@@ -24,7 +24,9 @@ class SummaryReportWriter {
 
     /**
      *
-     * @param {List[ConversionStep]} ConversionStep List of steps performed that are to be added to the summary report
+     * @param {Array[ConversionStep]} ConversionStep List of steps performed that are to be added to the summary report
+     * @param String target The path/location where the summary report need to be creation
+     * @param String report_name The name of the base summary report template file
      * @private
      *
      * Create a summary report which contains the step followed (and operations performed) during the conversion
@@ -33,8 +35,16 @@ class SummaryReportWriter {
         // create a copy of the summary report template file in the target folder
         let file_path = path.join(process.cwd(), target, report_name);
         try {
-            fsExtra.copyFileSync(path.join(__dirname, report_name), file_path);
-            logger.info(report_name + " copied successfully to " + target);
+            fsExtra.copyFileSync(
+                path.join(__dirname, constants.TEMPLATE_FOLDER, report_name),
+                file_path
+            );
+            logger.info(
+                "Base summary report template " +
+                    report_name +
+                    " copied to " +
+                    target
+            );
         } catch (err) {
             logger.error(
                 "Error copying " +
@@ -52,7 +62,7 @@ class SummaryReportWriter {
                     fs.appendFileSync(file_path, LINE_SEP);
                     fs.appendFileSync(
                         file_path,
-                        `#### + ${conversion_step.getRule()}`
+                        `#### ${conversion_step.getRule()}`
                     );
                     fs.appendFileSync(file_path, LINE_SEP);
                     fs.appendFileSync(
@@ -68,6 +78,7 @@ class SummaryReportWriter {
                 }
             }
         });
+        logger.info(report_name + " generation complete.");
     }
 
     /**

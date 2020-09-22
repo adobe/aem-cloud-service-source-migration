@@ -16,13 +16,24 @@ const glob = require("glob");
 const logger = require("./logger");
 
 var Util = {
-    // Function to grab values from command line input
+    /**
+     *
+     * @param String flag command line argument which need to be read
+     * @return {String} flag value
+     *
+     *  Grab values from command line input
+     */
     grab: (flag) => {
         let indexAfterFlag = process.argv.indexOf(flag) + 1;
         return process.argv[indexAfterFlag];
     },
 
-    // Function to recursively delete a folder and its content
+    /**
+     *
+     * @param String path The path/location where content need to be deleted
+     *
+     * Recursively delete a folder and its content
+     */
     deleteFolderRecursive: (path) => {
         if (fs.existsSync(path)) {
             fs.readdirSync(path).forEach(function (file) {
@@ -39,16 +50,64 @@ var Util = {
         }
     },
 
-    // Function to get the content of an XML file as a array of strings (lines)
-    getXMLContent: (file) => {
-        if (!fs.existsSync(file)) {
+    /**
+     *
+     * @param String filePath path of file whose content need to be read
+     * @return {Array.<String>} content of an XML file as a array of strings
+     *
+     * Async function to get the content of an XML file as a array of strings (lines)
+     */
+    getXMLContent: async (filePath) => {
+        if (!fs.existsSync(filePath)) {
             return [];
         }
         // read contents of the file and split them by newline
-        return fs.readFileSync(file.toString(), "UTF-8").split(/\r?\n/);
+        var data = await fs.promises.readFile(filePath, "utf8");
+        return data.split(/\r?\n/);
     },
 
-    // Function to data (a string array) to a file
+    /**
+     *
+     * @param String filePath path of file whose content need to be read
+     * @return {Array.<String>} content of an XML file as a array of strings
+     *
+     * Sync function to get the content of an XML file as a array of strings (lines)
+     */
+    getXMLContentSync: (filePath) => {
+        if (!fs.existsSync(filePath)) {
+            return [];
+        }
+        // read contents of the file and split them by newline
+        return fs.readFileSync(filePath, "utf8").split(/\r?\n/);
+    },
+
+    /**
+     *
+     * @param String filePath path of file where data need to be written
+     * @param String[] data content to be written of provided file
+     *
+     * Async function to write data (a string array) to a file
+     */
+    writeDataToFileAsync: (filePath, data) => {
+        return new Promise((resolve, reject) => {
+            const file = fs.createWriteStream(filePath);
+            data.forEach((line) => {
+                file.write(line.toString() + "\r\n");
+            });
+            file.end();
+            file.on("finish", () => resolve(true));
+            file.on("error", reject);
+        });
+    },
+
+    /**
+     *
+     * @param String filePath path of file where data need to be written
+     * @param String[] data content to be written of provided file
+     * @param String errorMsg error msg to log in case of failure/error
+     *
+     * Sync function to write data (a string array) to a file
+     */
     writeDataToFileSync: (filePath, data, errorMsg) => {
         var file = fs.createWriteStream(filePath);
         file.on("error", function () {
@@ -60,6 +119,14 @@ var Util = {
         file.end();
     },
 
+    /**
+     *
+     * @param String sourcePath path from where file need to be copied
+     * @param String destinationPath path where file to be copied
+     * @param String errorMsg error msg to log in case of failure/error
+     *
+     * Sync function to write data (a string array) to a file
+     */
     copyFolderSync: (sourcePath, destinationPath) => {
         // NOTE : In copySync method of fs-extra module, if src is a directory it will copy
         // everything inside of this directory, not the entire directory itself!!
@@ -68,11 +135,27 @@ var Util = {
         fsExtra.copySync(sourcePath, destinationPath);
     },
 
+    /**
+     *
+     * @param String directoryPath path which need to be scanned
+     * @param String fileExtension file extension which need to be search
+     * @return {Array.<String>} list of all files
+     *
+     * Get all files with given extension under given directory
+     */
     globGetFilesByExtension(directoryPath, fileExtension) {
         let globPattern = directoryPath + "/**/*" + fileExtension;
         return glob.sync(globPattern);
     },
 
+    /**
+     *
+     * @param String directoryPath path which need to be scanned
+     * @param String fileName file name which need to be search
+     * @return {Array.<String>} list of all files
+     *
+     * Get all files with given fileName under given directory
+     */
     globGetFilesByName(directoryPath, fileName) {
         let globPattern = directoryPath + "/**/" + fileName;
         return glob.sync(globPattern);

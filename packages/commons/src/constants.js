@@ -15,6 +15,8 @@ module.exports = {
 
     LOG_FILE: "./target/result.log",
 
+    TEMPLATE_FOLDER: "templates",
+
     TARGET_PROJECT_FOLDER: "./target/project",
 
     TARGET_PROJECT_SRC_FOLDER: "./target/project/src",
@@ -24,6 +26,8 @@ module.exports = {
     TARGET_DISPATCHER_SRC_FOLDER: "./target/dispatcher/src",
 
     SUMMARY_REPORT_LINE_SEPARATOR: "\n",
+
+    WARNING: "WARNING",
 
     ACTION_ADDED: "Added",
 
