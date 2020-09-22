@@ -18,6 +18,8 @@ This monorepo contains the code refactoring tools that help customers to migrate
 -   [Dispatcher Converter](./packages/dispatcher-converter) - configuring existing on-premise or
  Adobe Managed Services (AMS) dispatcher configurations to AEM as a Cloud Service compatible
  dispatcher configuration.
+-   [Repository Modernizer](./packages/repository-modernizer) - restructure existing projects
+  into AEM as a Cloud Service compatible packages.
 
 ## Setup
 ```
