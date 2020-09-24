@@ -46,7 +46,7 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
 
 # Usage
 
-While it is recommended to use this tool via our AIO CLI plugin for source migration (refer to [aio-cli-plugin-aem-cloud-service-migration](https://git.corp.adobe.com/maji/aio-cli-plugin-aem-cloud-service-migration)),
+While it is recommended to use this tool via our AIO CLI plugin for source migration (refer to [aio-cli-plugin-aem-cloud-service-migration](https://github.com/adobe/aio-cli-plugin-aem-cloud-service-migration)),
  it can also be executed standalone.
  
 
@@ -75,7 +75,7 @@ const RepositoryModernizer = require('@adobe/aem-cs-source-migration-repository-
 ## How to execute
 
 To execute the repository-modernizer tool locally :
-1. Run `git clone git@git.corp.adobe.com:maji/aem-cloud-service-source-migration.git` to clone the
+1. Run `git clone git@github.com:adobe/aem-cloud-service-source-migration.git` to clone the
  repository locally
 2. Navigate to the `repository-modernizer` folder
 3. Run `npm install` to install all the required dependencies
