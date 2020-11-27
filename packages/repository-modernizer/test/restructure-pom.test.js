@@ -3,7 +3,6 @@ Copyright 2020 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software distributed under
 the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
 OF ANY KIND, either express or implied. See the License for the specific language
@@ -29,6 +28,7 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
 const constants = require("../src/util/constants");
+const commons = require("@adobe/aem-cs-source-migration-commons");
 const configFileName = "config.yaml";
 const testDir = path.join(process.cwd(), "test");
 const { readFileSync } = jest.requireActual("fs");
@@ -45,6 +45,7 @@ const xmlContent = describe("restructure pom", function () {
             srcContentPackages[0],
             constants.POM_XML
         );
+        let package_artifactId_list = [];
         let projectPath = path.join(
             commons_constants.TARGET_PROJECT_SRC_FOLDER,
             path.basename(config.projects[0].projectPath)
@@ -59,6 +60,16 @@ const xmlContent = describe("restructure pom", function () {
             constants.UI_CONTENT,
             constants.POM_XML
         );
+        let allPackagePomFile = path.join(
+            projectPath,
+            constants.ALL,
+            constants.POM_XML
+        );
+        let pluginObj = {
+            pluginList: [],
+            pluginManagementList: [],
+            filevaultPluginEmbeddedList: [],
+        };
         let ui_content_artifactId = config.projects[0].artifactId.concat(
             ".",
             constants.UI_CONTENT
@@ -76,15 +87,19 @@ const xmlContent = describe("restructure pom", function () {
         const xmlContent = fs.readFileSync(srcpath, "utf8").split(/\r?\n/);
         //mock methods
         pomManipulationUtil.addDependencies.mockReturnValue(true);
-        pomManipulationUtil.embeddedArtifactsToFileVaultPlugin.mockResolvedValue(
-            true
-        );
         pomManipulationUtil.addPlugins.mockResolvedValue(true);
         pomManipulationUtil.embeddArtifactsUsingTemplate.mockResolvedValue(
             true
         );
+
+        let sdkDependency = constants.SDK_DEPENDENCY_TEMPLATE.replace(
+            "${version}",
+            constants.DEFAULT_SDK_VERSION
+        );
         pomManipulationUtil.removeDuplicatesDependencies.mockReturnValue(true);
+        pomManipulationUtil.embeddedArtifactsToFileVaultPlugin.mockResolvedValue(true);
         pomManipulationUtil.replaceVariables.mockResolvedValue(true);
+        pomManipulationUtil.removeDuplicatesPlugins.mockReturnValue(true);
         util.globGetFilesByName.mockReturnValue(["xyz/pom.xml", "abc/pom.xml"]);
         util.writeDataToFileSync.mockResolvedValue(true);
         util.getXMLContent.mockReturnValue(xmlContent);
@@ -97,12 +112,27 @@ const xmlContent = describe("restructure pom", function () {
             expect(pomManipulationUtil.addDependencies).toHaveBeenCalledTimes(
                 4
             );
+            expect(pomManipulationUtil.removeDuplicatesDependencies).toHaveBeenCalledTimes(
+                1
+            )
+            expect(pomManipulationUtil.embeddedArtifactsToFileVaultPlugin).toHaveBeenCalledWith(
+                uiAppsPomFile,
+                pluginObj.filevaultPluginEmbeddedList,
+                expect.anything()
+            )
+            expect(pomManipulationUtil.removeDuplicatesPlugins).toHaveBeenCalledTimes(
+               2
+            )
+            expect(pomManipulationUtil.embeddArtifactsUsingTemplate).toHaveBeenCalledTimes(
+                1
+            )
         });
     });
     test("get dependencies", async () => {
         let dependencyList = await pomsRewire.__get__("getDependenciesFromPom")(
             srcpath
         );
+        commons.logger.info(dependencyList);
         var expected = [
             "      <dependency>",
             "        <groupId>com.apps.aem</groupId>",
@@ -112,6 +142,11 @@ const xmlContent = describe("restructure pom", function () {
             "      <dependency>",
             "        <groupId>com.apps.aem</groupId>",
             "        <artifactId>test.core</artifactId>",
+            "        <version>1.0.1</version>",
+            "      </dependency>",
+            "      <dependency>",
+            "        <groupId>com.adobe.aem</groupId>",
+            "        <artifactId>aem.test.core</artifactId>",
             "        <version>1.0.1</version>",
             "      </dependency>",
         ];

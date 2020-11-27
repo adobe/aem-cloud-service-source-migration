@@ -121,6 +121,13 @@ module.exports = {
 
     XML_COMMENT_END: "-->",
 
+    ROOT_FILTER_SECTION_START: "<filters>",
+
+    ROOT_FILTER_SECTION_END: "</filters>",
+
+    FILTER_TAGS: ["<includes>", "</includes>","<include>","<excludes>","<exclude>","</excludes>"],
+
+
     OOTB_PARENT_POM_PLUGIN_MANAGEMENT: [
         "frontend-maven-plugin",
         "maven-jar-plugin",

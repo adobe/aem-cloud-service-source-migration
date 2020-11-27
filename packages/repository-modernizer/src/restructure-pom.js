@@ -286,6 +286,7 @@ async function refactorParentPom(
         nonAdobeDependencyList,
         conversionStep
     );
+    await addParentandModuleinfo(pomFile,config.parentPom.path);
     // add dependencies from source parent pom.xml
     let dependencyList = await getDependenciesFromPom(config.parentPom.path);
     await pomManipulationUtil.addDependencies(
@@ -405,8 +406,8 @@ async function getDependenciesFromPom(pomFile) {
                     line < fileContent.length &&
                     pomLine.trim() != constants.DEPENDENCY_END_TAG
                 ) {
-                    pomLine = fileContent[line];
                     line++;
+                    pomLine = fileContent[line];
                 }
                 continue;
             }
@@ -567,6 +568,48 @@ async function fetchSDKMetadata() {
         version = constants.DEFAULT_SDK_VERSION;
     }
     return version;
+}
+
+async function addParentandModuleinfo(pomFile,originalParent){
+    let parentandModule = [];
+    let pushContent = false;
+    let fileContent = await util.getXMLContent(originalParent);
+
+    for (let line = 0; line < fileContent.length; line++) {
+         pomLine = fileContent[line];
+         if(pomLine.trim()=="<parent>"){
+             while(line < fileContent.length && pomLine.trim()!="</parent>"){
+                parentandModule.push(pomLine);
+                line++;
+                pomLine = fileContent[line];
+             }
+             parentandModule.push(pomLine);
+         }
+         if(pomLine.trim()=="<modules>"){
+            while(line < fileContent.length && pomLine.trim()!="</modules>"){
+                parentandModule.push(pomLine);
+               line++;
+               pomLine = fileContent[line];
+            }
+            parentandModule.push(pomLine);
+        }  
+    }
+    let contentToBeWritten = [];
+    if(parentandModule.length!=0){
+        let fileContent = await util.getXMLContent(pomFile);
+        for (let line = 0; line < fileContent.length; line++) {
+            let pomLine= fileContent[line];
+            if(pomLine.trim()=="<parent>"){
+                parentandModule.forEach((module) => {
+                    contentToBeWritten.push(module);
+                });
+              line=line+2;
+            }
+            pomLine= fileContent[line];
+            contentToBeWritten.push(pomLine);
+        }
+        await util.writeDataToFileAsync(pomFile, contentToBeWritten); 
+    }
 }
 
 module.exports = RestructurePoms;
