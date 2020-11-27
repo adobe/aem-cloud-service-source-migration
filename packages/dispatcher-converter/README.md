@@ -107,7 +107,7 @@ dispatcherConverter:
         appendToVhosts:
             - "/Users/{username}/some/path/to/appendedContent.conf"
         pathToPrepend:
-            - "/Users/{username}/some/path/to/your/httpd/content"
+            - "/Users/{username}/some/path/to/your/httpd/content/"
         portsToMap:
             - 8000
             - 8080

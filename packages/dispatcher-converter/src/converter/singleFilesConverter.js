@@ -184,7 +184,7 @@ class SingleFilesConverter {
             this.dispatcherAnyPath
         );
 
-        fs.writeFileSync(Constants.TARGET_SINGLE_DISPATCHER, fileContentsArray);
+        fs.writeFileSync(Constants.TARGET_SINGLE_DISPATCHER, fileContentsArray.join(os.EOL));
 
         let returnContent = "";
         let rootFlag = false;
@@ -198,10 +198,10 @@ class SingleFilesConverter {
 
         for (let i = 0; i < fileContentsArray.length; i++) {
             if (rootFlag && farmFlag) {
-                if (fileContentsArray[i].trim().startsWith("{")) {
+                if (fileContentsArray[i].trim().includes("{")) {
                     sectionArrays.push("1");
                 }
-                if (fileContentsArray[i].trim().startsWith("}")) {
+                if (fileContentsArray[i].trim().includes("}")) {
                     //by the time we get to the last }, the array will have only 1 item in it, every other time it will contain 2...
                     if (sectionArrays.length === 1) {
                         //found the closing for the farm
