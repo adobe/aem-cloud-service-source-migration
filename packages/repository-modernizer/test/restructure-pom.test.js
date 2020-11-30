@@ -97,7 +97,9 @@ const xmlContent = describe("restructure pom", function () {
             constants.DEFAULT_SDK_VERSION
         );
         pomManipulationUtil.removeDuplicatesDependencies.mockReturnValue(true);
-        pomManipulationUtil.embeddedArtifactsToFileVaultPlugin.mockResolvedValue(true);
+        pomManipulationUtil.embeddedArtifactsToFileVaultPlugin.mockResolvedValue(
+            true
+        );
         pomManipulationUtil.replaceVariables.mockResolvedValue(true);
         pomManipulationUtil.removeDuplicatesPlugins.mockReturnValue(true);
         util.globGetFilesByName.mockReturnValue(["xyz/pom.xml", "abc/pom.xml"]);
@@ -112,20 +114,22 @@ const xmlContent = describe("restructure pom", function () {
             expect(pomManipulationUtil.addDependencies).toHaveBeenCalledTimes(
                 4
             );
-            expect(pomManipulationUtil.removeDuplicatesDependencies).toHaveBeenCalledTimes(
-                1
-            )
-            expect(pomManipulationUtil.embeddedArtifactsToFileVaultPlugin).toHaveBeenCalledWith(
+            expect(
+                pomManipulationUtil.removeDuplicatesDependencies
+            ).toHaveBeenCalledTimes(1);
+            expect(
+                pomManipulationUtil.embeddedArtifactsToFileVaultPlugin
+            ).toHaveBeenCalledWith(
                 uiAppsPomFile,
                 pluginObj.filevaultPluginEmbeddedList,
                 expect.anything()
-            )
-            expect(pomManipulationUtil.removeDuplicatesPlugins).toHaveBeenCalledTimes(
-               2
-            )
-            expect(pomManipulationUtil.embeddArtifactsUsingTemplate).toHaveBeenCalledTimes(
-                1
-            )
+            );
+            expect(
+                pomManipulationUtil.removeDuplicatesPlugins
+            ).toHaveBeenCalledTimes(2);
+            expect(
+                pomManipulationUtil.embeddArtifactsUsingTemplate
+            ).toHaveBeenCalledTimes(1);
         });
     });
     test("get dependencies", async () => {
