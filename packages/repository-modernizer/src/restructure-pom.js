@@ -286,7 +286,7 @@ async function refactorParentPom(
         nonAdobeDependencyList,
         conversionStep
     );
-    await addParentandModuleinfo(pomFile,config.parentPom.path);
+    await addParentandModuleinfo(pomFile, config.parentPom.path);
     // add dependencies from source parent pom.xml
     let dependencyList = await getDependenciesFromPom(config.parentPom.path);
     await pomManipulationUtil.addDependencies(
@@ -570,45 +570,51 @@ async function fetchSDKMetadata() {
     return version;
 }
 
-async function addParentandModuleinfo(pomFile,originalParent){
+async function addParentandModuleinfo(pomFile, originalParent) {
     let parentandModule = [];
     let pushContent = false;
     let fileContent = await util.getXMLContent(originalParent);
 
     for (let line = 0; line < fileContent.length; line++) {
-         pomLine = fileContent[line];
-         if(pomLine.trim()=="<parent>"){
-             while(line < fileContent.length && pomLine.trim()!="</parent>"){
+        pomLine = fileContent[line];
+        if (pomLine.trim() == constants.PARENT_START_TAG) {
+            while (
+                line < fileContent.length &&
+                pomLine.trim() != constants.PARENT_END_TAG
+            ) {
                 parentandModule.push(pomLine);
                 line++;
                 pomLine = fileContent[line];
-             }
-             parentandModule.push(pomLine);
-         }
-         if(pomLine.trim()=="<modules>"){
-            while(line < fileContent.length && pomLine.trim()!="</modules>"){
-                parentandModule.push(pomLine);
-               line++;
-               pomLine = fileContent[line];
             }
             parentandModule.push(pomLine);
-        }  
+        }
+        if (pomLine.trim() == constants.MODULE_START_TAG) {
+            while (
+                line < fileContent.length &&
+                pomLine.trim() != constants.MODULE_END_TAG
+            ) {
+                parentandModule.push(pomLine);
+                line++;
+                pomLine = fileContent[line];
+            }
+            parentandModule.push(pomLine);
+        }
     }
     let contentToBeWritten = [];
-    if(parentandModule.length!=0){
+    if (parentandModule.length != 0) {
         let fileContent = await util.getXMLContent(pomFile);
         for (let line = 0; line < fileContent.length; line++) {
-            let pomLine= fileContent[line];
-            if(pomLine.trim()=="<parent>"){
+            let pomLine = fileContent[line];
+            if (pomLine.trim() == constants.PARENT_START_TAG) {
                 parentandModule.forEach((module) => {
                     contentToBeWritten.push(module);
                 });
-              line=line+2;
+                line = line + 2;
             }
-            pomLine= fileContent[line];
+            pomLine = fileContent[line];
             contentToBeWritten.push(pomLine);
         }
-        await util.writeDataToFileAsync(pomFile, contentToBeWritten); 
+        await util.writeDataToFileAsync(pomFile, contentToBeWritten);
     }
 }
 

@@ -64,25 +64,25 @@ var RestructureFilterPaths = {
                         ? project.relativePathToExistingFilterXml
                         : constants.FILTER_PATH
                 );
-                if(!project.relativePathToExistingFilterXml.endsWith("pom.xml")){
-                if (fs.existsSync(contentPackageFilterPath)) {
-                    // read the project's filter.xml and separate the mutable and immutable filter paths
+                if (!contentPackageFilterPath.endsWith("pom.xml")) {
+                    if (fs.existsSync(contentPackageFilterPath)) {
+                        // read the project's filter.xml and separate the mutable and immutable filter paths
+                        segregateFilterPaths(
+                            util.getXMLContentSync(contentPackageFilterPath),
+                            filterPaths
+                        );
+                    } else {
+                        logger.error(
+                            `RestructureFilterPaths: Filter file at ${contentPackageFilterPath} not found!.`
+                        );
+                    }
+                } else {
                     segregateFilterPaths(
-                        util.getXMLContentSync(contentPackageFilterPath),
+                        getFiltersFromPomFile(contentPackageFilterPath),
                         filterPaths
                     );
-                } else {
-                    logger.error(
-                        `RestructureFilterPaths: Filter file at ${contentPackageFilterPath} not found!.`
-                    );
                 }
-            }else{
-                segregateFilterPaths(
-                    getFiltersFromPomFile(contentPackageFilterPath),
-                    filterPaths
-                );
-            }
-        });
+            });
             writeFilterPathsToFilterXml(
                 filterPaths.uiAppsFilters,
                 uiAppsFilterPath,
@@ -132,7 +132,7 @@ function getFiltersFromPomFile(pomFile) {
  */
 function segregateFilterPaths(filterFileContent, filterPaths) {
     let previousLine = "";
-    let prevstate=false;
+    let prevstate = false;
     // add the logic for creating the two filter path arrays here..
     filterFileContent.forEach((line) => {
         //skip start, end line and empty lines
@@ -144,19 +144,25 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
         ) {
             //add line to respective arrays
             if (isImmutableContentFilter(line)) {
-                prevstate=true;
+                prevstate = true;
                 filterPaths.uiAppsFilters.push(line);
             } else {
                 // if current line is a filter section end (i.e. `</filter>`),
                 // check if it should be added to ui.apps filter or ui.content filter
                 if (
-                    (line.trim() === constants.FILTER_SECTION_END || line.trim().includes('<includes>')||line.trim().includes('</includes>')||line.trim().includes('<include>')
-                    || line.trim().includes('<excludes>') || line.trim().includes('<exclude>') ||line.trim().includes('</excludes>') )&& prevstate==true
+                    (line.trim() === constants.FILTER_SECTION_END ||
+                        line.trim().includes("<includes>") ||
+                        line.trim().includes("</includes>") ||
+                        line.trim().includes("<include>") ||
+                        line.trim().includes("<excludes>") ||
+                        line.trim().includes("<exclude>") ||
+                        line.trim().includes("</excludes>")) &&
+                    prevstate == true
                 ) {
                     filterPaths.uiAppsFilters.push(line);
                 } else {
                     filterPaths.uiContentFilters.push(line);
-                    prevstate=false;
+                    prevstate = false;
                 }
             }
             previousLine = line;
@@ -197,10 +203,10 @@ function writeFilterPathsToFilterXml(filterPaths, filePath, conversionStep) {
 }
 
 function isImmutableContentFilter(line) {
-    if(line.indexOf('"')== -1){
-        line = line.substring(line.indexOf('<root>')+6);
-    }else{
-    line = line.substring(line.indexOf('"') + 1);
+    if (line.indexOf('"') == -1) {
+        line = line.substring(line.indexOf("<root>") + "<root>".length);
+    } else {
+        line = line.substring(line.indexOf('"') + 1);
     }
     return (
         line.startsWith("/apps") ||

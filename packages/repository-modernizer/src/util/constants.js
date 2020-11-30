@@ -57,6 +57,15 @@ module.exports = {
     CONTENT_PACKAGING_TYPES: ["content-package"],
 
     // POM tags and entries
+
+    PARENT_START_TAG: "<parent>",
+
+    PARENT_END_TAG: "<parent>",
+
+    MODULE_START_TAG: "<modules>",
+
+    MODULE_END_TAG: "</modules>",
+
     ARTIFACT_ID_START_TAG: "<artifactId>",
 
     ARTIFACT_ID_END_TAG: "</artifactId>",
@@ -125,8 +134,14 @@ module.exports = {
 
     ROOT_FILTER_SECTION_END: "</filters>",
 
-    FILTER_TAGS: ["<includes>", "</includes>","<include>","<excludes>","<exclude>","</excludes>"],
-
+    FILTER_TAGS: [
+        "<includes>",
+        "</includes>",
+        "<include>",
+        "<excludes>",
+        "<exclude>",
+        "</excludes>",
+    ],
 
     OOTB_PARENT_POM_PLUGIN_MANAGEMENT: [
         "frontend-maven-plugin",
