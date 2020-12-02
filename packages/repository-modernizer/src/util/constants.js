@@ -60,7 +60,7 @@ module.exports = {
 
     PARENT_START_TAG: "<parent>",
 
-    PARENT_END_TAG: "<parent>",
+    PARENT_END_TAG: "</parent>",
 
     MODULE_START_TAG: "<modules>",
 
