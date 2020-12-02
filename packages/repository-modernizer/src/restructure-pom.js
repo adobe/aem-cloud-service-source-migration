@@ -570,8 +570,15 @@ async function fetchSDKMetadata() {
     return version;
 }
 
+/**
+ *
+ * @param String pomFile path of parent pom
+ * @param String originalParent path of originalParent
+ *
+ * Function to add parent and module info
+ */
 async function addParentandModuleinfo(pomFile, originalParent) {
-    let parentandModule = [];
+    let parentModule = [];
     let pushContent = false;
     let fileContent = await util.getXMLContent(originalParent);
 
@@ -582,31 +589,31 @@ async function addParentandModuleinfo(pomFile, originalParent) {
                 line < fileContent.length &&
                 pomLine.trim() != constants.PARENT_END_TAG
             ) {
-                parentandModule.push(pomLine);
+                parentModule.push(pomLine);
                 line++;
                 pomLine = fileContent[line];
             }
-            parentandModule.push(pomLine);
+            parentModule.push(pomLine);
         }
         if (pomLine.trim() == constants.MODULE_START_TAG) {
             while (
                 line < fileContent.length &&
                 pomLine.trim() != constants.MODULE_END_TAG
             ) {
-                parentandModule.push(pomLine);
+                parentModule.push(pomLine);
                 line++;
                 pomLine = fileContent[line];
             }
-            parentandModule.push(pomLine);
+            parentModule.push(pomLine);
         }
     }
     let contentToBeWritten = [];
-    if (parentandModule.length != 0) {
+    if (parentModule.length != 0) {
         let fileContent = await util.getXMLContent(pomFile);
         for (let line = 0; line < fileContent.length; line++) {
             let pomLine = fileContent[line];
             if (pomLine.trim() == constants.PARENT_START_TAG) {
-                parentandModule.forEach((module) => {
+                parentModule.forEach((module) => {
                     contentToBeWritten.push(module);
                 });
                 line = line + 2;
