@@ -286,7 +286,7 @@ async function refactorParentPom(
         nonAdobeDependencyList,
         conversionStep
     );
-    await addParentandModuleinfo(pomFile, config.parentPom.path);
+    await addParentAndModuleinfo(pomFile, config.parentPom.path);
     // add dependencies from source parent pom.xml
     let dependencyList = await getDependenciesFromPom(config.parentPom.path);
     await pomManipulationUtil.addDependencies(
@@ -577,7 +577,7 @@ async function fetchSDKMetadata() {
  *
  * Function to add parent and module info
  */
-async function addParentandModuleinfo(pomFile, originalParent) {
+async function addParentAndModuleinfo(pomFile, originalParent) {
     let parentModule = [];
     let pushContent = false;
     let fileContent = await util.getXMLContent(originalParent);

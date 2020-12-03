@@ -28,7 +28,6 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
 const constants = require("../src/util/constants");
-const commons = require("@adobe/aem-cs-source-migration-commons");
 const configFileName = "config.yaml";
 const testDir = path.join(process.cwd(), "test");
 const { readFileSync } = jest.requireActual("fs");
@@ -136,7 +135,6 @@ const xmlContent = describe("restructure pom", function () {
         let dependencyList = await pomsRewire.__get__("getDependenciesFromPom")(
             srcpath
         );
-        commons.logger.info(dependencyList);
         var expected = [
             "      <dependency>",
             "        <groupId>com.apps.aem</groupId>",
@@ -216,7 +214,6 @@ const xmlContent = describe("restructure pom", function () {
     });
     test("fetch sdk version", async () => {
         let version = await pomsRewire.__get__("fetchSDKMetadata")(srcpath);
-        console.log(version);
         expect(version).not.toBeNull();
     });
 });

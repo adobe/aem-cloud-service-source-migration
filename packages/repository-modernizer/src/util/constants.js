@@ -134,6 +134,22 @@ module.exports = {
 
     ROOT_FILTER_SECTION_END: "</filters>",
 
+    INCLUDE_FILTER_ROOT_TAG: "<include>",
+
+    INCLUDE_FILTER_START_TAG: "<includes>",
+
+    INCLUDE_FILTER_END_TAG: "</includes>",
+
+    INCLUDE_FILTER_ROOT_TAG: "<include>",
+
+    EXCLUDE_FILTER_ROOT_TAG: "<exclude>",
+
+    EXCLUDE_FILTER_START_TAG: "<excludes>",
+
+    EXCLUDE_FILTER_END_TAG: "</excludes>",
+
+    ROOT: "<root>",
+
     FILTER_TAGS: [
         "<includes>",
         "</includes>",
