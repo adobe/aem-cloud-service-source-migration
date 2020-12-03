@@ -132,7 +132,7 @@ function getFiltersFromPomFile(pomFile) {
  */
 function segregateFilterPaths(filterFileContent, filterPaths) {
     let previousLine = "";
-    let prevstate = false;
+    let prevState = false;
     // add the logic for creating the two filter path arrays here..
     filterFileContent.forEach((line) => {
         //skip start, end line and empty lines
@@ -144,25 +144,37 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
         ) {
             //add line to respective arrays
             if (isImmutableContentFilter(line)) {
-                prevstate = true;
+                prevState = true;
                 filterPaths.uiAppsFilters.push(line);
             } else {
                 // if current line is a filter section end (i.e. `</filter>`),
                 // check if it should be added to ui.apps filter or ui.content filter
                 if (
                     (line.trim() === constants.FILTER_SECTION_END ||
-                        line.trim().includes("<includes>") ||
-                        line.trim().includes("</includes>") ||
-                        line.trim().includes("<include>") ||
-                        line.trim().includes("<excludes>") ||
-                        line.trim().includes("<exclude>") ||
-                        line.trim().includes("</excludes>")) &&
-                    prevstate == true
+                        line
+                            .trim()
+                            .includes(constants.INCLUDE_FILTER_START_TAG) ||
+                        line
+                            .trim()
+                            .includes(constants.INCLUDE_FILTER_END_TAG) ||
+                        line
+                            .trim()
+                            .includes(constants.INCLUDE_FILTER_ROOT_TAG) ||
+                        line
+                            .trim()
+                            .includes(constants.EXCLUDE_FILTER_START_TAG) ||
+                        line
+                            .trim()
+                            .includes(constants.EXCLUDE_FILTER_ROOT_TAG) ||
+                        line
+                            .trim()
+                            .includes(constants.EXCLUDE_FILTER_END_TAG)) &&
+                    prevState == true
                 ) {
                     filterPaths.uiAppsFilters.push(line);
                 } else {
                     filterPaths.uiContentFilters.push(line);
-                    prevstate = false;
+                    prevState = false;
                 }
             }
             previousLine = line;
@@ -204,7 +216,9 @@ function writeFilterPathsToFilterXml(filterPaths, filePath, conversionStep) {
 
 function isImmutableContentFilter(line) {
     if (line.indexOf('"') == -1) {
-        line = line.substring(line.indexOf("<root>") + "<root>".length);
+        line = line.substring(
+            line.indexOf(constants.ROOT) + constants.ROOT.length
+        );
     } else {
         line = line.substring(line.indexOf('"') + 1);
     }
