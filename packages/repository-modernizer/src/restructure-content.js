@@ -135,6 +135,7 @@ function copyContent(source, target, conversionStep) {
         if (fs.lstatSync(source).isDirectory()) {
             util.copyFolderSync(source, target);
         } else {
+            // if target is a file, if required create the folder hierarchy first
             if (!fs.existsSync(target)) {
                 fs.mkdirSync(target);
             }

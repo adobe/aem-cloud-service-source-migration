@@ -68,8 +68,13 @@ var RestructurePoms = {
                 ".",
                 constants.UI_CONTENT
             );
+            let ui_config_artifactId = project.artifactId.concat(
+                ".",
+                constants.UI_CONFIG
+            );
             package_artifactId_list.push(ui_apps_artifactId);
             package_artifactId_list.push(ui_content_artifactId);
+            package_artifactId_list.push(ui_config_artifactId);
             // add dependencies in ui.content
             let uiContentDependencyList = [
                 constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(

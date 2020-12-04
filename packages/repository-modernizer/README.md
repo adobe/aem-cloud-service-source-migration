@@ -40,13 +40,14 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
  structure, by creating the following deployment structure :
 -   The `ui.apps` package, or Code Package, contains all the code to be deployed and only deploys
  to `/apps`
+-   The `ui.config` package, or OSGI Configuration Package, contains all OSGI configurations
 -   The `ui.content` package, or Content Package, contains all content and configuration
 -   The `all` package is a container package that ONLY includes the `ui.apps` and `ui.content`
  packages as embeds
 
 # Usage
 
-While it is recommended to use this tool via our AIO CLI plugin for source migration (refer to [aio-cli-plugin-aem-cloud-service-migration](https://git.corp.adobe.com/maji/aio-cli-plugin-aem-cloud-service-migration)),
+While it is recommended to use this tool via our AIO CLI plugin for source migration (refer to [aio-cli-plugin-aem-cloud-service-migration](https://github.com/adobe/aio-cli-plugin-aem-cloud-service-migration)),
  it can also be executed standalone.
  
 
@@ -75,7 +76,7 @@ const RepositoryModernizer = require('@adobe/aem-cs-source-migration-repository-
 ## How to execute
 
 To execute the repository-modernizer tool locally :
-1. Run `git clone git@git.corp.adobe.com:maji/aem-cloud-service-source-migration.git` to clone the
+1. Run `git clone git@github.com:adobe/aem-cloud-service-source-migration.git` to clone the
  repository locally
 2. Navigate to the `repository-modernizer` folder
 3. Run `npm install` to install all the required dependencies
@@ -101,7 +102,8 @@ The repository modernizer expects the following configurations to be specified f
     (NOTE : Expects an array of project details objects.)
     -   `projectPath` : The absolute path to the project folder.
     -   `existingContentPackageFolder` : relative path(s) (w.r.t. the project folder) to the existing
-     content package(s) that needs to be restructured. (NOTE : Expects an array of relative paths.)
+     content package(s) that needs to be restructured. (NOTE : Expects an array of relative paths to 
+     existing content packages, NOT bundle/jar artifacts.)
     -   `relativePathToExistingFilterXml` : The relative path (w.r.t. the existing content package
         folder) to the vault filter.xml file. For example : `/src/main/content/META-INF/vault/filter.xml`
     -   `relativePathToExistingJcrRoot` : The relative path (w.r.t. the existing content package
@@ -134,8 +136,8 @@ repositoryModernizer:
   projects:
     - # absolute path to the project folder
       projectPath: /Users/{username}/some/path/to/xyz-aem
-      # relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured
-      # (expects one or more relative paths to be provided in array format)
+      # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
+      # NOTE : only content packages are expected here, NOT bundle/jar artifacts
       existingContentPackageFolder:
         - /ui.apps
         - /ui.content
