@@ -352,7 +352,7 @@ describe("FileOperations", function () {
             testFolder + "/newtestfile.vhost",
             true
         );
-        assert.notInclude(content, "Include");
+        assert.include(content, "# Include");
     });
 
     it("should successfully replace include statement with content of rule file", function () {
