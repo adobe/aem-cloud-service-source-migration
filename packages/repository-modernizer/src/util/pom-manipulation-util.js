@@ -124,7 +124,10 @@ var PomManipulationUtil = {
                     artifactIdList.forEach((artifactId) => {
                         // embedd the artifacts (ui.apps and ui.content packages
                         // are installed in separate locations)
-                        if (artifactId.endsWith(constants.UI_APPS)) {
+                        if (
+                            artifactId.endsWith(constants.UI_APPS) ||
+                            artifactId.endsWith(constants.UI_CONFIG)
+                        ) {
                             contentToBeWritten.push(
                                 constants.DEFAULT_EMBEDDED_APPS_TEMPLATE.replace(
                                     constants.DEFAULT_ARTIFACT_ID,

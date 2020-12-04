@@ -131,7 +131,6 @@ function getFiltersFromPomFile(pomFile) {
  * Segregate filters of ui.apps and ui.content package
  */
 function segregateFilterPaths(filterFileContent, filterPaths) {
-    let previousLine = "";
     let prevState = false;
     // add the logic for creating the two filter path arrays here..
     filterFileContent.forEach((line) => {
@@ -177,7 +176,6 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
                     prevState = false;
                 }
             }
-            previousLine = line;
         }
     });
 }

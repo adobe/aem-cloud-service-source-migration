@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const createBaseProjectStructure = require("./src/create-base-project-structure");
 const restructureFilters = require("./src/restructure-filters");
 const restructureContent = require("./src/restructure-content");
+const restructureConfig = require("./src/restructure-config");
 const restructurePoms = require("./src/restructure-pom");
 const constants = require("./src/util/constants");
 const {
@@ -38,6 +39,7 @@ var RepositoryModernizer = {
         restructureFilters.restructure(config.projects, conversionSteps);
         restructureContent.restructure(config.projects, conversionSteps);
         await restructurePoms.restructure(config, conversionSteps);
+        await restructureConfig.restructure(config.projects, conversionSteps);
         // create the summary report for the conversion performed
         await SummaryReportWriter.writeSummaryReport(
             conversionSteps,

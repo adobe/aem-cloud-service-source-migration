@@ -237,22 +237,27 @@ class FileOperations {
                                     )
                             ) {
                                 let replaceContents = "";
-                                 replaceContents = this.getContentFromFile(
+                                replaceContents = this.getContentFromFile(
                                     line
                                         .split(
                                             Constants.INCLUDE_SYNTAX_IN_FARM
                                         )[1]
                                         .trim(),
                                     true
-                                 );
+                                );
 
                                 result += replaceContents;
 
-                                let prependFileName = Constants.COMMENT_ANNOTATION + " " + line.trim() + os.EOL;
-                                resultArray[index] = prependFileName +
+                                let prependFileName =
+                                    Constants.COMMENT_ANNOTATION +
+                                    " " +
+                                    line.trim() +
+                                    os.EOL;
+                                resultArray[index] =
+                                    prependFileName +
                                     (line.startsWith("\t")
-                                    ? "\t" + replaceContents
-                                    : replaceContents);
+                                        ? "\t" + replaceContents
+                                        : replaceContents);
                             } else if (
                                 line
                                     .trim()
@@ -284,11 +289,16 @@ class FileOperations {
                                         );
                                 }
 
-                                let prependFileName = Constants.COMMENT_ANNOTATION + " " + line.trim() + os.EOL;
-                                resultArray[index] = prependFileName +
+                                let prependFileName =
+                                    Constants.COMMENT_ANNOTATION +
+                                    " " +
+                                    line.trim() +
+                                    os.EOL;
+                                resultArray[index] =
+                                    prependFileName +
                                     (line.startsWith("\t")
-                                    ? "\t" + replaceContents
-                                    : replaceContents);
+                                        ? "\t" + replaceContents
+                                        : replaceContents);
                             }
                         }
                     });
@@ -315,30 +325,35 @@ class FileOperations {
                     if (
                         line.trim().startsWith(Constants.INCLUDE_SYNTAX_IN_FARM)
                     ) {
-                        let prependFileName = Constants.COMMENT_ANNOTATION + " " + line.trim() + os.EOL;
-                        resultArray[index] = prependFileName +
+                        let prependFileName =
+                            Constants.COMMENT_ANNOTATION +
+                            " " +
+                            line.trim() +
+                            os.EOL;
+                        resultArray[index] =
+                            prependFileName +
                             (line.trim().startsWith("/t")
-                            ? "/t" +
-                              this.getContentFromFile(
-                                  this.getReadablePath(
-                                      line
-                                          .split(
-                                              Constants.INCLUDE_SYNTAX_IN_FARM
-                                          )[1]
-                                          .trim()
-                                  ),
-                                  true
-                              )
-                            : this.getContentFromFile(
-                                  this.getReadablePath(
-                                      line
-                                          .split(
-                                              Constants.INCLUDE_SYNTAX_IN_FARM
-                                          )[1]
-                                          .trim()
-                                  ),
-                                  true
-                              ));
+                                ? "/t" +
+                                  this.getContentFromFile(
+                                      this.getReadablePath(
+                                          line
+                                              .split(
+                                                  Constants.INCLUDE_SYNTAX_IN_FARM
+                                              )[1]
+                                              .trim()
+                                      ),
+                                      true
+                                  )
+                                : this.getContentFromFile(
+                                      this.getReadablePath(
+                                          line
+                                              .split(
+                                                  Constants.INCLUDE_SYNTAX_IN_FARM
+                                              )[1]
+                                              .trim()
+                                      ),
+                                      true
+                                  ));
                     } else if (
                         line
                             .trim()
@@ -359,11 +374,16 @@ class FileOperations {
                                 true
                             );
                         }
-                        let prependFileName = Constants.COMMENT_ANNOTATION + " " + line.trim() + os.EOL;
-                        resultArray[index] = prependFileName +
+                        let prependFileName =
+                            Constants.COMMENT_ANNOTATION +
+                            " " +
+                            line.trim() +
+                            os.EOL;
+                        resultArray[index] =
+                            prependFileName +
                             (line.startsWith("\t")
-                            ? "\t" + replaceContents
-                            : replaceContents);
+                                ? "\t" + replaceContents
+                                : replaceContents);
                     }
                 }
             });
@@ -432,8 +452,11 @@ class FileOperations {
                 }
             });
         }
-        if (fileDirPath == "" && this.config.cfg!=null) {
-            fileDirPath = this.globGetFilesByExtension(this.config.cfg,isConfString);
+        if (fileDirPath == "" && this.config.cfg != null) {
+            fileDirPath = this.globGetFilesByExtension(
+                this.config.cfg,
+                isConfString
+            );
         }
 
         return fileDirPath;
@@ -1780,7 +1803,9 @@ class FileOperations {
                             0,
                             includedFileName.length
                         );
-                        includedFileName = includedFileName.toString().replace(/['"]+/g,'');
+                        includedFileName = includedFileName
+                            .toString()
+                            .replace(/['"]+/g, "");
                         if (ruleFilesToCheck.includes(includedFileName)) {
                             ruleFilesIncluded.push(includedFileName);
                             logger.info(
@@ -1798,7 +1823,9 @@ class FileOperations {
                                 .split(Constants.INCLUDE_SYNTAX_IN_VHOST)[1]
                                 .trim()
                         );
-                        includedFileName = includedFileName.toString().replace(/['"]+/g,'');
+                        includedFileName = includedFileName
+                            .toString()
+                            .replace(/['"]+/g, "");
                         // what is this doing?
                         //included_file_name = included_file_name[:len(included_file_name)-1]
 

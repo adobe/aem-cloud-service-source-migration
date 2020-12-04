@@ -27,7 +27,8 @@
         "rewire": "^5.0.0",
         "stdout-stderr": "^0.1.9",
         "winston": "^3.2.1",
-        "yaml": "^1.10.0"
+        "yaml": "^1.10.0",
+        "xml-js": "^1.6.11"
     },
     "devDependencies": {
         "jest": "^26.4.2"

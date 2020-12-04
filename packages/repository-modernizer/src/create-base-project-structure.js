@@ -156,6 +156,17 @@ var CreateBaseProjectStructure = {
                     "Created package `ui.content` for mutable content/configuration"
                 )
             );
+            fsExtra.copySync(
+                path.join(basePath, constants.BASE_UI_CONFIG_PACKAGE),
+                path.join(projectPath, constants.UI_CONFIG)
+            );
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    path.join(projectPath, constants.UI_CONFIG),
+                    "Created package `ui.config` for OSGI configurations"
+                )
+            );
             // incase of single project, the parent pom file will be 1 directory level above
             // incase of multiple project, the parent pom file will be 2 directory level above
             await setPackageArtifactAndGroupId(
@@ -229,6 +240,7 @@ async function setPackageArtifactAndGroupId(
 ) {
     let ui_apps_artifactId = artifactId.concat(".", constants.UI_APPS);
     let ui_content_artifactId = artifactId.concat(".", constants.UI_CONTENT);
+    let ui_config_artifactId = artifactId.concat(".", constants.UI_CONFIG);
     let uiAppsReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_apps_artifactId,
@@ -251,6 +263,18 @@ async function setPackageArtifactAndGroupId(
     await pomManipulationUtil.replaceVariables(
         path.join(projectPath, constants.UI_CONTENT, constants.POM_XML),
         uiContentReplacementObj,
+        conversionStep
+    );
+    let uiConfigReplacementObj = {
+        [constants.DEFAULT_GROUP_ID]: config.groupId,
+        [constants.DEFAULT_ARTIFACT_ID]: ui_config_artifactId,
+        [constants.DEFAULT_APP_TITLE]: appTitle,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
+        [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
+    };
+    await pomManipulationUtil.replaceVariables(
+        path.join(projectPath, constants.UI_CONFIG, constants.POM_XML),
+        uiConfigReplacementObj,
         conversionStep
     );
 }

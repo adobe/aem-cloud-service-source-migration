@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+const path = require("path");
 
 module.exports = {
     REPOSITORY_MODERNIZER_REPORT: `repository-modernizer-report.md`,
@@ -17,6 +18,8 @@ module.exports = {
     BASE_UI_APPS_PACKAGE: "./resources/ui.apps",
 
     BASE_UI_CONTENT_PACKAGE: "./resources/ui.content",
+
+    BASE_UI_CONFIG_PACKAGE: "./resources/ui.config",
 
     BASE_ALL_PACKAGE: "./resources/all",
 
@@ -49,6 +52,8 @@ module.exports = {
     UI_APPS: "ui.apps",
 
     UI_CONTENT: "ui.content",
+
+    UI_CONFIG: "ui.config",
 
     ALL: "all",
 
@@ -133,8 +138,6 @@ module.exports = {
     ROOT_FILTER_SECTION_START: "<filters>",
 
     ROOT_FILTER_SECTION_END: "</filters>",
-
-    INCLUDE_FILTER_ROOT_TAG: "<include>",
 
     INCLUDE_FILTER_START_TAG: "<includes>",
 
@@ -225,8 +228,35 @@ module.exports = {
 
     ADOBE_DEPENDENCY_GROUP: ["com.adobe", "com.day", "org.apache"],
 
-    DEFAULT_SDK_VERSION: "2020.7.3902.20200716T022312Z-200604",
+    DEFAULT_SDK_VERSION: "2020.11.4553.20201124T121539Z-201028",
 
     URL_TO_FETCH_SDK_VERSION:
         "https://search.maven.org/solrsearch/select?q=aem-sdk-api&rows=20&wt=json",
+
+    OSGI_CONFIG_FILE_FORMATS: [
+        "com.*.cfg.json",
+        "com.*.config",
+        "com.*.cfg",
+        "org.*.cfg.json",
+        "org.*.config",
+        "org.*.cfg",
+    ],
+
+    XML_EXTENSION: ".xml",
+
+    UTF_8: "utf8",
+
+    SLING_OSGI_CONFIG: "sling:OsgiConfig",
+
+    APPS_DIR_PATH: path.join("/src/main/content/jcr_root/apps"),
+
+    OSGI_CONFIG_DIR_PATH: path.join(
+        "/src/main/content/jcr_root/apps/_appId_/osgiConfig"
+    ),
+
+    JCR_PRIMARY_TYPE: "jcr:primaryType",
+
+    JCR_ROOT: "jcr:root",
+
+    JSON_ATTRIBUTES_KEY: "_attributes",
 };

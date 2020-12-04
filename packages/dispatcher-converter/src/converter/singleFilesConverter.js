@@ -184,7 +184,10 @@ class SingleFilesConverter {
             this.dispatcherAnyPath
         );
 
-        fs.writeFileSync(Constants.TARGET_SINGLE_DISPATCHER, fileContentsArray.join(os.EOL));
+        fs.writeFileSync(
+            Constants.TARGET_SINGLE_DISPATCHER,
+            fileContentsArray.join(os.EOL)
+        );
 
         let returnContent = "";
         let rootFlag = false;
