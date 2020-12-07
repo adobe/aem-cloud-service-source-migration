@@ -16,7 +16,7 @@ const util = require("./src/util");
 const ConversionStep = require("./src/conversion_report/conversion_step");
 const ConversionOperation = require("./src/conversion_report/conversion_operation");
 const SummaryReportWriter = require("./src/conversion_report/summary_report_writer");
-
+const DetectionList = require("./src/conversion_report/detection_list");
 module.exports = {
     logger,
     constants,
@@ -24,4 +24,5 @@ module.exports = {
     ConversionStep,
     ConversionOperation,
     SummaryReportWriter,
+    DetectionList,
 };

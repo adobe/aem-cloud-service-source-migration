@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:oak="http://jackrabbit.apache.org/oak/ns/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:rep="internal"
+        jcr:primaryType="oak:QueryIndexDefinition"
+        async="async"
+        fulltextEnabled="{Boolean}false"
+        includedPaths="[/etc/test]"
+        reindex="{Boolean}false"
+        type="lucene">
+        <indexRules jcr:primaryType="nt:unstructured">
+            <sling:Folder jcr:primaryType="nt:unstructured">
+                <properties jcr:primaryType="nt:unstructured">
+                    <jcrcreated
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:created"
+                        propertyIndex="{Boolean}true"
+                        type="Date"/>
+                    <pageSource
+                        jcr:primaryType="nt:unstructured"
+                        name="pageSource"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
+                </properties>
+            </sling:Folder>
+        </indexRules>
+    </jcr:root>

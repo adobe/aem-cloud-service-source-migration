@@ -20,6 +20,8 @@ This monorepo contains the code refactoring tools that help customers to migrate
  dispatcher configuration.
 -   [Repository Modernizer](./packages/repository-modernizer) - restructure existing projects
   into AEM as a Cloud Service compatible packages.
+-   [Index Converter](./packages/index-converter) - migrate existing Custom Oak Index Defintions 
+  into AEM as a Cloud Service compatible Custom Oak Index Defintions.
 
 ## Setup
 ```

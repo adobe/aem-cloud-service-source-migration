@@ -1,0 +1,18 @@
+indexConverter:
+    # Absolute path to the jcr_root directory of the package containing the Ensure Index Definitions
+    # (please ignore if there are no Ensure Index Definitions)
+    # eg. /Users/xyz/sampleCode/CONTENT/src/main/content/jcr_root
+    ensureIndexDefinitionContentPackageJcrRootPath:
+    # Absolute path to the jcr_root directory of the package containing the Ensure Oak Index OSGI Configuration
+    # (please ignore if there are no Ensure Index Definitions)
+    # eg. /Users/xyz/sampleCode/CONFIG/src/main/content/jcr_root
+    ensureIndexDefinitionConfigPackageJcrRootPath:
+    # Version of AEM customer is on, used to determine the baseline index definitions
+    aemVersion:
+    # Path to the customer OAK Index Definition directory
+    # (please ignore if there are no Custom Oak Index Definitions under /oak:index)
+    # eg /Users/xyz/sampleCode/ui.apps/src/main/content/jcr_root/_oak_index
+    customOakIndexDirectoryPath:
+    # Path to the existing package `filter.xml` file
+    # eg /Users/xyz/sampleCode/ui.apps/src/main/content/META-INF/vault/filter.xml
+    filterXMLPath:

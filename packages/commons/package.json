@@ -28,7 +28,7 @@
         "nyc": "^15.1.0"
     },
     "scripts": {
-        "lint": "eslint src test",
+        "lint": "eslint index.js src test",
         "test": "nyc mocha",
         "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
         "generateDocumentation": "node docs.js"

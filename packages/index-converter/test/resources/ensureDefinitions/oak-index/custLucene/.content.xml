@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:oak="http://jackrabbit.apache.org/oak/ns/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="oak:Unstructured"
+    async="[async,nrt]"
+    compatVersion="{Long}2"
+    evaluatePathRestrictions="{Boolean}true"
+    entryCount="{Long}900"
+    type="lucene">
+    <indexRules jcr:primaryType="nt:unstructured">
+        <sling:Folder
+            jcr:primaryType="nt:unstructured"
+            includePropertyTypes="[String]">
+            <properties jcr:primaryType="nt:unstructured">
+                <assetShareUrlPrefix
+                    jcr:primaryType="nt:unstructured"
+                    name="assetshare.url.prefix"
+                    nodeScopeIndex="{Boolean}true"/>
+                <damAssetsRoot
+                    jcr:primaryType="nt:unstructured"
+                    name="dam:assetsRoot"
+                    nodeScopeIndex="{Boolean}true"/>
+            </properties>
+        </sling:Folder>
+    </indexRules>
+</jcr:root>
