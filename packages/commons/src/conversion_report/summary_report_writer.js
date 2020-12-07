@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 const ConversionStep = require("./conversion_step");
 const ConversionOperation = require("./conversion_operation");
+const DetectionList = require("./detection_list");
 const constants = require("../constants");
 const logger = require("../logger");
 const fsExtra = require("fs-extra");
@@ -24,14 +25,14 @@ class SummaryReportWriter {
 
     /**
      *
-     * @param {Array[ConversionStep]} ConversionStep List of steps performed that are to be added to the summary report
-     * @param String target The path/location where the summary report need to be creation
+     * @param {Array[ConversionStep || DetectionList]} summaryReportWriter List of conversion_step or detection_list that are to be added to the summary report
+     * @param String target The path/location where the summary report need to be created
      * @param String report_name The name of the base summary report template file
      * @private
      *
-     * Create a summary report which contains the step followed (and operations performed) during the conversion
+     * Create a summary report which contains the conversion_step  followed (and operations performed) or detection_list during the conversion
      */
-    static writeSummaryReport(conversion_steps, target, report_name) {
+    static writeSummaryReport(summaryReportWriter, target, report_name) {
         // create a copy of the summary report template file in the target folder
         let file_path = path.join(process.cwd(), target, report_name);
         try {
@@ -55,27 +56,35 @@ class SummaryReportWriter {
                     err
             );
         }
-        conversion_steps.forEach((conversion_step) => {
-            if (conversion_step instanceof ConversionStep) {
-                // only if some operation is actually performed under the step
-                if (conversion_step.isPerformed()) {
+        summaryReportWriter.forEach((step) => {
+            if (step instanceof ConversionStep) {
+                // only if some operation is actually performed under the conversion_step
+                if (step.isPerformed()) {
                     fs.appendFileSync(file_path, LINE_SEP);
-                    fs.appendFileSync(
-                        file_path,
-                        `#### ${conversion_step.getRule()}`
-                    );
+                    fs.appendFileSync(file_path, `#### ${step.getRule()}`);
                     fs.appendFileSync(file_path, LINE_SEP);
-                    fs.appendFileSync(
-                        file_path,
-                        conversion_step.getDescription()
-                    );
+                    fs.appendFileSync(file_path, step.getDescription());
                     fs.appendFileSync(file_path, LINE_SEP);
                     SummaryReportWriter.appendTableHeader(file_path);
                     SummaryReportWriter.appendOperation(
                         file_path,
-                        conversion_step.getOperations()
+                        step.getOperations()
                     );
                 }
+            } else if (step instanceof DetectionList) {
+                if (step.isDetected()) {
+                    // only if some element is actually added under the detection_step
+                    fs.appendFileSync(file_path, LINE_SEP);
+                    fs.appendFileSync(file_path, step.getHeading());
+                    fs.appendFileSync(file_path, LINE_SEP);
+                    step.getDetectionList().forEach((element) => {
+                        fs.appendFileSync(file_path, "*  " + element);
+                        fs.appendFileSync(file_path, LINE_SEP);
+                    });
+                }
+            } else {
+                fs.appendFileSync(file_path, LINE_SEP);
+                fs.appendFileSync(file_path, step);
             }
         });
         logger.info(report_name + " generation complete.");

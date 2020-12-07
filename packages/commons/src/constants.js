@@ -23,6 +23,8 @@ module.exports = {
 
     TARGET_DISPATCHER_FOLDER: "./target/dispatcher",
 
+    TARGET_INDEX_FOLDER: "./target/index",
+
     TARGET_DISPATCHER_SRC_FOLDER: "./target/dispatcher/src",
 
     SUMMARY_REPORT_LINE_SEPARATOR: "\n",

@@ -31,7 +31,7 @@
         "nyc": "^15.1.0"
     },
     "scripts": {
-        "lint": "eslint src test executors  --ignore-pattern executors/target/",
+        "lint": "eslint index.js src test executors  --ignore-pattern executors/target/",
         "test": "nyc mocha",
         "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
         "convert": "node main.js",

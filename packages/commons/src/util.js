@@ -14,6 +14,7 @@ const fs = require("fs");
 const fsExtra = require("fs-extra");
 const glob = require("glob");
 const logger = require("./logger");
+const path = require("path");
 
 var Util = {
     /**
@@ -144,7 +145,7 @@ var Util = {
      * Get all files with given extension under given directory
      */
     globGetFilesByExtension(directoryPath, fileExtension) {
-        let globPattern = directoryPath + "/**/*" + fileExtension;
+        let globPattern = path.join(directoryPath + "/**/*" + fileExtension);
         return glob.sync(globPattern);
     },
 
@@ -157,7 +158,7 @@ var Util = {
      * Get all files with given fileName under given directory
      */
     globGetFilesByName(directoryPath, fileName) {
-        let globPattern = directoryPath + "/**/" + fileName;
+        let globPattern = path.join(directoryPath + "/**/" + fileName);
         return glob.sync(globPattern);
     },
 };
