@@ -68,8 +68,13 @@ var RestructurePoms = {
                 ".",
                 constants.UI_CONTENT
             );
+            let ui_config_artifactId = project.artifactId.concat(
+                ".",
+                constants.UI_CONFIG
+            );
             package_artifactId_list.push(ui_apps_artifactId);
             package_artifactId_list.push(ui_content_artifactId);
+            package_artifactId_list.push(ui_config_artifactId);
             // add dependencies in ui.content
             let uiContentDependencyList = [
                 constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
@@ -286,6 +291,7 @@ async function refactorParentPom(
         nonAdobeDependencyList,
         conversionStep
     );
+    await addParentAndModuleinfo(pomFile, config.parentPom.path);
     // add dependencies from source parent pom.xml
     let dependencyList = await getDependenciesFromPom(config.parentPom.path);
     await pomManipulationUtil.addDependencies(
@@ -405,8 +411,8 @@ async function getDependenciesFromPom(pomFile) {
                     line < fileContent.length &&
                     pomLine.trim() != constants.DEPENDENCY_END_TAG
                 ) {
-                    pomLine = fileContent[line];
                     line++;
+                    pomLine = fileContent[line];
                 }
                 continue;
             }
@@ -567,6 +573,60 @@ async function fetchSDKMetadata() {
         version = constants.DEFAULT_SDK_VERSION;
     }
     return version;
+}
+
+/**
+ *
+ * @param String pomFile path of parent pom
+ * @param String originalParent path of originalParent
+ *
+ * Function to add parent and module info
+ */
+async function addParentAndModuleinfo(pomFile, originalParent) {
+    let parentModule = [];
+    let fileContent = await util.getXMLContent(originalParent);
+
+    for (let line = 0; line < fileContent.length; line++) {
+        let pomLine = fileContent[line];
+        if (pomLine.trim() == constants.PARENT_START_TAG) {
+            while (
+                line < fileContent.length &&
+                pomLine.trim() != constants.PARENT_END_TAG
+            ) {
+                parentModule.push(pomLine);
+                line++;
+                pomLine = fileContent[line];
+            }
+            parentModule.push(pomLine);
+        }
+        if (pomLine.trim() == constants.MODULE_START_TAG) {
+            while (
+                line < fileContent.length &&
+                pomLine.trim() != constants.MODULE_END_TAG
+            ) {
+                parentModule.push(pomLine);
+                line++;
+                pomLine = fileContent[line];
+            }
+            parentModule.push(pomLine);
+        }
+    }
+    let contentToBeWritten = [];
+    if (parentModule.length != 0) {
+        let fileContent = await util.getXMLContent(pomFile);
+        for (let line = 0; line < fileContent.length; line++) {
+            let pomLine = fileContent[line];
+            if (pomLine.trim() == constants.PARENT_START_TAG) {
+                parentModule.forEach((module) => {
+                    contentToBeWritten.push(module);
+                });
+                line = line + 2;
+            }
+            pomLine = fileContent[line];
+            contentToBeWritten.push(pomLine);
+        }
+        await util.writeDataToFileAsync(pomFile, contentToBeWritten);
+    }
 }
 
 module.exports = RestructurePoms;

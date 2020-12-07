@@ -198,7 +198,7 @@ class FileOperations {
             fs.stat(destPath, (err) => {
                 if (err) throw err;
                 logger.info(
-                    "FileOperationsUtility: Renaminng file " +
+                    "FileOperationsUtility: Renaming file " +
                         srcPath +
                         " to " +
                         destPath
@@ -219,7 +219,7 @@ class FileOperations {
         );
         let result = "";
         let readableFilePath = "";
-        let finalResult = filePath;
+        let finalResult = "";
 
         if (filePath.indexOf("*") > -1) {
             let files = glob.sync(filePath) || [];
@@ -236,7 +236,8 @@ class FileOperations {
                                         Constants.INCLUDE_SYNTAX_IN_FARM
                                     )
                             ) {
-                                result += this.getContentFromFile(
+                                let replaceContents = "";
+                                replaceContents = this.getContentFromFile(
                                     line
                                         .split(
                                             Constants.INCLUDE_SYNTAX_IN_FARM
@@ -244,6 +245,19 @@ class FileOperations {
                                         .trim(),
                                     true
                                 );
+
+                                result += replaceContents;
+
+                                let prependFileName =
+                                    Constants.COMMENT_ANNOTATION +
+                                    " " +
+                                    line.trim() +
+                                    os.EOL;
+                                resultArray[index] =
+                                    prependFileName +
+                                    (line.startsWith("\t")
+                                        ? "\t" + replaceContents
+                                        : replaceContents);
                             } else if (
                                 line
                                     .trim()
@@ -275,12 +289,20 @@ class FileOperations {
                                         );
                                 }
 
-                                resultArray[index] = line.startsWith("\t")
-                                    ? "\t" + replaceContents.split("\n")
-                                    : replaceContents;
+                                let prependFileName =
+                                    Constants.COMMENT_ANNOTATION +
+                                    " " +
+                                    line.trim() +
+                                    os.EOL;
+                                resultArray[index] =
+                                    prependFileName +
+                                    (line.startsWith("\t")
+                                        ? "\t" + replaceContents
+                                        : replaceContents);
                             }
                         }
                     });
+                    finalResult += resultArray.join(os.EOL);
                 }
             });
         } else {
@@ -296,7 +318,6 @@ class FileOperations {
                 }
             }
         }
-
         if (fs.existsSync(readableFilePath)) {
             let resultArray = result.split(os.EOL);
             resultArray.forEach((line, index) => {
@@ -304,28 +325,35 @@ class FileOperations {
                     if (
                         line.trim().startsWith(Constants.INCLUDE_SYNTAX_IN_FARM)
                     ) {
-                        resultArray[index] = line.trim().startsWith("/t")
-                            ? "/t" +
-                              this.getContentFromFile(
-                                  this.getReadablePath(
-                                      line
-                                          .split(
-                                              Constants.INCLUDE_SYNTAX_IN_FARM
-                                          )[1]
-                                          .trim()
-                                  ),
-                                  true
-                              ).split("/n")
-                            : this.getContentFromFile(
-                                  this.getReadablePath(
-                                      line
-                                          .split(
-                                              Constants.INCLUDE_SYNTAX_IN_FARM
-                                          )[1]
-                                          .trim()
-                                  ),
-                                  true
-                              ).split("/n");
+                        let prependFileName =
+                            Constants.COMMENT_ANNOTATION +
+                            " " +
+                            line.trim() +
+                            os.EOL;
+                        resultArray[index] =
+                            prependFileName +
+                            (line.trim().startsWith("/t")
+                                ? "/t" +
+                                  this.getContentFromFile(
+                                      this.getReadablePath(
+                                          line
+                                              .split(
+                                                  Constants.INCLUDE_SYNTAX_IN_FARM
+                                              )[1]
+                                              .trim()
+                                      ),
+                                      true
+                                  )
+                                : this.getContentFromFile(
+                                      this.getReadablePath(
+                                          line
+                                              .split(
+                                                  Constants.INCLUDE_SYNTAX_IN_FARM
+                                              )[1]
+                                              .trim()
+                                      ),
+                                      true
+                                  ));
                     } else if (
                         line
                             .trim()
@@ -346,16 +374,21 @@ class FileOperations {
                                 true
                             );
                         }
-
-                        resultArray[index] = line.startsWith("\t")
-                            ? "\t" + replaceContents.split("\n")
-                            : replaceContents;
+                        let prependFileName =
+                            Constants.COMMENT_ANNOTATION +
+                            " " +
+                            line.trim() +
+                            os.EOL;
+                        resultArray[index] =
+                            prependFileName +
+                            (line.startsWith("\t")
+                                ? "\t" + replaceContents
+                                : replaceContents);
                     }
                 }
             });
             finalResult = resultArray.join(os.EOL);
         }
-
         return finalResult;
     }
 
@@ -374,7 +407,7 @@ class FileOperations {
             let isConfString = "";
             let fileName = "";
 
-            line = line.replace(/^"(.*)"$/, "$1");
+            line = line.toString().replace(/^"(.*)"$/, "$1");
 
             if (line.includes(Constants.INCLUDE_SYNTAX_IN_VHOST)) {
                 stringAfterInclude = line
@@ -389,7 +422,7 @@ class FileOperations {
             fileName = isConfString[isConfString.length - 1].trim();
             line = this.getPathForDir(fileName);
         }
-        return line;
+        return line.toString();
     }
 
     /**
@@ -418,6 +451,12 @@ class FileOperations {
                     fileDirPath = filePath;
                 }
             });
+        }
+        if (fileDirPath == "" && this.config.cfg != null) {
+            fileDirPath = this.globGetFilesByExtension(
+                this.config.cfg,
+                isConfString
+            );
         }
 
         return fileDirPath;
@@ -1172,11 +1211,11 @@ class FileOperations {
                         //sectionIndentation = nextLine.length - nextLine.trim().length;
                     }
                 } else if (sectionFlag) {
-                    if (trimmedLine.startsWith("{")) {
+                    if (trimmedLine.includes("{")) {
                         sectionArrays.push("1");
                     }
 
-                    if (trimmedLine === "}") {
+                    if (trimmedLine.includes("}")) {
                         if (sectionArrays.length === 1) {
                             sectionFlag = false;
                             returnContent +=
@@ -1403,7 +1442,7 @@ class FileOperations {
         let srcDirGlob = srcDir + "/**";
         let srcDirFiles = glob.sync(srcDirGlob) || [];
         srcDirFiles.forEach((file) => {
-            if (fs.lstatSync(file).isFile()) {
+            if (fs.statSync(file).isFile()) {
                 availableDirFiles.push(file);
             }
         });
@@ -1753,7 +1792,7 @@ class FileOperations {
             );
             fileContentsArray.forEach((line) => {
                 let strippedLine = line.trim();
-                if (strippedLine.startsWith(includeSyntax)) {
+                if (strippedLine.includes(includeSyntax)) {
                     if (includeSyntax === Constants.INCLUDE_SYNTAX_IN_FARM) {
                         let includedFileName = path.basename(
                             strippedLine
@@ -1764,7 +1803,9 @@ class FileOperations {
                             0,
                             includedFileName.length
                         );
-
+                        includedFileName = includedFileName
+                            .toString()
+                            .replace(/['"]+/g, "");
                         if (ruleFilesToCheck.includes(includedFileName)) {
                             ruleFilesIncluded.push(includedFileName);
                             logger.info(
@@ -1782,6 +1823,9 @@ class FileOperations {
                                 .split(Constants.INCLUDE_SYNTAX_IN_VHOST)[1]
                                 .trim()
                         );
+                        includedFileName = includedFileName
+                            .toString()
+                            .replace(/['"]+/g, "");
                         // what is this doing?
                         //included_file_name = included_file_name[:len(included_file_name)-1]
 

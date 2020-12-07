@@ -1,0 +1,47 @@
+{
+    "xmlns:cm": "http://",
+    "xmlns:oak": "http://jackrabbit.apache.org/oak/ns/1.0",
+    "xmlns:slingevent": "http://sling.apache.org/jcr/event/1.0",
+    "xmlns:sling": "http://sling.apache.org/jcr/sling/1.0",
+    "xmlns:granite": "http://www.adobe.com/jcr/granite/1.0",
+    "xmlns:social": "http://www.adobe.com/social/1.0",
+    "xmlns:dam": "http://www.day.com/dam/1.0",
+    "xmlns:cq": "http://www.day.com/jcr/cq/1.0",
+    "xmlns:jcr": "http://www.jcp.org/jcr/1.0",
+    "xmlns:mix": "http://www.jcp.org/jcr/mix/1.0",
+    "xmlns:nt": "http://www.jcp.org/jcr/nt/1.0",
+    "xmlns:rep": "internal",
+    "jcr:mixinTypes": "[rep:AccessControllable]",
+    "jcr:primaryType": "nt:unstructured",
+    "socialLucene": {
+      "jcr:primaryType": "oak:QueryIndexDefinition",
+      "async": "[async,nrt]",
+      "compatVersion": "{Long}2",
+      "evaluatePathRestrictions": "{Boolean}true",
+      "name": "socialLucene",
+      "reindex": "{Boolean}false",
+      "reindexCount": "{Long}1",
+      "seed": "{Long}2686807359705661613",
+      "type": "lucene",
+      "indexRules": {
+        "jcr:primaryType": "nt:unstructured",
+        "social:asiResource": {
+          "jcr:primaryType": "nt:unstructured",
+          "indexNodeName": "{Boolean}true",
+          "properties": {
+            "jcr:primaryType": "nt:unstructured",
+            "social:baseType": {
+              "jcr:primaryType": "nt:unstructured",
+              "name": "social:baseType",
+              "propertyIndex": "{Boolean}true"
+            },
+            "resourceType": {
+              "jcr:primaryType": "nt:unstructured",
+              "name": "sling:resourceType",
+              "propertyIndex": "{Boolean}true"
+            }
+          }
+        }
+      }
+    }
+  }

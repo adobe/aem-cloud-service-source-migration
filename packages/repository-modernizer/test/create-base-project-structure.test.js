@@ -38,7 +38,7 @@ const path = require("path");
 const yaml = require("js-yaml");
 const configFileName = "config.yaml";
 const testDir = path.join(process.cwd(), "test");
-const {readFileSync} = jest.requireActual('fs');
+const { readFileSync } = jest.requireActual("fs");
 const config = yaml.safeLoad(
     readFileSync(path.join(testDir, configFileName), "utf8")
 );
@@ -61,11 +61,14 @@ describe("create-base-project-structure", function () {
         );
         let ui_apps_artifactId = config.projects[0].artifactId.concat(
             ".",
-            constants.UI_APPS);
-        // mock the methods
-        pomManipulationUtil.replaceVariables.mockResolvedValue(
-            true
+            constants.UI_APPS
         );
+        let ui_config_artifactId = config.projects[0].artifactId.concat(
+            ".",
+            constants.UI_CONFIG
+        );
+        // mock the methods
+        pomManipulationUtil.replaceVariables.mockResolvedValue(true);
         pomManipulationUtil.verifyArtifactPackagingType.mockReturnValue(false);
         util.globGetFilesByName.mockReturnValue(["xyz/pom.xml", "abc/pom.xml"]);
         fs.existsSync.mockResolvedValue(true);
@@ -73,37 +76,41 @@ describe("create-base-project-structure", function () {
         fs.copyFileSync.mockResolvedValue(true);
         fsExtra.copySync.mockResolvedValue(true);
         // call the method
-        return base.create(
-            config,
-            "",
-            conversionSteps
-        ).then(() => {
+        return base.create(config, "", conversionSteps).then(() => {
             // test whether the appropriate methods were called with correct params
-            expect(fs.mkdirSync).toHaveBeenCalledWith(projectPath, { recursive: true });
+            expect(fs.mkdirSync).toHaveBeenCalledWith(projectPath, {
+                recursive: true,
+            });
             expect(fsExtra.copySync).toHaveBeenCalledWith(
-                    path.join(constants.BASE_ALL_PACKAGE),
-                    path.join(projectPath, constants.ALL)
-                );
+                path.join(constants.BASE_ALL_PACKAGE),
+                path.join(projectPath, constants.ALL)
+            );
             expect(fsExtra.copySync).toHaveBeenCalledWith(
-                    path.join(constants.BASE_UI_APPS_PACKAGE),
-                    path.join(projectPath, constants.UI_APPS)
-                );
+                path.join(constants.BASE_UI_APPS_PACKAGE),
+                path.join(projectPath, constants.UI_APPS)
+            );
             expect(fsExtra.copySync).toHaveBeenCalledWith(
-                    path.join(constants.BASE_UI_CONTENT_PACKAGE),
-                    path.join(projectPath, constants.UI_CONTENT)
-                );
+                path.join(constants.BASE_UI_CONTENT_PACKAGE),
+                path.join(projectPath, constants.UI_CONTENT)
+            );
+            expect(fsExtra.copySync).toHaveBeenCalledWith(
+                path.join(constants.BASE_UI_CONFIG_PACKAGE),
+                path.join(projectPath, constants.UI_CONFIG)
+            );
             expect(fs.copyFileSync).toHaveBeenCalledWith(
-                    path.join(constants.BASE_PARENT_POM),
-                    path.join(projectPath, constants.POM_XML)
-                );
+                path.join(constants.BASE_PARENT_POM),
+                path.join(projectPath, constants.POM_XML)
+            );
             expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
                 path.join(projectPath, constants.UI_APPS, constants.POM_XML),
                 {
                     [constants.DEFAULT_GROUP_ID]: config.groupId,
                     [constants.DEFAULT_ARTIFACT_ID]: ui_apps_artifactId,
                     [constants.DEFAULT_APP_TITLE]: config.projects[0].appTitle,
-                    [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
-                    [constants.DEFAULT_RELATIVE_PATH]: constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                        config.parentPom.artifactId,
+                    [constants.DEFAULT_RELATIVE_PATH]:
+                        constants.RELATIVE_PATH_ONE_LEVEL_UP,
                 },
                 expect.anything()
             );
@@ -113,8 +120,23 @@ describe("create-base-project-structure", function () {
                     [constants.DEFAULT_GROUP_ID]: config.groupId,
                     [constants.DEFAULT_ARTIFACT_ID]: ui_content_artifactId,
                     [constants.DEFAULT_APP_TITLE]: config.projects[0].appTitle,
-                    [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
-                    [constants.DEFAULT_RELATIVE_PATH]: constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                        config.parentPom.artifactId,
+                    [constants.DEFAULT_RELATIVE_PATH]:
+                        constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                },
+                expect.anything()
+            );
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(projectPath, constants.UI_CONFIG, constants.POM_XML),
+                {
+                    [constants.DEFAULT_GROUP_ID]: config.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]: ui_config_artifactId,
+                    [constants.DEFAULT_APP_TITLE]: config.projects[0].appTitle,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                        config.parentPom.artifactId,
+                    [constants.DEFAULT_RELATIVE_PATH]:
+                        constants.RELATIVE_PATH_ONE_LEVEL_UP,
                 },
                 expect.anything()
             );
@@ -132,7 +154,10 @@ describe("create-base-project-structure", function () {
                 },
                 expect.anything()
             );
-            expect(util.globGetFilesByName).toHaveBeenCalledWith(path.join(config.projects[0].projectPath), constants.POM_XML);
+            expect(util.globGetFilesByName).toHaveBeenCalledWith(
+                path.join(config.projects[0].projectPath),
+                constants.POM_XML
+            );
         });
     });
 });

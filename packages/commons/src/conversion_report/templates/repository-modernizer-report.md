@@ -21,6 +21,7 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
  structure, by creating the following deployment structure :
 -   The `ui.apps` package, or Code Package, contains all the code to be deployed and only deploys
  to `/apps`
+-   The `ui.config` package, or OSGi Configuration Package, contains all OSGi configurations
 -   The `ui.content` package, or Content Package, contains all content and configuration
 -   The `all` package is a container package that ONLY includes the `ui.apps` and `ui.content`
  packages as embeds
