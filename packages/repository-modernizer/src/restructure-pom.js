@@ -548,12 +548,13 @@ async function addSdkDependencytoCoreBundles(
             )
         ) {
             let bundleFolderPath = path.dirname(allPomFiles[pomFile]);
-            let PomFile = path.join(
-                destination + bundleFolderPath.replace(source, ""),
+            let bundlePomFile = path.join(
+                destination,
+                bundleFolderPath.replace(source, ""),
                 constants.POM_XML
             );
             await pomManipulationUtil.addSdkDependencies(
-                PomFile,
+                bundlePomFile,
                 sdkDependency,
                 conversionStep
             );
