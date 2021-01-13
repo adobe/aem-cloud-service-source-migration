@@ -68,6 +68,8 @@ var CreateBaseProjectStructure = {
                 constants.ALL,
                 constants.POM_XML
             );
+            //copy resources parent pom file to target/src/pom(Parent)
+            if(config.parentPom.path!=null){
             fs.copyFileSync(
                 path.join(basePath, constants.BASE_PARENT_POM),
                 path.join(
@@ -89,6 +91,7 @@ var CreateBaseProjectStructure = {
                 "CreateBaseProjectStructure: Base parent pom.xml created at " +
                     commons_constants.TARGET_PROJECT_SRC_FOLDER
             );
+          }
         }
         // create the base packages for all projects
         for (const project of projects) {
@@ -167,16 +170,41 @@ var CreateBaseProjectStructure = {
                     "Created package `ui.config` for OSGI configurations"
                 )
             );
+            fs.copyFileSync(
+                path.join(basePath, constants.BASE_PARENT_POM),
+                path.join(projectPath, constants.POM_XML)
+            );
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    path.join(projectPath, constants.POM_XML),
+                    "Created base parent pom.xml"
+                )
+            );
+            logger.info(
+                `CreateBaseProjectStructure: Base parent pom.xml created at ${projectPath}`
+            );
             // incase of single project, the parent pom file will be 1 directory level above
             // incase of multiple project, the parent pom file will be 2 directory level above
+            let relativeParentPomPath="";
+            let parent_artifactId="";
+            if(config.parentPom.path!=null){
+                parent_artifactId=config.parentPom.artifactId;
+            }else{
+                parent_artifactId=project.parentPom.artifactId;
+            }
+            if((config.parentPom.path!=null && projects.length == 1) ||(config.parentPom.path==null &&  projects.length >1 )){
+                relativeParentPomPath = constants.RELATIVE_PATH_ONE_LEVEL_UP;
+            }else if(config.parentPom.path!=null &&  projects.length >1 ){
+                relativeParentPomPath = constants.RELATIVE_PATH_TWO_LEVEL_UP;
+            }
             await setPackageArtifactAndGroupId(
                 projectPath,
                 project.artifactId,
                 project.appTitle,
                 config,
-                projects.length == 1
-                    ? constants.RELATIVE_PATH_ONE_LEVEL_UP
-                    : constants.RELATIVE_PATH_TWO_LEVEL_UP,
+                parent_artifactId,
+                relativeParentPomPath,
                 conversionStep
             );
             // copy misc packages from source
@@ -235,6 +263,7 @@ async function setPackageArtifactAndGroupId(
     artifactId,
     appTitle,
     config,
+    parent_artifactId,
     relativeParentPomPath,
     conversionStep
 ) {
@@ -245,7 +274,7 @@ async function setPackageArtifactAndGroupId(
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_apps_artifactId,
         [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]: parent_artifactId,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -257,7 +286,7 @@ async function setPackageArtifactAndGroupId(
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_content_artifactId,
         [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]: parent_artifactId,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -269,7 +298,7 @@ async function setPackageArtifactAndGroupId(
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_config_artifactId,
         [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]: parent_artifactId,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(

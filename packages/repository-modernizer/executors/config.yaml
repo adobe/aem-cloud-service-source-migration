@@ -1,35 +1,67 @@
 repositoryModernizer:
     # groupId to be used for newly created packages
-    groupId:
-    # information about parent pom
+    groupId: 
+    # information about parent pom (fill this in case of single root parent pom)
     parentPom:
         # absolute path to the parent pom file
-        path:
+        path: 
         # the artifactId to be set for the parent pom
-        artifactId:
+        artifactId: 
         # the application title to be set for the parent pom
-        appTitle:
+        appTitle: 
     # information required for all package
     all:
         # prefix that is to be used to set the artifactId for all package
-        artifactId:
+        artifactId: 
         # application title
-        appTitle:
+        appTitle: 
     # information about projects
     projects:
         - # absolute path to the project folder
-          projectPath:
+          projectPath: 
           # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
           # NOTE : only content packages are expected here, NOT bundle/jar artifacts
           existingContentPackageFolder:
-              -
+              - 
           # relative path (w.r.t. the existing content package folder) to the filter.xml file
           # (If not specified, default path `/src/main/content/META-INF/vault/filter.xml` will be used.)
-          relativePathToExistingFilterXml:
+          relativePathToExistingFilterXml: 
           # relative path (w.r.t. the existing content package folder) to the jcr_root directory
           # (If not specified, default path `/src/main/content/jcr_root` will be used)
-          relativePathToExistingJcrRoot:
+          relativePathToExistingJcrRoot: 
           # prefix that is to be used to set the artifactId for newly created ui.apps and ui.content packages
-          artifactId:
+          artifactId: 
           # application title
-          appTitle:
+          appTitle: 
+          # parent pom specific to project
+          parentPom:
+             # absolute path to the parent pom file
+             path: 
+             # the artifactId to be set for the parent pom
+             artifactId: 
+             # the application title to be set for the parent pom
+             appTitle: 
+        - # absolute path to the project folder
+          projectPath: 
+          # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
+          # NOTE : only content packages are expected here, NOT bundle/jar artifacts
+          existingContentPackageFolder:
+              - 
+          # relative path (w.r.t. the existing content package folder) to the filter.xml file
+          # (If not specified, default path `/src/main/content/META-INF/vault/filter.xml` will be used.)
+          relativePathToExistingFilterXml: 
+          # relative path (w.r.t. the existing content package folder) to the jcr_root directory
+          # (If not specified, default path `/src/main/content/jcr_root` will be used)
+          relativePathToExistingJcrRoot: 
+          # prefix that is to be used to set the artifactId for newly created ui.apps and ui.content packages
+          artifactId: 
+          # application title
+          appTitle: 
+          # parent pom specific to project
+          parentPom:
+             # absolute path to the parent pom file
+             path: 
+             # the artifactId to be set for the parent pom
+             artifactId: 
+             # the application title to be set for the parent pom
+             appTitle: 
