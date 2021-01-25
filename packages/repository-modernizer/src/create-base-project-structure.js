@@ -22,7 +22,7 @@ const constants = require("./util/constants");
 const path = require("path");
 const fs = require("fs");
 const fsExtra = require("fs-extra");
-
+const pomParser = require("node-pom-parser");
 var CreateBaseProjectStructure = {
     /**
      *
@@ -68,30 +68,29 @@ var CreateBaseProjectStructure = {
                 constants.ALL,
                 constants.POM_XML
             );
-            //copy resources parent pom file to target/src/pom(Parent)
-            if(config.parentPom.path!=null){
-            fs.copyFileSync(
-                path.join(basePath, constants.BASE_PARENT_POM),
-                path.join(
-                    commons_constants.TARGET_PROJECT_SRC_FOLDER,
-                    constants.POM_XML
-                )
-            );
-            conversionStep.addOperation(
-                new ConversionOperation(
-                    commons_constants.ACTION_ADDED,
+            if (config.parentPom.path != null) {
+                fs.copyFileSync(
+                    path.join(basePath, constants.BASE_PARENT_POM),
                     path.join(
                         commons_constants.TARGET_PROJECT_SRC_FOLDER,
                         constants.POM_XML
-                    ),
-                    "Created base parent pom.xml"
-                )
-            );
-            logger.info(
-                "CreateBaseProjectStructure: Base parent pom.xml created at " +
-                    commons_constants.TARGET_PROJECT_SRC_FOLDER
-            );
-          }
+                    )
+                );
+                conversionStep.addOperation(
+                    new ConversionOperation(
+                        commons_constants.ACTION_ADDED,
+                        path.join(
+                            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+                            constants.POM_XML
+                        ),
+                        "Created base parent pom.xml"
+                    )
+                );
+                logger.info(
+                    "CreateBaseProjectStructure: Base parent pom.xml created at " +
+                        commons_constants.TARGET_PROJECT_SRC_FOLDER
+                );
+            }
         }
         // create the base packages for all projects
         for (const project of projects) {
@@ -186,16 +185,19 @@ var CreateBaseProjectStructure = {
             );
             // incase of single project, the parent pom file will be 1 directory level above
             // incase of multiple project, the parent pom file will be 2 directory level above
-            let relativeParentPomPath="";
-            let parent_artifactId="";
-            if(config.parentPom.path!=null){
-                parent_artifactId=config.parentPom.artifactId;
-            }else{
-                parent_artifactId=project.parentPom.artifactId;
+            let relativeParentPomPath = "";
+            let parentArtifactId = "";
+            if (config.parentPom.path != null) {
+                parentArtifactId = config.parentPom.artifactId;
+            } else {
+                parentArtifactId = project.parentPom.artifactId;
             }
-            if((config.parentPom.path!=null && projects.length == 1) ||(config.parentPom.path==null &&  projects.length >1 )){
+            if (
+                (config.parentPom.path != null && projects.length == 1) ||
+                (config.parentPom.path == null && projects.length > 1)
+            ) {
                 relativeParentPomPath = constants.RELATIVE_PATH_ONE_LEVEL_UP;
-            }else if(config.parentPom.path!=null &&  projects.length >1 ){
+            } else if (config.parentPom.path != null && projects.length > 1) {
                 relativeParentPomPath = constants.RELATIVE_PATH_TWO_LEVEL_UP;
             }
             await setPackageArtifactAndGroupId(
@@ -203,7 +205,7 @@ var CreateBaseProjectStructure = {
                 project.artifactId,
                 project.appTitle,
                 config,
-                parent_artifactId,
+                parentArtifactId,
                 relativeParentPomPath,
                 conversionStep
             );
@@ -228,7 +230,20 @@ var CreateBaseProjectStructure = {
             logger.info(
                 `CreateBaseProjectStructure: Base packages created for ${projectPath}.`
             );
+            //embed core bundles
+            let bundle_artifactId_list = [];
+            bundle_artifactId_list = getArtifactIdListOfCoreBundle(
+                project.projectPath,
+                constants.BUNDLE_PACKAGING_TYPES
+            );
+            await pomManipulationUtil.embeddArtifactsUsingTemplate(
+                allPackagePomFile,
+                bundle_artifactId_list,
+                config.groupId,
+                conversionStep
+            );
         }
+
         await pomManipulationUtil.replaceVariables(
             allPackagePomFile,
             {
@@ -263,7 +278,7 @@ async function setPackageArtifactAndGroupId(
     artifactId,
     appTitle,
     config,
-    parent_artifactId,
+    parentArtifactId,
     relativeParentPomPath,
     conversionStep
 ) {
@@ -274,7 +289,7 @@ async function setPackageArtifactAndGroupId(
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_apps_artifactId,
         [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: parent_artifactId,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]: parentArtifactId,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -286,7 +301,7 @@ async function setPackageArtifactAndGroupId(
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_content_artifactId,
         [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: parent_artifactId,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]: parentArtifactId,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -298,7 +313,7 @@ async function setPackageArtifactAndGroupId(
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_config_artifactId,
         [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: parent_artifactId,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]: parentArtifactId,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -369,6 +384,35 @@ function copyCoreBundlesOrContentPackages(
             );
         }
     });
+}
+/**
+ *
+ * @param String source path of the source project
+ * @param String[] packagingType array for packaging types to match against
+ *
+ * Get list of artifactId of core bundles
+ */
+function getArtifactIdListOfCoreBundle(source, packagingType) {
+    // the path.join() is to standardize the paths to use '\' irrespective of OS
+    source = path.join(source);
+    // get all pom files
+    let allPomFiles = util.globGetFilesByName(source, constants.POM_XML);
+    let bundle_artifactId_list = [];
+    // check if packaging type is matching
+    allPomFiles.forEach((pomFile) => {
+        if (
+            packagingType.includes("bundle") &&
+            pomManipulationUtil.verifyArtifactPackagingType(
+                pomFile,
+                packagingType
+            )
+        ) {
+            var pom = pomParser.parsePom({ filePath: pomFile });
+            var artifactId = pom.artifactId;
+            bundle_artifactId_list.push(artifactId);
+        }
+    });
+    return bundle_artifactId_list;
 }
 
 module.exports = CreateBaseProjectStructure;

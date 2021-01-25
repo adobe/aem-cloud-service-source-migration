@@ -148,18 +148,22 @@ var RestructurePoms = {
                 pluginObj,
                 conversionStep
             );
-            if(config.parentPom.path == null){
-                let parentPomarr=[project.parentPom.path,project.parentPom.artifactId,project.parentPom.appTitle];
-            await refactorParentPom(
-                path.join(projectPath, constants.POM_XML),
-                sdkVersion,
-                config,
-                parentPomarr,
-                nonAdobeDependencyList,
-                conversionStep
-            );
-            conversionSteps.push(conversionStep);
-           }
+            if (config.parentPom.path == null) {
+                let parentPomarr = [
+                    project.parentPom.path,
+                    project.parentPom.artifactId,
+                    project.parentPom.appTitle,
+                ];
+                await refactorParentPom(
+                    path.join(projectPath, constants.POM_XML),
+                    sdkVersion,
+                    config,
+                    parentPomarr,
+                    nonAdobeDependencyList,
+                    conversionStep
+                );
+                conversionSteps.push(conversionStep);
+            }
         }
         // all package pom file manipulation
         let allPackageDependencyList = [];
@@ -190,18 +194,22 @@ var RestructurePoms = {
             conversionStep
         );
         // refactor the parent pom.xml
-        if(config.parentPom.path != null){
-        let parentPomarr=[config.parentPom.path,config.parentPom.artifactId,config.parentPom.appTitle];
-        await refactorParentPom(
-            path.join(projectRootPath, constants.POM_XML),
-            sdkVersion,
-            config,
-            parentPomarr,
-            nonAdobeDependencyList,
-            conversionStep
-        );
-        conversionSteps.push(conversionStep);
-      }
+        if (config.parentPom.path != null) {
+            let parentPomarr = [
+                config.parentPom.path,
+                config.parentPom.artifactId,
+                config.parentPom.appTitle,
+            ];
+            await refactorParentPom(
+                path.join(projectRootPath, constants.POM_XML),
+                sdkVersion,
+                config,
+                parentPomarr,
+                nonAdobeDependencyList,
+                conversionStep
+            );
+            conversionSteps.push(conversionStep);
+        }
     },
 };
 /**
@@ -283,7 +291,7 @@ async function add3rdPartyRepoSection(
  *
  * Async function to refactor parent pom file
  */
-async function   refactorParentPom(
+async function refactorParentPom(
     pomFile,
     sdkVersion,
     config,
