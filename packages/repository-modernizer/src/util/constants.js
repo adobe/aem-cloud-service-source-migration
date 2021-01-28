@@ -55,6 +55,8 @@ module.exports = {
 
     ALL: "all",
 
+    NON_ADOBE_DEPENDENCIES: "nonadobedependencies",
+
     BUNDLE_PACKAGING_TYPES: ["jar", "bundle"],
 
     CONTENT_PACKAGING_TYPES: ["content-package"],
@@ -65,11 +67,13 @@ module.exports = {
 
     PARENT_END_TAG: "</parent>",
 
-    MODULE_START_TAG: "<modules>",
+    MODULE_START_TAG: "    <modules>",
 
-    MODULE_END_TAG: "</modules>",
+    MODULE_END_TAG: "    </modules>",
 
-    MODULE_TAG: `<module>\${module}</module>`,
+    MODULE_TAG: `        <module>\${module}</module>`,
+
+    DEFAULT_MODULE: "${module}",
 
     ARTIFACT_ID_START_TAG: "<artifactId>",
 
@@ -228,7 +232,7 @@ module.exports = {
 
     NON_ADOBE_REPO_SECTION_TEMPLATE: `        <repository>
             <id>local-repo</id>
-            <url>file:nonAdobeDependencies</url>
+            <url>file:nonadobedependencies</url>
             <name>Repository</name>
             <releases>
                 <enabled>true</enabled>

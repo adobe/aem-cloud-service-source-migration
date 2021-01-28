@@ -228,7 +228,7 @@ async function add3rdPartyRepoSection(
         );
         let nonAdobeDependencyFolder = path.join(
             path.dirname(pomFile),
-            "nonAdobeDependencies"
+            constants.NON_ADOBE_DEPENDENCIES
         );
         fs.mkdirSync(nonAdobeDependencyFolder, {
             recursive: true,
@@ -612,11 +612,11 @@ async function addParentAndModuleinfo(pomFile, originalParent) {
         }
     }
     parentModule.push(constants.MODULE_START_TAG);
-    let moduleList = getModuleList(
-        pomFile.substring(0, pomFile.indexOf("/pom.xml"))
-    );
+    let moduleList = getModuleList(path.dirname(pomFile));
     for (const module of moduleList) {
-        parentModule.push(constants.MODULE_TAG.replace("${module}", module));
+        parentModule.push(
+            constants.MODULE_TAG.replace(constants.DEFAULT_MODULE, module)
+        );
     }
     parentModule.push(constants.MODULE_END_TAG);
     let contentToBeWritten = [];
