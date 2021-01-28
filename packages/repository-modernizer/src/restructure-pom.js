@@ -75,21 +75,26 @@ var RestructurePoms = {
             packageArtifactIdInfoList.push({
                 artifactId: ui_apps_artifactId,
                 appId: project.appId,
+                version: project.version,
             });
             packageArtifactIdInfoList.push({
                 artifactId: ui_content_artifactId,
                 appId: project.appId,
+                version: project.version,
             });
             packageArtifactIdInfoList.push({
                 artifactId: ui_config_artifactId,
                 appId: project.appId,
+                version: project.version,
             });
             // add dependencies in ui.content
             let uiContentDependencyList = [
                 constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
                     constants.DEFAULT_ARTIFACT_ID,
                     ui_apps_artifactId
-                ).replace(constants.DEFAULT_GROUP_ID, config.groupId),
+                )
+                    .replace(constants.DEFAULT_GROUP_ID, config.groupId)
+                    .replace(constants.DEFAULT_VERSION, project.version),
             ];
             pomManipulationUtil.addDependencies(
                 uiContentPomFile,
@@ -171,7 +176,9 @@ var RestructurePoms = {
                 constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
                     constants.DEFAULT_ARTIFACT_ID,
                     artifactIdInfo.artifactId
-                ).replace(constants.DEFAULT_GROUP_ID, config.groupId)
+                )
+                    .replace(constants.DEFAULT_GROUP_ID, config.groupId)
+                    .replace(constants.DEFAULT_VERSION, artifactIdInfo.version)
             );
         });
         // embed required packages in all package pom file

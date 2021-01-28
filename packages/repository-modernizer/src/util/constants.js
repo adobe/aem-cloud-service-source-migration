@@ -219,7 +219,7 @@ module.exports = {
     DEFAULT_DEPENDENCY_TEMPLATE: `        <dependency>
             <groupId>\${groupId}</groupId>
             <artifactId>\${artifactId}</artifactId>
-            <version>\${project.version}</version>
+            <version>\${version}</version>
             <type>zip</type>
         </dependency>`,
 

@@ -193,6 +193,7 @@ var CreateBaseProjectStructure = {
                 conversionStep
             );
             // copy core bundles from source
+            let allPackageDependencyList = [];
             let artifactIdInfoList = copyCoreBundlesOrContentPackages(
                 project.projectPath,
                 projectPath,
@@ -201,6 +202,21 @@ var CreateBaseProjectStructure = {
                 project.appId,
                 conversionStep
             );
+            artifactIdInfoList.forEach((artifactIdInfo) => {
+                allPackageDependencyList.push(
+                    constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
+                        constants.DEFAULT_ARTIFACT_ID,
+                        artifactIdInfo.artifactId
+                    )
+                        .replace(constants.DEFAULT_GROUP_ID, config.groupId)
+                        .replace(
+                            constants.DEFAULT_VERSION,
+                            typeof artifactIdInfo.version === "undefined"
+                                ? ""
+                                : artifactIdInfo.version
+                        )
+                );
+            });
             logger.info(
                 `CreateBaseProjectStructure: Base packages created for ${projectPath}.`
             );
@@ -209,6 +225,11 @@ var CreateBaseProjectStructure = {
                 allPackagePomFile,
                 artifactIdInfoList,
                 config.groupId,
+                conversionStep
+            );
+            await pomManipulationUtil.addDependencies(
+                allPackagePomFile,
+                allPackageDependencyList,
                 conversionStep
             );
         }
@@ -362,9 +383,17 @@ function copyCoreBundlesOrContentPackages(
             );
             var pom = pomParser.parsePom({ filePath: pomFile });
             var artifactId = pom.artifactId;
+            var version = pom.version;
+            if (typeof version === "undefined") {
+                logger.warn(
+                    pomFile +
+                        " does not have version defined. Please add version in 'all' pom file."
+                );
+            }
             artifactIdInfoList.push({
                 artifactId: artifactId,
                 appId: appId,
+                version: version,
             });
         }
     });
