@@ -9,8 +9,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const path = require("path");
-
 module.exports = {
     REPOSITORY_MODERNIZER_REPORT: `repository-modernizer-report.md`,
 
@@ -57,6 +55,8 @@ module.exports = {
 
     ALL: "all",
 
+    NON_ADOBE_DEPENDENCIES: "nonadobedependencies",
+
     BUNDLE_PACKAGING_TYPES: ["jar", "bundle"],
 
     CONTENT_PACKAGING_TYPES: ["content-package"],
@@ -67,9 +67,13 @@ module.exports = {
 
     PARENT_END_TAG: "</parent>",
 
-    MODULE_START_TAG: "<modules>",
+    MODULE_START_TAG: "    <modules>",
 
-    MODULE_END_TAG: "</modules>",
+    MODULE_END_TAG: "    </modules>",
+
+    MODULE_TAG: `        <module>\${module}</module>`,
+
+    DEFAULT_MODULE: "${module}",
 
     ARTIFACT_ID_START_TAG: "<artifactId>",
 
@@ -99,6 +103,8 @@ module.exports = {
 
     DEFAULT_ARTIFACT_ID: "${artifactId}",
 
+    DEFAULT_VERSION: "${version}",
+
     DEFAULT_GROUP_ID: "${groupId}",
 
     DEFAULT_APP_TITLE: "${appTitle}",
@@ -106,6 +112,8 @@ module.exports = {
     DEFAULT_APP_ID: "${appId}",
 
     DEFAULT_ROOT_ARTIFACT_ID: "${rootArtifactId}",
+
+    DEFAULT_ROOT_VERSION: "${rootVersion}",
 
     DEFAULT_RELATIVE_PATH: "${relativePath}",
 
@@ -202,6 +210,11 @@ module.exports = {
                             <type>zip</type>
                             <target>/apps/\${appId}-packages/content/install</target>
                         </embedded>`,
+    DEFAULT_EMBEDDED_CORE_BUNDLE_TEMPLATE: `                        <embedded>
+                        <groupId>\${groupId}</groupId>
+                        <artifactId>\${artifactId}</artifactId>
+                        <target>/apps/\${appId}-packages/application/install</target>
+                    </embedded>`,
 
     DEFAULT_DEPENDENCY_TEMPLATE: `        <dependency>
             <groupId>\${groupId}</groupId>
@@ -219,7 +232,7 @@ module.exports = {
 
     NON_ADOBE_REPO_SECTION_TEMPLATE: `        <repository>
             <id>local-repo</id>
-            <url>file:nonAdobeDependencies</url>
+            <url>file:nonadobedependencies</url>
             <name>Repository</name>
             <releases>
                 <enabled>true</enabled>

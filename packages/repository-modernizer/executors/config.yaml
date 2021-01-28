@@ -9,12 +9,16 @@ repositoryModernizer:
         artifactId:
         # the application title to be set for the parent pom
         appTitle:
+        # version to be to be set for the parent pom
+        version:
     # information required for all package
     all:
         # prefix that is to be used to set the artifactId for all package
         artifactId:
         # application title
         appTitle:
+        # version to be set for all pom
+        version:
     # information about projects
     projects:
         - # absolute path to the project folder
@@ -33,5 +37,7 @@ repositoryModernizer:
           artifactId:
           # application title
           appTitle:
+          # project specific version to be used for content packages
+          version:
           # application ID (will be used for config and package folder names)
           appId:

@@ -8,7 +8,7 @@
     <parent>
         <groupId>${groupId}</groupId>
         <artifactId>${rootArtifactId}</artifactId>
-        <version>${version}</version>
+        <version>${rootVersion}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -17,6 +17,7 @@
     <!-- ====================================================================== -->
     <artifactId>${artifactId}</artifactId>
     <packaging>content-package</packaging>
+    <version>${version}</version>
     <name>${appTitle} - UI config</name>
     <description>UI config package for ${appTitle}</description>
 

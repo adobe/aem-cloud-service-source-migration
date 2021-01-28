@@ -22,6 +22,7 @@ const constants = require("./util/constants");
 const path = require("path");
 const fs = require("fs");
 const fsExtra = require("fs-extra");
+const pomParser = require("node-pom-parser");
 
 var CreateBaseProjectStructure = {
     /**
@@ -173,6 +174,7 @@ var CreateBaseProjectStructure = {
                 projectPath,
                 project.artifactId,
                 project.appTitle,
+                project.version,
                 config,
                 projects.length == 1
                     ? constants.RELATIVE_PATH_ONE_LEVEL_UP
@@ -187,24 +189,35 @@ var CreateBaseProjectStructure = {
                 project.existingContentPackageFolder.map((folder) =>
                     path.join(project.projectPath, folder)
                 ),
+                project.appId,
                 conversionStep
             );
             // copy core bundles from source
-            copyCoreBundlesOrContentPackages(
+            let artifactIdInfoList = copyCoreBundlesOrContentPackages(
                 project.projectPath,
                 projectPath,
                 constants.BUNDLE_PACKAGING_TYPES,
                 [],
+                project.appId,
                 conversionStep
             );
             logger.info(
                 `CreateBaseProjectStructure: Base packages created for ${projectPath}.`
+            );
+            //embed core bundles
+            await pomManipulationUtil.embeddArtifactsUsingTemplate(
+                allPackagePomFile,
+                artifactIdInfoList,
+                config.groupId,
+                conversionStep
             );
         }
         await pomManipulationUtil.replaceVariables(
             allPackagePomFile,
             {
                 [constants.DEFAULT_GROUP_ID]: config.groupId,
+                [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+                [constants.DEFAULT_VERSION]: config.all.version,
                 [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId.concat(
                     ".",
                     constants.ALL
@@ -234,6 +247,7 @@ async function setPackageArtifactAndGroupId(
     projectPath,
     artifactId,
     appTitle,
+    version,
     config,
     relativeParentPomPath,
     conversionStep
@@ -244,8 +258,10 @@ async function setPackageArtifactAndGroupId(
     let uiAppsReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_apps_artifactId,
+        [constants.DEFAULT_VERSION]: version,
         [constants.DEFAULT_APP_TITLE]: appTitle,
         [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -256,8 +272,10 @@ async function setPackageArtifactAndGroupId(
     let uiContentReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_content_artifactId,
+        [constants.DEFAULT_VERSION]: version,
         [constants.DEFAULT_APP_TITLE]: appTitle,
         [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -268,8 +286,10 @@ async function setPackageArtifactAndGroupId(
     let uiConfigReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
         [constants.DEFAULT_ARTIFACT_ID]: ui_config_artifactId,
+        [constants.DEFAULT_VERSION]: version,
         [constants.DEFAULT_APP_TITLE]: appTitle,
         [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -294,12 +314,14 @@ function copyCoreBundlesOrContentPackages(
     destination,
     packagingType,
     ignoredPaths,
+    appId,
     conversionStep
 ) {
     // the path.join() is to standardize the paths to use '\' irrespective of OS
     source = path.join(source);
     // get all pom files
     let allPomFiles = util.globGetFilesByName(source, constants.POM_XML);
+    let artifactIdInfoList = [];
     // check if packaging type is matching
     allPomFiles.forEach((pomFile) => {
         // the path.join() is to standardize the paths to use '\' irrespective of OS
@@ -338,8 +360,14 @@ function copyCoreBundlesOrContentPackages(
                           destinationFolderPath
                 )
             );
+            var pom = pomParser.parsePom({ filePath: pomFile });
+            var artifactId = pom.artifactId;
+            artifactIdInfoList.push({
+                artifactId: artifactId,
+                appId: appId,
+            });
         }
     });
+    return artifactIdInfoList;
 }
-
 module.exports = CreateBaseProjectStructure;
