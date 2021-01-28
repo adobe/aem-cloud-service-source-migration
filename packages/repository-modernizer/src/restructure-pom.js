@@ -174,8 +174,9 @@ var RestructurePoms = {
                 constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
                     constants.DEFAULT_ARTIFACT_ID,
                     artifactIdInfo.artifactId
-                ).replace(constants.DEFAULT_GROUP_ID, config.groupId)
-                .replace(constants.DEFAULT_VERSION,artifactIdInfo.version)
+                )
+                    .replace(constants.DEFAULT_GROUP_ID, config.groupId)
+                    .replace(constants.DEFAULT_VERSION, artifactIdInfo.version)
             );
         });
         // embed required packages in all package pom file
