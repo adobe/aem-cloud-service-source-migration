@@ -39,3 +39,5 @@ repositoryModernizer:
           appTitle: 
           # project specific version to be used for content packages
           version: 
+          # application ID (will be used for config and package folder names)
+          appId:

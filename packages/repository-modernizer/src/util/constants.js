@@ -107,6 +107,8 @@ module.exports = {
 
     DEFAULT_APP_TITLE: "${appTitle}",
 
+    DEFAULT_APP_ID: "${appId}",
+
     DEFAULT_ROOT_ARTIFACT_ID: "${rootArtifactId}",
 
     DEFAULT_ROOT_VERSION: "${rootVersion}",
@@ -191,6 +193,8 @@ module.exports = {
     ],
 
     // Default Templates
+    DEFAULT_ALL_FILTER_PATH_TEMPLATE: `    <filter root="/apps/\${appId}-packages"/>`,
+
     DEFAULT_EMBEDDED_APPS_TEMPLATE: `                        <embedded>
                             <groupId>\${groupId}</groupId>
                             <artifactId>\${artifactId}</artifactId>
@@ -258,12 +262,6 @@ module.exports = {
     UTF_8: "utf8",
 
     SLING_OSGI_CONFIG: "sling:OsgiConfig",
-
-    APPS_DIR_PATH: path.join("/src/main/content/jcr_root/apps"),
-
-    OSGI_CONFIG_DIR_PATH: path.join(
-        "/src/main/content/jcr_root/apps/_appId_/osgiConfig"
-    ),
 
     JCR_PRIMARY_TYPE: "jcr:primaryType",
 

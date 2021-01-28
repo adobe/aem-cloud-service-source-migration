@@ -35,12 +35,17 @@ var RestructureFilterPaths = {
             "`ui.apps` package should contains all the code to be deployed `/apps` or `/oak:index`, " +
                 "whereas `ui.content` package should contains all content and configuration not in `/apps` or `/oak:index`."
         );
+        let projectRootPath = commons_constants.TARGET_PROJECT_SRC_FOLDER;
+        let allFilterPaths = [];
         // create the base packages for all projects
         projects.forEach((project) => {
             let targetProjectPath = path.join(
                 commons_constants.TARGET_PROJECT_SRC_FOLDER,
                 path.basename(project.projectPath)
             );
+            if (projects.length === 1) {
+                projectRootPath = targetProjectPath;
+            }
             let uiAppsFilterPath = path.join(
                 targetProjectPath,
                 constants.UI_APPS,
@@ -49,6 +54,11 @@ var RestructureFilterPaths = {
             let uiContentFilterPath = path.join(
                 targetProjectPath,
                 constants.UI_CONTENT,
+                constants.FILTER_PATH
+            );
+            let uiConfigFilterPath = path.join(
+                targetProjectPath,
+                constants.UI_CONFIG,
                 constants.FILTER_PATH
             );
             const filterPaths = {
@@ -93,7 +103,33 @@ var RestructureFilterPaths = {
                 uiContentFilterPath,
                 conversionStep
             );
+            replaceAppIdInFilterXml(
+                uiConfigFilterPath,
+                project.appId,
+                null,
+                conversionStep
+            );
+            // since different projects will have different appId
+            // i.e. would require diff package installation folders in all package
+            allFilterPaths.push(
+                constants.DEFAULT_ALL_FILTER_PATH_TEMPLATE.replace(
+                    constants.DEFAULT_APP_ID,
+                    project.appId
+                )
+            );
         });
+        // add filters to all's filter.xml
+        let allPackageFilterPath = path.join(
+            projectRootPath,
+            constants.ALL,
+            constants.FILTER_PATH
+        );
+        replaceAppIdInFilterXml(
+            allPackageFilterPath,
+            null,
+            allFilterPaths,
+            conversionStep
+        );
         conversionSteps.push(conversionStep);
     },
 };
@@ -225,6 +261,70 @@ function isImmutableContentFilter(line) {
         line.startsWith("/libs") ||
         line.startsWith("/oak:index")
     );
+}
+
+/**
+ *
+ * @param filePath path of filter.xml where content need to be written
+ * @param appId appId for the project
+ * @param filterPathsToAppend paths that need to be added to the filter.xml
+ * @param conversionStep  object containing info about rule and  details of the rule that is being followed
+ *
+ * Modify the ui.config package filter paths to include the given project's appId
+ */
+function replaceAppIdInFilterXml(
+    filterPath,
+    appId,
+    filterPathsToAppend,
+    conversionStep
+) {
+    if (!fs.existsSync(filterPath)) {
+        logger.error(
+            `RestructureFilterPaths: Cannot find filter file at ${filterPath}`
+        );
+    } else {
+        let fileContent = util.getXMLContentSync(filterPath);
+        let replaced = false;
+        for (let index = 0; index < fileContent.length; index++) {
+            let line = fileContent[index];
+            if (appId != null && line.includes(constants.DEFAULT_APP_ID)) {
+                fileContent[index] = line.replace(
+                    constants.DEFAULT_APP_ID,
+                    appId
+                );
+                replaced = true;
+            }
+            // add all package filter paths
+            if (
+                line == constants.FILTER_XML_END &&
+                filterPathsToAppend != null
+            ) {
+                filterPathsToAppend.forEach((filterPath) => {
+                    fileContent[index++] = filterPath;
+                });
+                fileContent[index] = line;
+                replaced = true;
+            }
+        }
+        // only write back/ log if actually replaced
+        if (replaced) {
+            util.writeDataToFileSync(
+                filterPath,
+                fileContent,
+                `RestructureFilterPaths: Error while trying to add filters to ${filterPath}.`
+            );
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    filterPath,
+                    "Included required paths `filter.xml`"
+                )
+            );
+            logger.info(
+                `RestructureFilterPaths: Filters added to  ${filterPath}.`
+            );
+        }
+    }
 }
 
 module.exports = RestructureFilterPaths;

@@ -51,7 +51,16 @@ var RestructureContent = {
                 constants.UI_APPS,
                 constants.JCR_ROOT_PATH
             );
-            await migrateConfig(uiAppsJcrRootPath, conversionStep);
+            if (project.appId == null) {
+                logger.error(
+                    `RestructureConfig: 'appId' not specified for project ${project.projectPath}.`
+                );
+            }
+            await migrateConfig(
+                uiAppsJcrRootPath,
+                project.appId,
+                conversionStep
+            );
         }
         conversionSteps.push(conversionStep);
     },
@@ -60,12 +69,15 @@ var RestructureContent = {
 /**
  *
  * @param String uiAppsJcrRootPath  jcr root path of ui.apps package
+ * @param String appId the appId of the project
  * @param object conversionStep  object containing info about rule and  details of the rule that is being followed
  *
  * Migrate content of packages to ui.apps and ui.content
  */
-async function migrateConfig(uiAppsJcrRootPath, conversionStep) {
+async function migrateConfig(uiAppsJcrRootPath, appId, conversionStep) {
     if (fs.existsSync(uiAppsJcrRootPath)) {
+        const appsDirPath = path.join(constants.JCR_ROOT_PATH, "apps");
+        const osgiConfigDirPath = path.join(appsDirPath, appId, "osgiconfig");
         // get all files with extension ".cfg.json", ".config", ".cfg"
         for (let configFileFormat of constants.OSGI_CONFIG_FILE_FORMATS) {
             let configFiles = util.globGetFilesByName(
@@ -77,7 +89,21 @@ async function migrateConfig(uiAppsJcrRootPath, conversionStep) {
                 if (
                     !(await fs.promises.lstat(oldConfigFilePath)).isDirectory()
                 ) {
-                    await moveConfig(oldConfigFilePath, conversionStep);
+                    let newConfigFilePath = oldConfigFilePath.replace(
+                        constants.UI_APPS,
+                        constants.UI_CONFIG
+                    );
+                    newConfigFilePath = newConfigFilePath.split(appsDirPath);
+                    newConfigFilePath = path.join(
+                        newConfigFilePath[0],
+                        osgiConfigDirPath,
+                        newConfigFilePath[1].replace(appId, "")
+                    );
+                    await moveConfig(
+                        oldConfigFilePath,
+                        newConfigFilePath,
+                        conversionStep
+                    );
                 }
             }
         }
@@ -92,19 +118,27 @@ async function migrateConfig(uiAppsJcrRootPath, conversionStep) {
                 !(await fs.promises.lstat(contentXmlFile)).isDirectory() &&
                 (await isOsgiConfig(contentXmlFile))
             ) {
-                await moveConfig(contentXmlFile, conversionStep);
+                let newConfigFilePath = contentXmlFile.replace(
+                    constants.UI_APPS,
+                    constants.UI_CONFIG
+                );
+                newConfigFilePath = newConfigFilePath.split(appsDirPath);
+                newConfigFilePath = path.join(
+                    newConfigFilePath[0],
+                    osgiConfigDirPath,
+                    newConfigFilePath[1].replace(appId, "")
+                );
+                await moveConfig(
+                    contentXmlFile,
+                    newConfigFilePath,
+                    conversionStep
+                );
             }
         }
         conversionStep.addOperation(
             new ConversionOperation(
                 commons_constants.WARNING,
-                path.join(
-                    uiAppsJcrRootPath.replace(
-                        constants.UI_APPS,
-                        constants.UI_CONFIG
-                    ),
-                    constants.OSGI_CONFIG_DIR_PATH
-                ),
+                osgiConfigDirPath,
                 "Please verify the Run mode-specific OSGi configuration folders nomenclature, expected folder-name format : `config.<author|publish>.<dev|stage|prod>`."
             )
         );
@@ -116,14 +150,16 @@ async function migrateConfig(uiAppsJcrRootPath, conversionStep) {
 /**
  *
  * @param String oldConfigFilePath  config file path in ui.apps package
+ * @param String newConfigFilePath the new config file path in ui.config package
  * @param object conversionStep  object containing info about rule and  details of the rule that is being followed
  *
  * Move config file from old location to ui.config package
  */
-async function moveConfig(oldConfigFilePath, conversionStep) {
-    let newConfigFilePath = oldConfigFilePath
-        .replace(constants.UI_APPS, constants.UI_CONFIG)
-        .replace(constants.APPS_DIR_PATH, constants.OSGI_CONFIG_DIR_PATH);
+async function moveConfig(
+    oldConfigFilePath,
+    newConfigFilePath,
+    conversionStep
+) {
     let newConfigFileParent = path.dirname(newConfigFilePath);
     // if target is a file, if required create the folder hierarchy first
     if (!fs.existsSync(newConfigFileParent)) {
