@@ -189,14 +189,16 @@ var CreateBaseProjectStructure = {
                 project.existingContentPackageFolder.map((folder) =>
                     path.join(project.projectPath, folder)
                 ),
+                project.appId,
                 conversionStep
             );
             // copy core bundles from source
-            let artifactIdList = copyCoreBundlesOrContentPackages(
+            let artifactIdInfoList = copyCoreBundlesOrContentPackages(
                 project.projectPath,
                 projectPath,
                 constants.BUNDLE_PACKAGING_TYPES,
                 [],
+                project.appId,
                 conversionStep
             );
             logger.info(
@@ -205,7 +207,7 @@ var CreateBaseProjectStructure = {
             //embed core bundles
             await pomManipulationUtil.embeddArtifactsUsingTemplate(
                 allPackagePomFile,
-                artifactIdList,
+                artifactIdInfoList,
                 config.groupId,
                 conversionStep
             );
@@ -312,13 +314,14 @@ function copyCoreBundlesOrContentPackages(
     destination,
     packagingType,
     ignoredPaths,
+    appId,
     conversionStep
 ) {
     // the path.join() is to standardize the paths to use '\' irrespective of OS
     source = path.join(source);
     // get all pom files
     let allPomFiles = util.globGetFilesByName(source, constants.POM_XML);
-    let artifactIdList = [];
+    let artifactIdInfoList = [];
     // check if packaging type is matching
     allPomFiles.forEach((pomFile) => {
         // the path.join() is to standardize the paths to use '\' irrespective of OS
@@ -359,9 +362,12 @@ function copyCoreBundlesOrContentPackages(
             );
             var pom = pomParser.parsePom({ filePath: pomFile });
             var artifactId = pom.artifactId;
-            artifactIdList.push(artifactId);
+            artifactIdInfoList.push({
+                artifactId: artifactId,
+                appId: appId,
+            });
         }
     });
-    return artifactIdList;
+    return artifactIdInfoList;
 }
 module.exports = CreateBaseProjectStructure;
