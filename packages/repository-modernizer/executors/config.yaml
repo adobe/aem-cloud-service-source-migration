@@ -1,32 +1,32 @@
 repositoryModernizer:
     # groupId to be used for newly created packages
-    groupId: 
+    groupId:
     # information about parent pom
     parentPom:
         # absolute path to the parent pom file
-        path: 
+        path:
         # the artifactId to be set for the parent pom
-        artifactId: 
+        artifactId:
         # the application title to be set for the parent pom
-        appTitle: 
+        appTitle:
         # version to be to be set for the parent pom
-        version: 
+        version:
     # information required for all package
     all:
         # prefix that is to be used to set the artifactId for all package
-        artifactId: 
+        artifactId:
         # application title
-        appTitle: 
+        appTitle:
         # version to be set for all pom
-        version: 
+        version:
     # information about projects
     projects:
         - # absolute path to the project folder
-          projectPath: 
+          projectPath:
           # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
           # NOTE : only content packages are expected here, NOT bundle/jar artifacts
           existingContentPackageFolder:
-              - 
+              -
           # relative path (w.r.t. the existing content package folder) to the filter.xml file
           # (If not specified, default path `/src/main/content/META-INF/vault/filter.xml` will be used.)
           relativePathToExistingFilterXml:
@@ -34,10 +34,10 @@ repositoryModernizer:
           # (If not specified, default path `/src/main/content/jcr_root` will be used)
           relativePathToExistingJcrRoot:
           # prefix that is to be used to set the artifactId for newly packages
-          artifactId: 
+          artifactId:
           # application title
-          appTitle: 
+          appTitle:
           # project specific version to be used for content packages
-          version: 
+          version:
           # application ID (will be used for config and package folder names)
-          appId: 
+          appId:

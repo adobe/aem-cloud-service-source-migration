@@ -95,9 +95,11 @@ The repository modernizer expects the following configurations to be specified f
     - `path` : The absolute path to the existing parent pom file.
     - `artifactId` : The `artifactId` to be set for the parent pom.
     - `appTitle` : The application title to be set for the parent pom.
+    - `version` : The version to be set for the parent pom.
 -   `all` : Add the required information for `all` package
     - `artifactId` : The prefix that is to be used to set the artifactId for the `all` package.
     - `appTitle` : The application title.
+    - `version` : The version to be set for the all pom.
 -   `projects` : Add the required information about all the projects you want to restructure.
     (NOTE : Expects an array of project details objects.)
     -   `projectPath` : The absolute path to the project folder.
@@ -111,6 +113,9 @@ The repository modernizer expects the following configurations to be specified f
     -   `artifactId` : The prefix that is to be used to set the artifactId for all newly
         created `ui.apps` and `ui.content` packages.
     -   `appTitle` : The application title.
+    -   `version` : The version used for content packages.
+    -   `appId` : The application Id.
+
 
 Example:
 
@@ -126,12 +131,16 @@ repositoryModernizer:
     artifactId: xyz-aem-parent
     # the application title to be set for the parent pom
     appTitle: XYZ-AEM Parent
+    # version to be to be set for the parent pom
+    version: 1.0.0-SNAPSHOT
   # information required for all package
   all:
     # prefix that is to be used to set the artifactId for all package
     artifactId: xyz-aem
     # application title
     appTitle: XYZ-AEM Code Repository
+    # version to be set for all pom
+    version: 1.0.0-SNAPSHOT
   # information about projects
   projects:
     - # absolute path to the project folder
@@ -153,6 +162,10 @@ repositoryModernizer:
       artifactId: xyz-content-aem
       # application title
       appTitle: XYZ
+      # project specific version to be used for content packages
+      version: 2.0.0-SNAPSHOT
+      # application ID (will be used for config and package folder names)
+      appId: XYZ-APP
 ```
 
 # Contributing
