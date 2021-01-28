@@ -178,8 +178,12 @@ var PomManipulationUtil = {
                                 constants.DEFAULT_EMBEDDED_CORE_BUNDLE_TEMPLATE.replace(
                                     constants.DEFAULT_ARTIFACT_ID,
                                     artifactId
-                                ).replace(constants.DEFAULT_GROUP_ID, groupId)
-                                .replace(constants.DEFAULT_APP_ID, appId)
+                                )
+                                    .replace(
+                                        constants.DEFAULT_GROUP_ID,
+                                        groupId
+                                    )
+                                    .replace(constants.DEFAULT_APP_ID, appId)
                             );
                             logger.info(
                                 `PomManipulationUtil: Embedded artifact ${artifactId} in ${pomFilePath}.`
