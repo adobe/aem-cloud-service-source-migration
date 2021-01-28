@@ -19,7 +19,8 @@ repositoryModernizer:
         appTitle:
         # version to be set for all pom
         version:
-    # information about projects
+    # information about projects (expects an array of project information)
+    # NOTE : For multiple projects create separate copies of the info section for each project
     projects:
         - # absolute path to the project folder
           projectPath:

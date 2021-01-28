@@ -102,6 +102,7 @@ The repository modernizer expects the following configurations to be specified f
     - `version` : The version to be set for the all pom.
 -   `projects` : Add the required information about all the projects you want to restructure.
     (NOTE : Expects an array of project details objects.)
+    (NOTE : For multiple projects create separate copies of the info section for each project)
     -   `projectPath` : The absolute path to the project folder.
     -   `existingContentPackageFolder` : relative path(s) (w.r.t. the project folder) to the existing
      content package(s) that needs to be restructured. (NOTE : Expects an array of relative paths to 
@@ -141,9 +142,10 @@ repositoryModernizer:
     appTitle: XYZ-AEM Code Repository
     # version to be set for all pom
     version: 1.0.0-SNAPSHOT
-  # information about projects
+  # information about projects (expects an array of project information)
+  # NOTE : For multiple projects create separate copies of the info section for each project
   projects:
-    - # absolute path to the project folder
+    - # absolute path to the XYZ project folder
       projectPath: /Users/{username}/some/path/to/xyz-aem
       # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
       # NOTE : only content packages are expected here, NOT bundle/jar artifacts
@@ -151,7 +153,6 @@ repositoryModernizer:
         - /ui.apps
         - /ui.content
         - /ui.permissions
-        - /oak-index-definitions
       # relative path (w.r.t. the existing content package folder) to the filter.xml file
       # (If not specified, default path `/src/main/content/META-INF/vault/filter.xml` will be used.)
       relativePathToExistingFilterXml:
@@ -162,10 +163,31 @@ repositoryModernizer:
       artifactId: xyz-content-aem
       # application title
       appTitle: XYZ
+      # application ID (will be used for config and package folder names)
+      appId: xyz-app
       # project specific version to be used for content packages
       version: 2.0.0-SNAPSHOT
+    - # absolute path to the ABC project folder
+      projectPath: /Users/{username}/some/path/to/abc-aem
+      # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
+      # NOTE : only content packages are expected here, NOT bundle/jar artifacts
+      existingContentPackageFolder:
+        - /content
+        - /oak-index-definitions
+      # relative path (w.r.t. the existing content package folder) to the filter.xml file
+      # (If not specified, default path `/src/main/content/META-INF/vault/filter.xml` will be used.)
+      relativePathToExistingFilterXml:
+      # relative path (w.r.t. the existing content package folder) to the jcr_root directory
+      # (If not specified, default path `/src/main/content/jcr_root` will be used)
+      relativePathToExistingJcrRoot:
+      # prefix that is to be used to set the artifactId for newly created ui.apps and ui.content packages
+      artifactId: abc-content-aem
+      # application title
+      appTitle: ABC
       # application ID (will be used for config and package folder names)
-      appId: XYZ-APP
+      appId: abc-app
+      # project specific version to be used for content packages
+      version: 2.0.0-SNAPSHOT
 ```
 
 # Contributing
