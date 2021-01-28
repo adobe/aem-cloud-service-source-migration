@@ -8,7 +8,7 @@
     <parent>
         <groupId>${groupId}</groupId>
         <artifactId>${rootArtifactId}</artifactId>
-        <version>${version}</version>
+        <version>${rootVersion}</version>
         <relativePath>${relativePath}</relativePath>
     </parent>
 
@@ -17,6 +17,7 @@
     <!-- ====================================================================== -->
     <artifactId>${artifactId}</artifactId>
     <packaging>content-package</packaging>
+    <version>${version}</version>
     <name>${appTitle} - UI apps</name>
     <description>UI apps package for ${appTitle}</description>
 

@@ -281,6 +281,7 @@ async function refactorParentPom(
             [constants.DEFAULT_GROUP_ID]: config.groupId,
             [constants.DEFAULT_ARTIFACT_ID]: config.parentPom.artifactId,
             [constants.DEFAULT_APP_TITLE]: config.parentPom.appTitle,
+            [constants.DEFAULT_VERSION]: config.parentPom.version,
             [constants.DEFAULT_SDK_API]: sdkVersion,
         },
         conversionStep
@@ -600,18 +601,15 @@ async function addParentAndModuleinfo(pomFile, originalParent) {
             }
             parentModule.push(pomLine);
         }
-        if (pomLine.trim() == constants.MODULE_START_TAG) {
-            while (
-                line < fileContent.length &&
-                pomLine.trim() != constants.MODULE_END_TAG
-            ) {
-                parentModule.push(pomLine);
-                line++;
-                pomLine = fileContent[line];
-            }
-            parentModule.push(pomLine);
-        }
     }
+    parentModule.push(constants.MODULE_START_TAG);
+    let moduleList = getModuleList(
+        pomFile.substring(0, pomFile.indexOf("/pom.xml"))
+    );
+    for (const module of moduleList) {
+        parentModule.push(constants.MODULE_TAG.replace("${module}", module));
+    }
+    parentModule.push(constants.MODULE_END_TAG);
     let contentToBeWritten = [];
     if (parentModule.length != 0) {
         let fileContent = await util.getXMLContent(pomFile);
@@ -628,6 +626,17 @@ async function addParentAndModuleinfo(pomFile, originalParent) {
         }
         await util.writeDataToFileAsync(pomFile, contentToBeWritten);
     }
+}
+function getModuleList(projectRootPath) {
+    let moduleList = [];
+    fs.readdirSync(projectRootPath).forEach(function (file) {
+        var currentPath = path.join(projectRootPath, file);
+        // if entry is a directory, copy it to the respective package
+        if (fs.lstatSync(currentPath).isDirectory()) {
+            moduleList.push(file);
+        }
+    });
+    return moduleList;
 }
 
 module.exports = RestructurePoms;

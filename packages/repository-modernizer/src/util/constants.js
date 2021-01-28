@@ -71,6 +71,8 @@ module.exports = {
 
     MODULE_END_TAG: "</modules>",
 
+    MODULE_TAG: `<module>\${module}</module>`,
+
     ARTIFACT_ID_START_TAG: "<artifactId>",
 
     ARTIFACT_ID_END_TAG: "</artifactId>",
@@ -99,11 +101,15 @@ module.exports = {
 
     DEFAULT_ARTIFACT_ID: "${artifactId}",
 
+    DEFAULT_VERSION: "${version}",
+
     DEFAULT_GROUP_ID: "${groupId}",
 
     DEFAULT_APP_TITLE: "${appTitle}",
 
     DEFAULT_ROOT_ARTIFACT_ID: "${rootArtifactId}",
+
+    DEFAULT_ROOT_VERSION: "${rootVersion}",
 
     DEFAULT_RELATIVE_PATH: "${relativePath}",
 
@@ -198,6 +204,11 @@ module.exports = {
                             <type>zip</type>
                             <target>/apps/\${appId}-packages/content/install</target>
                         </embedded>`,
+    DEFAULT_EMBEDDED_CORE_BUNDLE_TEMPLATE: `                        <embedded>
+                        <groupId>\${groupId}</groupId>
+                        <artifactId>\${artifactId}</artifactId>
+                        <target>/apps/\${appId}-packages/application/install</target>
+                    </embedded>`,
 
     DEFAULT_DEPENDENCY_TEMPLATE: `        <dependency>
             <groupId>\${groupId}</groupId>

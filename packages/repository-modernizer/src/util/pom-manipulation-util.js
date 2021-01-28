@@ -161,6 +161,23 @@ var PomManipulationUtil = {
                                     `Embedded artifact ${artifactId} in all package`
                                 )
                             );
+                        } else {
+                            contentToBeWritten.push(
+                                constants.DEFAULT_EMBEDDED_CORE_BUNDLE_TEMPLATE.replace(
+                                    constants.DEFAULT_ARTIFACT_ID,
+                                    artifactId
+                                ).replace(constants.DEFAULT_GROUP_ID, groupId)
+                            );
+                            logger.info(
+                                `PomManipulationUtil: Embedded artifact ${artifactId} in ${pomFilePath}.`
+                            );
+                            conversionStep.addOperation(
+                                new ConversionOperation(
+                                    commons_constants.ACTION_ADDED,
+                                    pomFilePath,
+                                    `Embedded artifact ${artifactId} in all package`
+                                )
+                            );
                         }
                     });
                 }

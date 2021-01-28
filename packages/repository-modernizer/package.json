@@ -24,11 +24,12 @@
         "jest-junit": "^6.0.0",
         "js-yaml": "^3.14.0",
         "node-fetch": "^2.6.1",
+        "node-pom-parser": "^0.1.1",
         "rewire": "^5.0.0",
         "stdout-stderr": "^0.1.9",
         "winston": "^3.2.1",
-        "yaml": "^1.10.0",
-        "xml-js": "^1.6.11"
+        "xml-js": "^1.6.11",
+        "yaml": "^1.10.0"
     },
     "devDependencies": {
         "jest": "^26.4.2"
