@@ -193,6 +193,7 @@ var CreateBaseProjectStructure = {
                 conversionStep
             );
             // copy core bundles from source
+            let allPackageDependencyList = [];
             let artifactIdInfoList = copyCoreBundlesOrContentPackages(
                 project.projectPath,
                 projectPath,
@@ -201,6 +202,14 @@ var CreateBaseProjectStructure = {
                 project.appId,
                 conversionStep
             );
+            artifactIdInfoList.forEach((artifactIdInfo) => {
+                allPackageDependencyList.push(
+                    constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
+                        constants.DEFAULT_ARTIFACT_ID,
+                        artifactIdInfo.artifactId
+                    ).replace(constants.DEFAULT_GROUP_ID, config.groupId)
+                );
+            });
             logger.info(
                 `CreateBaseProjectStructure: Base packages created for ${projectPath}.`
             );
@@ -209,6 +218,11 @@ var CreateBaseProjectStructure = {
                 allPackagePomFile,
                 artifactIdInfoList,
                 config.groupId,
+                conversionStep
+            );
+            await pomManipulationUtil.addDependencies(
+                allPackagePomFile,
+                allPackageDependencyList,
                 conversionStep
             );
         }
