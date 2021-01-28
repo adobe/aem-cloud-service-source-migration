@@ -8,12 +8,16 @@ parentPom:
     artifactId: test-aem-parent
     # the application title to be set for the parent pom
     appTitle: test-AEM Parent
+    # version to be to be set for the parent pom
+    version: 1.0.0-SNAPSHOT
 # information required for all package
 all:
     # prefix that is to be used to set the artifactId for all package
     artifactId: test-aem
     # application title
     appTitle: Test-AEM Code Repository
+    # version to be set for all pom
+    version: 1.0.0-SNAPSHOT
 # information about projects
 projects:
     - # absolute path to the project folder
@@ -32,5 +36,7 @@ projects:
       artifactId: test-content-aem
       # application title
       appTitle: test-content
+      # project specific version to be used for content packages
+      version: 2.0.0-SNAPSHOT
       # application ID (will be used for config and package folder names)
       appId: test

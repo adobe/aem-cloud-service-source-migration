@@ -211,7 +211,9 @@ var CreateBaseProjectStructure = {
                         .replace(constants.DEFAULT_GROUP_ID, config.groupId)
                         .replace(
                             constants.DEFAULT_VERSION,
-                            artifactIdInfo.version
+                            typeof artifactIdInfo.version === "undefined"
+                                ? ""
+                                : artifactIdInfo.version
                         )
                 );
             });
@@ -383,7 +385,10 @@ function copyCoreBundlesOrContentPackages(
             var artifactId = pom.artifactId;
             var version = pom.version;
             if (typeof version === "undefined") {
-                logger.warn(pomFile + " does not have version defined.");
+                logger.warn(
+                    pomFile +
+                        " does not have version defined. Please add version in 'all' pom file."
+                );
             }
             artifactIdInfoList.push({
                 artifactId: artifactId,

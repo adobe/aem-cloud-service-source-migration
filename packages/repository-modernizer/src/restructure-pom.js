@@ -92,8 +92,9 @@ var RestructurePoms = {
                 constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
                     constants.DEFAULT_ARTIFACT_ID,
                     ui_apps_artifactId
-                ).replace(constants.DEFAULT_GROUP_ID, config.groupId)
-                .replace(constants.DEFAULT_VERSION, project.version),
+                )
+                    .replace(constants.DEFAULT_GROUP_ID, config.groupId)
+                    .replace(constants.DEFAULT_VERSION, project.version),
             ];
             pomManipulationUtil.addDependencies(
                 uiContentPomFile,
