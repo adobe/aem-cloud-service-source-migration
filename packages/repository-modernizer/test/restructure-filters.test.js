@@ -25,7 +25,7 @@ const filterRewire = rewire("./../src/restructure-filters");
 const yaml = require("js-yaml");
 const path = require("path");
 const fs = require("fs");
-const {readFileSync} = jest.requireActual('fs');
+const { readFileSync } = jest.requireActual("fs");
 
 const configFileName = "config.yaml";
 const testDir = path.join(process.cwd(), "test");
@@ -41,7 +41,7 @@ const xmlContent = [
     '	 <filter root="/etc/map/non-migrated-ddp-results-lm"/>',
     '    <filter root="/home/users/system/ni/content"/>',
     '    <filter root="/content/configuration"/>',
-    '</workspaceFilter>',
+    "</workspaceFilter>",
 ];
 const expectedUIContentFilterPaths = [
     '    <filter root="/etc/dam/viewers/s7viewers/libs"/>',
@@ -49,13 +49,30 @@ const expectedUIContentFilterPaths = [
     '    <filter root="/home/users/system/ni/content"/>',
     '    <filter root="/content/configuration"/>',
 ];
+
 const expectedUIAppsFilterPaths = [
     '    <filter root="/apps/dam/cfm"/>',
     '	 <filter root="/apps/dam/content/schemaeditors/reports"/>',
 ];
 
-describe(" restructure filter", function () {
+const configFilterContent = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<workspaceFilter version="1.0">',
+    '    <filter root="/apps/${appId}/osgiconfig"/>',
+    "</workspaceFilter>",
+];
+const expectedUIConfigFilterPaths = [
+    '    <filter root="/apps/test/osgiconfig"/>',
+];
 
+const allFilterContent = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<workspaceFilter version="1.0">',
+    "</workspaceFilter>",
+];
+const expectedAllFilterPaths = ['    <filter root="/apps/test-packages"/>'];
+
+describe(" restructure filter", function () {
     test("exports", async () => {
         expect(typeof filterRewire.__get__("isImmutableContentFilter")).toEqual(
             "function"
@@ -71,6 +88,11 @@ describe(" restructure filter", function () {
             commons_constants.TARGET_PROJECT_SRC_FOLDER,
             path.basename(config.projects[0].projectPath)
         );
+        let allFilterPath = path.join(
+            targetProjectPath,
+            constants.ALL,
+            constants.FILTER_PATH
+        );
         let uiAppsFilterPath = path.join(
             targetProjectPath,
             constants.UI_APPS,
@@ -81,6 +103,11 @@ describe(" restructure filter", function () {
             constants.UI_CONTENT,
             constants.FILTER_PATH
         );
+        let uiConfigFilterPath = path.join(
+            targetProjectPath,
+            constants.UI_CONFIG,
+            constants.FILTER_PATH
+        );
         let contentPackageFilterPath = path.join(
             config.projects[0].projectPath,
             config.projects[0].existingContentPackageFolder[0],
@@ -88,13 +115,18 @@ describe(" restructure filter", function () {
         );
         // mock the methods return values
         fs.existsSync.mockReturnValue(true);
-        util.getXMLContentSync.mockReturnValue(xmlContent);
+        util.getXMLContentSync
+            .mockReturnValueOnce(xmlContent)
+            .mockReturnValueOnce(configFilterContent)
+            .mockReturnValueOnce(allFilterContent);
         util.writeDataToFileSync.mockResolvedValue(true);
         // execute the method
         filter.restructure(config.projects, conversionSteps);
         // test whether the appropriate methods were called with correct params
         expect(fs.existsSync).toHaveBeenCalledWith(contentPackageFilterPath);
-        expect(util.getXMLContentSync).toHaveBeenCalledWith(contentPackageFilterPath);
+        expect(util.getXMLContentSync).toHaveBeenCalledWith(
+            contentPackageFilterPath
+        );
         expect(util.writeDataToFileSync).toHaveBeenCalledWith(
             uiAppsFilterPath,
             constants.FILTER_XML_START.concat(
@@ -111,17 +143,34 @@ describe(" restructure filter", function () {
             ),
             `RestructureFilterPaths: Error while trying to add filters to ${uiContentFilterPath}.`
         );
+        expect(fs.existsSync).toHaveBeenCalledWith(uiConfigFilterPath);
+        expect(util.getXMLContentSync).toHaveBeenCalledWith(uiConfigFilterPath);
+        expect(util.writeDataToFileSync).toHaveBeenCalledWith(
+            uiConfigFilterPath,
+            constants.FILTER_XML_START.concat(
+                expectedUIConfigFilterPaths,
+                constants.FILTER_XML_END
+            ),
+            `RestructureFilterPaths: Error while trying to add filters to ${uiConfigFilterPath}.`
+        );
+        expect(fs.existsSync).toHaveBeenCalledWith(allFilterPath);
+        expect(util.getXMLContentSync).toHaveBeenCalledWith(allFilterPath);
+        expect(util.writeDataToFileSync).toHaveBeenCalledWith(
+            allFilterPath,
+            constants.FILTER_XML_START.concat(
+                expectedAllFilterPaths,
+                constants.FILTER_XML_END
+            ),
+            `RestructureFilterPaths: Error while trying to add filters to ${allFilterPath}.`
+        );
     });
 
-    test("Segregate Filter Paths", () => {
+    test("segregateFilterPaths", () => {
         const filterPaths = {
             uiAppsFilters: [],
             uiContentFilters: [],
         };
-        filterRewire.__get__("segregateFilterPaths")(
-            xmlContent,
-            filterPaths
-        );
+        filterRewire.__get__("segregateFilterPaths")(xmlContent, filterPaths);
         expect(filterPaths.uiAppsFilters.length).toBe(2);
         expect(filterPaths.uiContentFilters.length).toBe(4);
         for (var i = 0; i < expectedUIAppsFilterPaths.length; i++) {

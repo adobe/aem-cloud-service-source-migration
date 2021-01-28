@@ -92,16 +92,16 @@ var PomManipulationUtil = {
 
     /**
      *
-     * @param String pomFilePath  path of pom file in which artifactId's need to be set
-     * @param Array.<String> artifactIdList  list of artifact
-     * @param String groupId groupId to be use in pom
-     * @param object conversionStep  object containing info about rule and  details of the rule that is being followed
+     * @param pomFilePath  path of pom file in which artifactId's need to be set
+     * @param artifactIdInfoList  list of artifact
+     * @param groupId groupId to be use in pom
+     * @param conversionStep  object containing info about rule and  details of the rule that is being followed
      *
      * Set artifactId in the package's pom
      */
     async embeddArtifactsUsingTemplate(
         pomFilePath,
-        artifactIdList,
+        artifactIdInfoList,
         groupId,
         conversionStep
     ) {
@@ -121,7 +121,9 @@ var PomManipulationUtil = {
                         .trim()
                         .startsWith(constants.EMBEDDEDS_SECTION_START_TAG)
                 ) {
-                    artifactIdList.forEach((artifactId) => {
+                    artifactIdInfoList.forEach((artifactIdInfo) => {
+                        let artifactId = artifactIdInfo.artifactId;
+                        let appId = artifactIdInfo.appId;
                         // embedd the artifacts (ui.apps and ui.content packages
                         // are installed in separate locations)
                         if (
@@ -132,7 +134,12 @@ var PomManipulationUtil = {
                                 constants.DEFAULT_EMBEDDED_APPS_TEMPLATE.replace(
                                     constants.DEFAULT_ARTIFACT_ID,
                                     artifactId
-                                ).replace(constants.DEFAULT_GROUP_ID, groupId)
+                                )
+                                    .replace(
+                                        constants.DEFAULT_GROUP_ID,
+                                        groupId
+                                    )
+                                    .replace(constants.DEFAULT_APP_ID, appId)
                             );
                             logger.info(
                                 `PomManipulationUtil: Embedded artifact ${artifactId} in ${pomFilePath}.`
@@ -149,7 +156,12 @@ var PomManipulationUtil = {
                                 constants.DEFAULT_EMBEDDED_CONTENT_TEMPLATE.replace(
                                     constants.DEFAULT_ARTIFACT_ID,
                                     artifactId
-                                ).replace(constants.DEFAULT_GROUP_ID, groupId)
+                                )
+                                    .replace(
+                                        constants.DEFAULT_GROUP_ID,
+                                        groupId
+                                    )
+                                    .replace(constants.DEFAULT_APP_ID, appId)
                             );
                             logger.info(
                                 `PomManipulationUtil: Embedded artifact ${artifactId} in ${pomFilePath}.`

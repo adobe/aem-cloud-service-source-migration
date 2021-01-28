@@ -35,7 +35,7 @@ var RestructurePoms = {
     async restructure(config, conversionSteps) {
         let sdkVersion = "";
         let projects = config.projects;
-        let package_artifactId_list = [];
+        let packageArtifactIdInfoList = [];
         let nonAdobeDependencyList = new Set();
         let conversionStep = new ConversionStep(
             "Restructure pom files",
@@ -72,9 +72,18 @@ var RestructurePoms = {
                 ".",
                 constants.UI_CONFIG
             );
-            package_artifactId_list.push(ui_apps_artifactId);
-            package_artifactId_list.push(ui_content_artifactId);
-            package_artifactId_list.push(ui_config_artifactId);
+            packageArtifactIdInfoList.push({
+                artifactId: ui_apps_artifactId,
+                appId: project.appId,
+            });
+            packageArtifactIdInfoList.push({
+                artifactId: ui_content_artifactId,
+                appId: project.appId,
+            });
+            packageArtifactIdInfoList.push({
+                artifactId: ui_config_artifactId,
+                appId: project.appId,
+            });
             // add dependencies in ui.content
             let uiContentDependencyList = [
                 constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
@@ -157,18 +166,18 @@ var RestructurePoms = {
             constants.POM_XML
         );
         // add dependencies to all package pom file
-        package_artifactId_list.forEach((artifactId) => {
+        packageArtifactIdInfoList.forEach((artifactIdInfo) => {
             allPackageDependencyList.push(
                 constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
                     constants.DEFAULT_ARTIFACT_ID,
-                    artifactId
+                    artifactIdInfo.artifactId
                 ).replace(constants.DEFAULT_GROUP_ID, config.groupId)
             );
         });
         // embed required packages in all package pom file
         await pomManipulationUtil.embeddArtifactsUsingTemplate(
             allPackagePomFile,
-            package_artifactId_list,
+            packageArtifactIdInfoList,
             config.groupId,
             conversionStep
         );
