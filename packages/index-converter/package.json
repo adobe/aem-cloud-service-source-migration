@@ -4,11 +4,11 @@
     "version": "0.0.1",
     "repository": {
         "type": "git",
-        "url": "https://github.com/adobe/aem-cloud-service-source-migration/packages/index-converter"
+        "url": "https://github.com/adobe/aem-cloud-service-source-migration/tree/master/packages/index-converter"
     },
     "author": "Adobe Inc.",
     "license": "Apache-2.0",
-    "homepage": "https://github.com/adobe/aem-cloud-service-source-migration/packages/index-converter",
+    "homepage": "https://github.com/adobe/aem-cloud-service-source-migration/tree/master/packages/index-converter",
     "bugs": {
         "url": "https://github.com/adobe/aem-cloud-service-source-migration/issues"
     },
