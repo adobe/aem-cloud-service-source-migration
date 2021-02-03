@@ -299,6 +299,7 @@ async function refactorParentPom(
             [constants.DEFAULT_APP_TITLE]: config.parentPom.appTitle,
             [constants.DEFAULT_VERSION]: config.parentPom.version,
             [constants.DEFAULT_SDK_API]: sdkVersion,
+            [constants.PARENT_POM_SDK_VERSION]: constants.DEFAULT_SDK_API,
         },
         conversionStep
     );
@@ -311,6 +312,9 @@ async function refactorParentPom(
     await addParentAndModuleinfo(pomFile, config.parentPom.path);
     // add dependencies from source parent pom.xml
     let dependencyList = await getDependenciesFromPom(config.parentPom.path);
+    dependencyList = pomManipulationUtil.removeDuplicatesDependencies(
+        dependencyList
+    );
     await pomManipulationUtil.addDependencies(
         pomFile,
         dependencyList,
@@ -406,15 +410,23 @@ async function getDependenciesFromPom(pomFile) {
     let fileContent = await util.getXMLContent(pomFile);
     let pushContent = false;
     let pomLine = "";
-    for (let line = 0; line < fileContent.length; line++) {
-        pomLine = fileContent[line];
-        // add dependencies to the list
-        if (pomLine.trim() === constants.DEPENDENCY_SECTION_START_TAG) {
-            //skipping dependency section start tag from getting added to list
+    for (let index = 0; index < fileContent.length; index++) {
+        pomLine = fileContent[index];
+        // add dependencies to the appropriate section
+        if (
+            pomLine.trim() === constants.DEPENDENCY_SECTION_START_TAG &&
+            fileContent[index - 1].includes(
+                constants.DEPENDENCY_MANAGEMENT_SECTION_START_TAG
+            )
+        ) {
             pushContent = true;
+            //skipping dependency section start tag from getting added to list
             continue;
         }
-        if (pomLine.trim() === constants.DEPENDENCY_SECTION_END_TAG) {
+        if (
+            pushContent &&
+            pomLine.trim() === constants.DEPENDENCY_SECTION_END_TAG
+        ) {
             //not adding end tag to list
             pushContent = false;
         }
@@ -425,11 +437,11 @@ async function getDependenciesFromPom(pomFile) {
                 dependencyList.pop();
                 //skip lines till dependency end tag
                 while (
-                    line < fileContent.length &&
+                    index < fileContent.length &&
                     pomLine.trim() != constants.DEPENDENCY_END_TAG
                 ) {
-                    line++;
-                    pomLine = fileContent[line];
+                    index++;
+                    pomLine = fileContent[index];
                 }
                 continue;
             }
@@ -452,7 +464,7 @@ async function getPluginsFromPom(pomFile, pluginObj) {
     let pomLine = "";
     for (let line = 0; line < fileContent.length; line++) {
         pomLine = fileContent[line].trim();
-        // adding plugin management section to list
+        // if plugin management section is found
         if (pomLine === constants.PLUGINS_MANAGEMENT_SECTION_START_TAG) {
             // skip the <pluginManagement> and the following <plugin> tags
             line += 2;
@@ -643,12 +655,17 @@ async function addParentAndModuleinfo(pomFile, originalParent) {
         await util.writeDataToFileAsync(pomFile, contentToBeWritten);
     }
 }
+
+// Get all the maven arifact names from within the project
 function getModuleList(projectRootPath) {
     let moduleList = [];
     fs.readdirSync(projectRootPath).forEach(function (file) {
         var currentPath = path.join(projectRootPath, file);
         // if entry is a directory, copy it to the respective package
-        if (fs.lstatSync(currentPath).isDirectory()) {
+        if (
+            fs.lstatSync(currentPath).isDirectory() &&
+            fs.existsSync(path.join(currentPath, constants.POM_XML))
+        ) {
             moduleList.push(file);
         }
     });

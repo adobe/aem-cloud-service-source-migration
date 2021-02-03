@@ -81,8 +81,9 @@ const xmlContent = describe("restructure pom", function () {
             constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
                 constants.DEFAULT_ARTIFACT_ID,
                 ui_apps_artifactId
-            ).replace(constants.DEFAULT_GROUP_ID, config.groupId)
-            .replace(constants.DEFAULT_VERSION, projects[0].version),
+            )
+                .replace(constants.DEFAULT_GROUP_ID, config.groupId)
+                .replace(constants.DEFAULT_VERSION, projects[0].version),
         ];
         const xmlContent = fs.readFileSync(srcpath, "utf8").split(/\r?\n/);
         //mock methods
@@ -116,7 +117,7 @@ const xmlContent = describe("restructure pom", function () {
             );
             expect(
                 pomManipulationUtil.removeDuplicatesDependencies
-            ).toHaveBeenCalledTimes(1);
+            ).toHaveBeenCalledTimes(2);
             expect(
                 pomManipulationUtil.embeddedArtifactsToFileVaultPlugin
             ).toHaveBeenCalledWith(

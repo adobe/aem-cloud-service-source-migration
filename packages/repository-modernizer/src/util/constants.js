@@ -123,6 +123,8 @@ module.exports = {
 
     DEFAULT_SDK_API: "${aem.sdk.api}",
 
+    PARENT_POM_SDK_VERSION: "${sdk.version}",
+
     PACKAGING_TAG_START: "<packaging>",
 
     PACKAGING_TAG_END: "</packaging>",
