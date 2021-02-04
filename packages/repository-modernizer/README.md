@@ -45,6 +45,62 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
 -   The `all` package is a container package that ONLY includes the `ui.apps` and `ui.content`
  packages as embeds
 
+
+# How it works
+
+####1. Create base project structure
+* Create the base template for `all` package and parent `pom.xml file` at the root level.
+* If only single project is configured, create the base template for `ui.apps`, `ui.content`
+ and `ui.config` packages at the same level.
+* If multiple projects are configured, create similarly named project folders inside which
+ we create the base template for `ui.apps`, `ui.content` and `ui.config` packages.
+* Apply the specified `groupId`, `artifactId` and `version` in the newly created artifact `pom.xml` files.
+* For each project specified in the configuration, copy all packages (other than the packages
+ specified under `existingContentPackageFolder`) of the packaging type `jar`, `bundle`,
+ `content-package` from the source.
+* Embed the core bundles (copied in the above step) in the `all/pom.xml`.
+
+####2. Separate mutable and immutable content
+* For each project specified in the configuration, traverse the content of the source packages
+ specified under `existingContentPackageFolder` and separate the mutable and immutable content
+ according to their paths.
+* The separated content are copied over to the project's `ui.apps` and `ui.content` packages
+ as applicable.
+* Find and move the OSGi configurations from the `ui.apps` package to the `ui.configs` package
+ (under the path `/apps/my-app/osgiconfig`).
+NOTE : Conflicts during the above move operation will be reported and conflicting content needs to
+ be moved over manually.
+
+####3. Separate filter paths
+* For each project specified in the configuration, traverse the content of the source packages
+ specified under `existingContentPackageFolder` and extract the filter paths specified in their
+ `filter.xml` files.
+* The filter paths are separated into mutable and immutable paths based on their jcr paths.
+ The separated paths are now added to the project's `ui.apps` and `ui.content` packages' filter
+ file as applicable.
+* Add the filter path to `/apps/my-app/osgiconfig` in `ui.configs` package's filter file.
+
+####4. Refactor the pom files
+* For each project specified in the configuration, traverse the content of pom files of the
+ source packages specified under `existingContentPackageFolder` and extract the dependency and
+ plugin info. They will be added to the `ui.apps/pom.xml` file.
+ NOTE :
+    - `uber-jar` dependencies will be replaced with `aem-sdk-api` dependencies
+    - 3rd party bundle dependencies which are found will be reported, please add 3rd party
+     dependency jar files in the `nonadobedependencies` directory (which would serve as a
+     local repository for 3rd party bundles). It will be included in the repository section of
+     the parent pom.
+* In `ui.content/pom.xml` add the dependency for the `ui.apps` artifact.
+* In `all/pom.xml` embed the newly created `ui.apps`,`ui.config` and `ui.config` artifacts
+ for each project.
+* In the parent pom file, add the sub-projects info section, and the repository section for
+ including 3rd party dependencies from local repository.
+* In the parent pom file, add the dependency and plugin info extracted from the source parent pom.
+* Add the parent pom info in the newly created `ui.apps/pom.xml`, `ui.content/pom.xml` and
+ `ui.config/pom.xml` for each project.
+* Scan the core bundles' pom files and replace any `uber-jar` dependency with `aem-sdk-api`
+ dependency.
+
 # Usage
 
 While it is recommended to use this tool via our AIO CLI plugin for source migration (refer to [aio-cli-plugin-aem-cloud-service-migration](https://github.com/adobe/aio-cli-plugin-aem-cloud-service-migration)),
@@ -189,6 +245,30 @@ repositoryModernizer:
       # project specific version to be used for content packages
       version: 2.0.0-SNAPSHOT
 ```
+
+# Known Limitations
+The tool has some known limitations (we are working on fixing them) such as :
+1. It does not create Reactor `pom.xml` files for individual projects.
+ A parent `pom.xml` file is created at the root level, but for multi-project structures,
+ we do not create reactor pom files for individual projects.
+2. It does not work on nested maven artifacts.
+ The tool can process multiple projects, each project can have multiple content packages,
+ but if such packages have nested packages within, the tool will not be able to process them.
+3. It does not create `ui.apps.structure` package.
+ The tool doesn't create the `ui.apps.structure` package, we add the following configuration in the
+ `filevault-package-maven-plugin` to prevent build failure:
+ ```<failOnDependencyErrors>false</failOnDependencyErrors>```
+4. It does not make any modifications to existing core bundles, apart from replacing `uber-jar`
+ dependencies with `aem-sdk-api` dependencies.
+
+#### Things that would need to be handled manually :
+* conflicts arising during moving content to new packages.
+* missing version info in core bundles will be reported; the version will also need to be added in
+ the dependency section in the `all/pom.xml`.
+* core bundles (and their pom files) will need to be adjusted according AEM as a Cloud Service
+ specifications.
+* 3rd party dependency bundles will be reported, their jar files need to be placed in the 
+ `nonadobedependencies` directory which will serve as a local repository.
 
 # Contributing
 
