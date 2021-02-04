@@ -48,7 +48,7 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
 
 # How it works
 
-####1. Create base project structure
+#### 1. Create base project structure
 * Create the base template for `all` package and parent `pom.xml file` at the root level.
 * If only single project is configured, create the base template for `ui.apps`, `ui.content`
  and `ui.config` packages at the same level.
@@ -60,7 +60,7 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
  `content-package` from the source.
 * Embed the core bundles (copied in the above step) in the `all/pom.xml`.
 
-####2. Separate mutable and immutable content
+#### 2. Separate mutable and immutable content
 * For each project specified in the configuration, traverse the content of the source packages
  specified under `existingContentPackageFolder` and separate the mutable and immutable content
  according to their paths.
@@ -71,7 +71,7 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
 NOTE : Conflicts during the above move operation will be reported and conflicting content needs to
  be moved over manually.
 
-####3. Separate filter paths
+#### 3. Separate filter paths
 * For each project specified in the configuration, traverse the content of the source packages
  specified under `existingContentPackageFolder` and extract the filter paths specified in their
  `filter.xml` files.
@@ -80,7 +80,7 @@ NOTE : Conflicts during the above move operation will be reported and conflictin
  file as applicable.
 * Add the filter path to `/apps/my-app/osgiconfig` in `ui.configs` package's filter file.
 
-####4. Refactor the pom files
+#### 4. Refactor the pom files
 * For each project specified in the configuration, traverse the content of pom files of the
  source packages specified under `existingContentPackageFolder` and extract the dependency and
  plugin info. They will be added to the `ui.apps/pom.xml` file.
@@ -267,7 +267,7 @@ The tool has some known limitations (we are working on fixing them) such as :
  the dependency section in the `all/pom.xml`.
 * core bundles (and their pom files) will need to be adjusted according AEM as a Cloud Service
  specifications.
-* 3rd party dependency bundles will be reported, their jar files need to be placed in the 
+* 3rd party dependency bundles will be reported, their jar files need to be placed in the
  `nonadobedependencies` directory which will serve as a local repository.
 
 # Contributing

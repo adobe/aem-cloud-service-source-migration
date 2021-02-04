@@ -40,7 +40,7 @@ This utility transforms only lucene type Custom Oak Index Definitions which are 
 
 
 # How it works
-####1. Handle Ensure Definitions
+#### 1. Handle Ensure Definitions
 Refer to [Ensure Oak Index](https://adobe-consulting-services.github.io/acs-aem-commons/features/ensure-oak-index/index.html)
  to learn how to define and create Oak Definitions. These were created (in place of actual Oak
  index definitions) so that they do not wipe out the actual index data when updating the node,
@@ -53,7 +53,7 @@ AEM as a Cloud Service does not support Ensure Definitions, and hence they will 
 * Remove any properties that are to be ignored as mentioned in OSGi configurations
 * Remove subtree `/facets/jcr:content` from Ensure Definition
 
-####2. Handle Custom OOTB (Product) Oak Index Definition
+#### 2. Handle Custom OOTB (Product) Oak Index Definition
 * It will parse the Custom OOTB (Product) Oak Index Definition and fetch the associated OOTB
  Index Definition corresponding to the `aemVersion` specified.
 * It will compare the Custom OOTB Oak Index Definition to the associated OOTB Index Definition and
@@ -70,7 +70,7 @@ AEM as a Cloud Service does not support Ensure Definitions, and hence they will 
 ```
 For example, `damAssetLucene-6-custom-1`
 
-####3. Handle Newly created Custom Oak Index Definition
+#### 3. Handle Newly created Custom Oak Index Definition
 * It will parse and validate the Custom Oak Index Definition as per AEM as Cloud Service compatible
  OAK Index Definitions guidelines.
 * It will rename the Custom Oak Index Definition.
@@ -78,7 +78,7 @@ For example, `damAssetLucene-6-custom-1`
  ```"Name of the Custom Oak Index Definition"-"custom"-1```
 For example, `testindex-custom-1`
 
-####4. Update the filter path
+#### 4. Update the filter path
 This tool will update the filter path in filter.xml as well based on the new name of Custom OAK
  Index Definitions.
 For example, from `<filter root="/oak:index/damAssetLucene1"/>` to
@@ -164,6 +164,10 @@ The tool has some known limitations (we are working on fixing them) such as :
  `/apps` or `/oak:index`.
 2. It will not transform those lucene type indexes which are created for `nt:base`.
 
+#### Things that would need to be handled manually :
+* copy the converted index definitions to the `/oak:index` folder inside `ui.apps` package.
+* copy the index definition filter paths from the generated `filter.xml` to the `ui.apps`
+ package's `filter.xml` file.
 
 # Contributing
 
