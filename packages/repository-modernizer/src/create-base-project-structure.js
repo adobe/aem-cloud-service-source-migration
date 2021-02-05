@@ -204,7 +204,7 @@ var CreateBaseProjectStructure = {
             );
             artifactIdInfoList.forEach((artifactIdInfo) => {
                 allPackageDependencyList.push(
-                    constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
+                    constants.BUNDLE_DEPENDENCY_TEMPLATE.replace(
                         constants.DEFAULT_ARTIFACT_ID,
                         artifactIdInfo.artifactId
                     )

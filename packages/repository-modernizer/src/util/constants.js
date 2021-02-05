@@ -225,6 +225,13 @@ module.exports = {
             <type>zip</type>
         </dependency>`,
 
+    BUNDLE_DEPENDENCY_TEMPLATE: `        <dependency>
+        <groupId>\${groupId}</groupId>
+        <artifactId>\${artifactId}</artifactId>
+        <version>\${version}</version>
+        <type>jar</type>
+    </dependency>`,
+
     SDK_DEPENDENCY_TEMPLATE: `        <dependency>
           <groupId>com.adobe.aem</groupId>
           <artifactId>aem-sdk-api</artifactId>
