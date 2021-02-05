@@ -262,11 +262,11 @@ The tool has some known limitations (we are working on fixing them) such as :
  dependencies with `aem-sdk-api` dependencies.
 
 #### Things that would need to be handled manually :
-* conflicts arising during moving content to new packages.
-* missing version info in core bundles will be reported; the version will also need to be added in
+* Conflicts arising during moving content to new packages.
+* Missing version info in core bundles will be reported; the version will also need to be added in
  the dependency section in the `all/pom.xml`.
-* core bundles (and their pom files) will need to be adjusted according AEM as a Cloud Service
- specifications.
+* For core bundles, changes like updating them to use the BND plugin (rather than the old Felix
+ pluigin), translating the Felix bundler directives to BND directives need to be done manually.
 * 3rd party dependency bundles will be reported, their jar files need to be placed in the
  `nonadobedependencies` directory which will serve as a local repository.
 
