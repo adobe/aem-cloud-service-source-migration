@@ -98,9 +98,9 @@ var RepositoryModernizer = {
             );
             valid = false;
         }
-        let projects = config.projects;
+        //let projects = config.projects;
         let projectIndex = 0;
-        for (const project of projects) {
+        for (const project of config.projects) {
             projectIndex++;
             if (project.projectPath == null) {
                 logger.warn(

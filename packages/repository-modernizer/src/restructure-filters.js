@@ -184,15 +184,19 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
             if (isImmutableContentFilter(line)) {
                 prevState = true;
                 if (
-                    line.includes("<include") ||
-                    (line.includes("<exclude") && line.includes("mode="))
+                    line.trim().startsWith("<include") ||
+                    (line.trim().startsWith("<exclude") &&
+                        line.includes("mode="))
                 ) {
                     filterPaths.uiAppsFilters.push(
                         line.substring(0, line.indexOf("mode")) + "/>"
                     );
-                    uiAppsExtraRoot.push(
-                        "    <filter root" + line.substring(line.indexOf("="))
-                    );
+                    if (line.trim().startsWith("<include")) {
+                        uiAppsExtraRoot.push(
+                            "    <filter root" +
+                                line.substring(line.indexOf("="))
+                        );
+                    }
                 } else {
                     filterPaths.uiAppsFilters.push(line);
                 }
@@ -224,16 +228,19 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
                     filterPaths.uiAppsFilters.push(line);
                 } else {
                     if (
-                        line.includes("<include") ||
-                        (line.includes("<exclude") && line.includes("mode="))
+                        line.trim().startsWith("<include") ||
+                        (line.trim().startsWith("<exclude") &&
+                            line.includes("mode="))
                     ) {
                         filterPaths.uiContentFilters.push(
                             line.substring(0, line.indexOf("mode")) + "/>"
                         );
-                        uiContentExtraRoot.push(
-                            "    <filter root" +
-                                line.substring(line.indexOf("="))
-                        );
+                        if (line.trim().startsWith("<include")) {
+                            uiContentExtraRoot.push(
+                                "    <filter root" +
+                                    line.substring(line.indexOf("="))
+                            );
+                        }
                     } else {
                         filterPaths.uiContentFilters.push(line);
                     }
