@@ -249,12 +249,8 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
             }
         }
     });
-    filterPaths.uiAppsFilters = filterPaths.uiAppsFilters.concat(
-        uiAppsExtraRoot
-    );
-    filterPaths.uiContentFilters = filterPaths.uiContentFilters.concat(
-        uiContentExtraRoot
-    );
+    filterPaths.uiAppsFilters.push(...uiAppsExtraRoot);
+    filterPaths.uiContentFilters.push(...uiContentExtraRoot);
 }
 
 /**
