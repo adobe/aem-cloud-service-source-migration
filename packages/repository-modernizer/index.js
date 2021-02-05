@@ -18,6 +18,7 @@ const restructurePoms = require("./src/restructure-pom");
 const constants = require("./src/util/constants");
 const {
     constants: common_constants,
+    logger,
     SummaryReportWriter,
 } = require("@adobe/aem-cs-source-migration-commons");
 
@@ -46,6 +47,111 @@ var RepositoryModernizer = {
             common_constants.TARGET_PROJECT_FOLDER,
             constants.REPOSITORY_MODERNIZER_REPORT
         );
+    },
+    async checkConfig(config) {
+        let valid = true;
+        if (config.groupId == null) {
+            logger.warn(
+                "Expected parameter 'groupId' not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        if (config.parentPom.path == null) {
+            logger.warn(
+                "Expected parameter 'path' (under 'parentPom' section) not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        if (config.parentPom.artifactId == null) {
+            logger.warn(
+                "Expected parameter 'artifactId' (under 'parentPom' section) not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        if (config.parentPom.appTitle == null) {
+            logger.warn(
+                "Expected parameter 'appTitle' (under 'parentPom' section) not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        if (config.parentPom.version == null) {
+            logger.warn(
+                "Expected parameter 'version' (under 'parentPom' section) not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        if (config.all.artifactId == null) {
+            logger.warn(
+                "Expected parameter 'artifactId' (under 'all' section) not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        if (config.all.appTitle == null) {
+            logger.warn(
+                "Expected parameter 'appTitle' (under 'all' section) not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        if (config.all.version == null) {
+            logger.warn(
+                "Expected parameter 'version' (under 'all' section) not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        let projects = config.projects;
+        let projectIndex = 0;
+        for (const project of projects) {
+            projectIndex++;
+            if (project.projectPath == null) {
+                logger.warn(
+                    "Expected parameter 'projectPath' (under 'project'" +
+                        projectIndex +
+                        " section) not defined in configuration file. Please add the missing parameter to execute the tool."
+                );
+                valid = false;
+            }
+            if (project.existingContentPackageFolder[0] == null) {
+                logger.warn(
+                    "Expected parameter 'existingContentPackageFolder'(under 'project'" +
+                        projectIndex +
+                        " section) is empty in configuration file. Please add the missing parameter to execute the tool."
+                );
+                valid = false;
+            }
+            if (project.artifactId == null) {
+                logger.warn(
+                    "Expected parameter 'artifactId' (under 'project'" +
+                        projectIndex +
+                        " section) not defined in configuration file. Please add the missing parameter to execute the tool."
+                );
+                valid = false;
+            }
+            if (project.appTitle == null) {
+                logger.warn(
+                    "Expected parameter 'appTitle'(under 'project'" +
+                        projectIndex +
+                        " section) not defined in configuration file. Please add the missing parameter to execute the tool."
+                );
+                valid = false;
+            }
+            if (project.version == null) {
+                logger.warn(
+                    "Expected parameter 'version' (under 'project'" +
+                        projectIndex +
+                        " section) not defined in configuration file. Please add the missing parameter to execute the tool."
+                );
+                valid = false;
+            }
+            if (project.appId == null) {
+                logger.warn(
+                    "Expected parameter 'appId' (under 'project'" +
+                        projectIndex +
+                        " section) not defined in configuration file. Please add the missing parameter to execute the tool."
+                );
+                valid = false;
+            }
+        }
+        return valid;
     },
 };
 

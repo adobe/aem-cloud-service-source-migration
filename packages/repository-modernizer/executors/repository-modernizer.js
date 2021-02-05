@@ -27,6 +27,7 @@ if (fs.existsSync(constants.TARGET_FOLDER)) {
     logger.info("./target deleted successfully");
     console.log("./target deleted successfully");
 }
+fs.mkdirSync(constants.TARGET_FOLDER);
 const yamlFile = fs.readFileSync(process.cwd() + "/config.yaml", "utf8");
 let config = yaml.safeLoad(yamlFile);
 executeRepoModernizer(config);
@@ -39,19 +40,27 @@ executeRepoModernizer(config);
 async function executeRepoModernizer(config) {
     console.log("Restructuring...");
     try {
-        await RepositoryModernizer.performModernization(
-            config.repositoryModernizer,
-            ".."
-        );
-        logger.info("Restructuring Completed!");
-        console.log("Restructuring Completed!");
-        console.log(
-            `Please check ${constants.TARGET_PROJECT_SRC_FOLDER} folder for transformed configuration files.`
-        );
-        console.log(
-            `Please check ${constants.TARGET_PROJECT_FOLDER} for summary report.`
-        );
-        console.log(`Please check ${constants.LOG_FILE} for logs.`);
+        if (
+            await RepositoryModernizer.checkConfig(config.repositoryModernizer)
+        ) {
+            await RepositoryModernizer.performModernization(
+                config.repositoryModernizer,
+                ".."
+            );
+            logger.info("Restructuring Completed!");
+            console.log("Restructuring Completed!");
+            console.log(
+                `Please check ${constants.TARGET_PROJECT_SRC_FOLDER} folder for transformed configuration files.`
+            );
+            console.log(
+                `Please check ${constants.TARGET_PROJECT_FOLDER} for summary report.`
+            );
+            console.log(`Please check ${constants.LOG_FILE} for logs.`);
+        } else {
+            console.log(
+                `Missing configuration! Please check ${constants.LOG_FILE} for more information.`
+            );
+        }
     } catch (error) {
         logger.error(error);
         console.log(error);

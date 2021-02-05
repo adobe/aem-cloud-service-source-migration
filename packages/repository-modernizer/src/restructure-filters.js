@@ -168,6 +168,9 @@ function getFiltersFromPomFile(pomFile) {
  */
 function segregateFilterPaths(filterFileContent, filterPaths) {
     let prevState = false;
+    let uiAppsExtraRoot = [];
+    let uiContentExtraRoot = [];
+
     // add the logic for creating the two filter path arrays here..
     filterFileContent.forEach((line) => {
         //skip start, end line and empty lines
@@ -180,7 +183,19 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
             //add line to respective arrays
             if (isImmutableContentFilter(line)) {
                 prevState = true;
-                filterPaths.uiAppsFilters.push(line);
+                if (
+                    line.includes("<include") ||
+                    (line.includes("<exclude") && line.includes("mode="))
+                ) {
+                    filterPaths.uiAppsFilters.push(
+                        line.substring(0, line.indexOf("mode")) + "/>"
+                    );
+                    uiAppsExtraRoot.push(
+                        "    <filter root" + line.substring(line.indexOf("="))
+                    );
+                } else {
+                    filterPaths.uiAppsFilters.push(line);
+                }
             } else {
                 // if current line is a filter section end (i.e. `</filter>`),
                 // check if it should be added to ui.apps filter or ui.content filter
@@ -208,12 +223,31 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
                 ) {
                     filterPaths.uiAppsFilters.push(line);
                 } else {
-                    filterPaths.uiContentFilters.push(line);
+                    if (
+                        line.includes("<include") ||
+                        (line.includes("<exclude") && line.includes("mode="))
+                    ) {
+                        filterPaths.uiContentFilters.push(
+                            line.substring(0, line.indexOf("mode")) + "/>"
+                        );
+                        uiContentExtraRoot.push(
+                            "    <filter root" +
+                                line.substring(line.indexOf("="))
+                        );
+                    } else {
+                        filterPaths.uiContentFilters.push(line);
+                    }
                     prevState = false;
                 }
             }
         }
     });
+    filterPaths.uiAppsFilters = filterPaths.uiAppsFilters.concat(
+        uiAppsExtraRoot
+    );
+    filterPaths.uiContentFilters = filterPaths.uiContentFilters.concat(
+        uiContentExtraRoot
+    );
 }
 
 /**
