@@ -38,6 +38,7 @@
         <bnd.version>5.0.0</bnd.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <aemanalyser.version>0.0.12</aemanalyser.version>
         <aem.sdk.api>${aem.sdk.api}</aem.sdk.api>
     </properties>
 
@@ -81,8 +82,7 @@
                                     <version>[3.3.9,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <message>Project must be compiled
-                                        with Java 8 or higher</message>
+                                    <message>Project must be compiled with Java 8 or higher</message>
                                     <version>1.8.0</version>
                                 </requireJavaVersion>
                             </rules>
@@ -249,7 +249,32 @@ Bundle-DocURL:
                     <version>1.0.3</version>
                     <configuration>
                         <filterSource>src/main/content/META-INF/vault/filter.xml</filterSource>
+                        <properties>
+                            <cloudManagerTarget>none</cloudManagerTarget>
+                        </properties>
+                        <validatorsSettings>
+                            <jackrabbit-nodetypes>
+                                <options>
+                                    <!-- use the nodetypes and namespaces from the aem-nodetypes.jar provided in the plugin dependencies -->
+                                    <cnds>tccl:aem.cnd</cnds>
+                                </options>
+                            </jackrabbit-nodetypes>
+                        </validatorsSettings>
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>biz.netcentric.aem</groupId>
+                            <artifactId>aem-nodetypes</artifactId>
+                            <version>6.5.5.0</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <!-- AEM Analyser Plugin -->
+                <plugin>
+                    <groupId>com.adobe.aem</groupId>
+                    <artifactId>aemanalyser-maven-plugin</artifactId>
+                    <version>${aemanalyser.version}</version>
+                    <extensions>true</extensions>
                 </plugin>
                 <!-- Content Package Plugin -->
                 <plugin>

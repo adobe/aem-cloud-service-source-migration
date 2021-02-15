@@ -42,14 +42,14 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
  to `/apps`
 -   The `ui.config` package, or OSGi Configuration Package, contains all OSGi configurations
 -   The `ui.content` package, or Content Package, contains all content and configuration
--   The `all` package is a container package that ONLY includes the `ui.apps` and `ui.content`
- packages as embeds
+-   The `all` package, container package that embeds the core bundles and the ui.apps ,ui.config
+ and ui.content packages
 
 
 # How it works
 
 #### 1. Create base project structure
-* Create the base template for `all` package and parent `pom.xml file` at the root level.
+* Create the base template for `all` package `analyse` package and parent `pom.xml file` at the root level.
 * If only single project is configured, create the base template for `ui.apps`, `ui.content`
  and `ui.config` packages at the same level.
 * If multiple projects are configured, create similarly named project folders inside which
@@ -152,8 +152,8 @@ The repository modernizer expects the following configurations to be specified f
     - `artifactId` : The `artifactId` to be set for the parent pom.
     - `appTitle` : The application title to be set for the parent pom.
     - `version` : The version to be set for the parent pom.
--   `all` : Add the required information for `all` package
-    - `artifactId` : The prefix that is to be used to set the artifactId for the `all` package.
+-   `all` : Add the required information for `all` and `analyse` packages
+    - `artifactId` : The prefix that is to be used to set the artifactId for the `all` and `analyse` packages.
     - `appTitle` : The application title.
     - `version` : The version to be set for the all pom.
 -   `projects` : Add the required information about all the projects you want to restructure.
@@ -190,9 +190,9 @@ repositoryModernizer:
     appTitle: XYZ-AEM Parent
     # version to be to be set for the parent pom
     version: 1.0.0-SNAPSHOT
-  # information required for all package
+  # information required for all and analyse packages
   all:
-    # prefix that is to be used to set the artifactId for all package
+    # prefix that is to be used to set the artifactId for all and analyse packages
     artifactId: xyz-aem
     # application title
     appTitle: XYZ-AEM Code Repository

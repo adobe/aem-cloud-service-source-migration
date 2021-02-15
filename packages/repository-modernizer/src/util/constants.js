@@ -21,6 +21,8 @@ module.exports = {
 
     BASE_ALL_PACKAGE: "./resources/all",
 
+    BASE_ANALYSE_PACKAGE: "./resources/analyse",
+
     BASE_PARENT_POM: "./resources/pom.xml",
 
     // relative path (w.r.t. the content package folder) to the filter.xml file
@@ -54,6 +56,8 @@ module.exports = {
     UI_CONFIG: "ui.config",
 
     ALL: "all",
+
+    ANALYSE: "analyse",
 
     NON_ADOBE_DEPENDENCIES: "nonadobedependencies",
 

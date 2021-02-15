@@ -40,7 +40,8 @@ var CreateBaseProjectStructure = {
                 " Create an `all` container package for including the ui.apps and ui.content packages as embeds."
         );
         let projects = config.projects;
-        let allPackagePomFile = "";
+        let allPackagePomFile = "",
+            analysePackagePomFile = "";
         // if there are more than one project, create the all package at the projects' root level
         if (projects.length > 1) {
             fsExtra.copySync(
@@ -64,9 +65,35 @@ var CreateBaseProjectStructure = {
                 "CreateBaseProjectStructure: Base `all` package created at " +
                     commons_constants.TARGET_PROJECT_SRC_FOLDER
             );
+            fsExtra.copySync(
+                path.join(basePath, constants.BASE_ANALYSE_PACKAGE),
+                path.join(
+                    commons_constants.TARGET_PROJECT_SRC_FOLDER,
+                    constants.ANALYSE
+                )
+            );
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    path.join(
+                        commons_constants.TARGET_PROJECT_SRC_FOLDER,
+                        constants.ANALYSE
+                    ),
+                    "Created `analyse` package"
+                )
+            );
+            logger.info(
+                "CreateBaseProjectStructure: Base `analyse` package created at " +
+                    commons_constants.TARGET_PROJECT_SRC_FOLDER
+            );
             allPackagePomFile = path.join(
                 commons_constants.TARGET_PROJECT_SRC_FOLDER,
                 constants.ALL,
+                constants.POM_XML
+            );
+            analysePackagePomFile = path.join(
+                commons_constants.TARGET_PROJECT_SRC_FOLDER,
+                constants.ANALYSE,
                 constants.POM_XML
             );
             fs.copyFileSync(
@@ -118,6 +145,26 @@ var CreateBaseProjectStructure = {
                 allPackagePomFile = path.join(
                     projectPath,
                     constants.ALL,
+                    constants.POM_XML
+                );
+                // create the analyse package at the same level
+                fsExtra.copySync(
+                    path.join(basePath, constants.BASE_ANALYSE_PACKAGE),
+                    path.join(projectPath, constants.ANALYSE)
+                );
+                conversionStep.addOperation(
+                    new ConversionOperation(
+                        commons_constants.ACTION_ADDED,
+                        path.join(projectPath, constants.ANALYSE),
+                        "Created `analyse` package"
+                    )
+                );
+                logger.info(
+                    `CreateBaseProjectStructure: Base analyse package created at ${projectPath}.`
+                );
+                analysePackagePomFile = path.join(
+                    projectPath,
+                    constants.ANALYSE,
                     constants.POM_XML
                 );
                 fs.copyFileSync(
@@ -239,10 +286,20 @@ var CreateBaseProjectStructure = {
                 [constants.DEFAULT_GROUP_ID]: config.groupId,
                 [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
                 [constants.DEFAULT_VERSION]: config.all.version,
-                [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId.concat(
-                    ".",
-                    constants.ALL
-                ),
+                [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId,
+                [constants.DEFAULT_APP_TITLE]: config.all.appTitle,
+                [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    config.parentPom.artifactId,
+            },
+            conversionStep
+        );
+        await pomManipulationUtil.replaceVariables(
+            analysePackagePomFile,
+            {
+                [constants.DEFAULT_GROUP_ID]: config.groupId,
+                [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+                [constants.DEFAULT_VERSION]: config.all.version,
+                [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId,
                 [constants.DEFAULT_APP_TITLE]: config.all.appTitle,
                 [constants.DEFAULT_ROOT_ARTIFACT_ID]:
                     config.parentPom.artifactId,

@@ -16,7 +16,7 @@
     <!-- ====================================================================== -->
     <!-- P R O J E C T  D E S C R I P T I O N                                   -->
     <!-- ====================================================================== -->
-    <artifactId>${artifactId}</artifactId>
+    <artifactId>${artifactId}.all</artifactId>
     <packaging>content-package</packaging>
     <version>${version}</version>
     <name>${appTitle} - All</name>
