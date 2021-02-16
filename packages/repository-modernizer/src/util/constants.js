@@ -15,6 +15,8 @@ module.exports = {
     // Base package paths
     BASE_UI_APPS_PACKAGE: "./resources/ui.apps",
 
+    BASE_UI_APPS_STRUCTURE_PACKAGE: "./resources/ui.apps.structure",
+
     BASE_UI_CONTENT_PACKAGE: "./resources/ui.content",
 
     BASE_UI_CONFIG_PACKAGE: "./resources/ui.config",
@@ -50,6 +52,8 @@ module.exports = {
 
     // Keywords
     UI_APPS: "ui.apps",
+
+    UI_APPS_STRUCTURE: "ui.apps.structure",
 
     UI_CONTENT: "ui.content",
 
@@ -151,6 +155,8 @@ module.exports = {
 
     XML_COMMENT_END: "-->",
 
+    FILTER_ROOT_START_TAG: "<filter root",
+
     ROOT_FILTER_SECTION_START: "<filters>",
 
     ROOT_FILTER_SECTION_END: "</filters>",
@@ -168,6 +174,10 @@ module.exports = {
     EXCLUDE_FILTER_END_TAG: "</excludes>",
 
     ROOT: "<root>",
+
+    JCR_REPOSITORY_ROOT_ENTRY: "    <filter><root>${rootPath}</root></filter>",
+
+    ROOT_PATH: "${rootPath}",
 
     FILTER_TAGS: [
         "<includes>",

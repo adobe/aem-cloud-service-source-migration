@@ -50,10 +50,10 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
 
 #### 1. Create base project structure
 * Create the base template for `all` package `analyse` package and parent `pom.xml file` at the root level.
-* If only single project is configured, create the base template for `ui.apps`, `ui.content`
- and `ui.config` packages at the same level.
-* If multiple projects are configured, create similarly named project folders inside which
- we create the base template for `ui.apps`, `ui.content` and `ui.config` packages.
+* If only single project is configured, create the base template for `ui.apps`, `ui.apps.structure`,
+ `ui.content` and `ui.config` packages at the same level.
+* If multiple projects are configured, create project folders (with the same name as source project) inside
+ which we create the base template for `ui.apps`,`ui.apps.structure`, `ui.content` and `ui.config` packages.
 * Apply the specified `groupId`, `artifactId` and `version` in the newly created artifact `pom.xml` files.
 * For each project specified in the configuration, copy all packages (other than the packages
  specified under `existingContentPackageFolder`) of the packaging type `jar`, `bundle`,
@@ -78,6 +78,9 @@ NOTE : Conflicts during the above move operation will be reported and conflictin
 * The filter paths are separated into mutable and immutable paths based on their jcr paths.
  The separated paths are now added to the project's `ui.apps` and `ui.content` packages' filter
  file as applicable.
+* In `ui.apps.structure/pom.xml`, define the JCR repository roots in which the project’s code
+ sub-packages deploy into (i.e. enumerate the filter root paths present in `ui.apps` package's
+ `filter.xml`). 
 * Add the filter path to `/apps/my-app/osgiconfig` in `ui.configs` package's filter file.
 
 #### 4. Refactor the pom files
@@ -90,6 +93,7 @@ NOTE : Conflicts during the above move operation will be reported and conflictin
      dependency jar files in the `nonadobedependencies` directory (which would serve as a
      local repository for 3rd party bundles). It will be included in the repository section of
      the parent pom.
+* In `ui.apps/pom.xml` add the dependency for the `ui.apps.structure` artifact.
 * In `ui.content/pom.xml` add the dependency for the `ui.apps` artifact.
 * In `all/pom.xml` embed the newly created `ui.apps`,`ui.config` and `ui.config` artifacts
  for each project.
@@ -254,11 +258,7 @@ The tool has some known limitations (we are working on fixing them) such as :
 2. It does not work on nested maven artifacts.
  The tool can process multiple projects, each project can have multiple content packages,
  but if such packages have nested packages within, the tool will not be able to process them.
-3. It does not create `ui.apps.structure` package.
- The tool doesn't create the `ui.apps.structure` package, we add the following configuration in the
- `filevault-package-maven-plugin` to prevent build failure:
- ```<failOnDependencyErrors>false</failOnDependencyErrors>```
-4. It does not make any modifications to existing core bundles, apart from replacing `uber-jar`
+3. It does not make any modifications to existing core bundles, apart from replacing `uber-jar`
  dependencies with `aem-sdk-api` dependencies.
 
 #### Things that would need to be handled manually :

@@ -194,6 +194,17 @@ var CreateBaseProjectStructure = {
                 )
             );
             fsExtra.copySync(
+                path.join(basePath, constants.BASE_UI_APPS_STRUCTURE_PACKAGE),
+                path.join(projectPath, constants.UI_APPS_STRUCTURE)
+            );
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    path.join(projectPath, constants.UI_APPS_STRUCTURE),
+                    "Created package `ui.apps.structure` to define the JCR repository roots in which the project’s code sub-packages deploy into"
+                )
+            );
+            fsExtra.copySync(
                 path.join(basePath, constants.BASE_UI_CONTENT_PACKAGE),
                 path.join(projectPath, constants.UI_CONTENT)
             );
@@ -330,12 +341,9 @@ async function setPackageArtifactAndGroupId(
     relativeParentPomPath,
     conversionStep
 ) {
-    let ui_apps_artifactId = artifactId.concat(".", constants.UI_APPS);
-    let ui_content_artifactId = artifactId.concat(".", constants.UI_CONTENT);
-    let ui_config_artifactId = artifactId.concat(".", constants.UI_CONFIG);
     let uiAppsReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: ui_apps_artifactId,
+        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
         [constants.DEFAULT_VERSION]: version,
         [constants.DEFAULT_APP_TITLE]: appTitle,
         [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
@@ -347,9 +355,23 @@ async function setPackageArtifactAndGroupId(
         uiAppsReplacementObj,
         conversionStep
     );
+    let uiAppsStructureReplacementObj = {
+        [constants.DEFAULT_GROUP_ID]: config.groupId,
+        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
+        [constants.DEFAULT_VERSION]: version,
+        [constants.DEFAULT_APP_TITLE]: appTitle,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+        [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
+    };
+    await pomManipulationUtil.replaceVariables(
+        path.join(projectPath, constants.UI_APPS_STRUCTURE, constants.POM_XML),
+        uiAppsStructureReplacementObj,
+        conversionStep
+    );
     let uiContentReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: ui_content_artifactId,
+        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
         [constants.DEFAULT_VERSION]: version,
         [constants.DEFAULT_APP_TITLE]: appTitle,
         [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
@@ -363,7 +385,7 @@ async function setPackageArtifactAndGroupId(
     );
     let uiConfigReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: ui_config_artifactId,
+        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
         [constants.DEFAULT_VERSION]: version,
         [constants.DEFAULT_APP_TITLE]: appTitle,
         [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
