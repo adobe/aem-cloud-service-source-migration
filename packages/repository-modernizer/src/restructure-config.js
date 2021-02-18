@@ -56,6 +56,11 @@ var RestructureContent = {
                     `RestructureConfig: 'appId' not specified for project ${project.projectPath}.`
                 );
             }
+            await renameConfigFolders(
+                uiAppsJcrRootPath,
+                project.osgiFoldersToRename,
+                conversionStep
+            );
             await migrateConfig(
                 uiAppsJcrRootPath,
                 project.appId,
@@ -65,6 +70,105 @@ var RestructureContent = {
         conversionSteps.push(conversionStep);
     },
 };
+
+/**
+ *
+ * @param String uiAppsJcrRootPath  jcr root path of ui.apps package
+ * @param String osgiFoldersToRename the project info as configured in the input config yaml file
+ * @param object conversionStep  object containing info about rule and  details of the rule that is being followed
+ *
+ * Rename the OSGi config folders as defined in the config yaml file
+ */
+async function renameConfigFolders(
+    uiAppsJcrRootPath,
+    osgiFoldersToRename,
+    conversionStep
+) {
+    for (let osgiFolderPath of Object.keys(osgiFoldersToRename)) {
+        let osgiConfigFolderPath = path.join(uiAppsJcrRootPath, osgiFolderPath);
+        let newOsgiConfigFolderPath = path.join(
+            path.dirname(osgiConfigFolderPath),
+            osgiFoldersToRename[osgiFolderPath]
+        );
+        if (fs.existsSync(osgiConfigFolderPath)) {
+            if (fs.existsSync(newOsgiConfigFolderPath)) {
+                let targetJcrPath = osgiFolderPath.replace(
+                    path.basename(osgiFolderPath),
+                    osgiFoldersToRename[osgiFolderPath]
+                );
+                conversionStep.addOperation(
+                    new ConversionOperation(
+                        commons_constants.ACTION_RENAMED,
+                        path.dirname(osgiFolderPath),
+                        `OSGI config folder '${targetJcrPath}' already exists! '${path.basename(
+                            osgiFolderPath
+                        )}' will be merged with existing folder`
+                    )
+                );
+                logger.info(
+                    `RestructureConfig: OSGI config folder '${targetJcrPath}' already exists! '${path.basename(
+                        osgiFolderPath
+                    )}' will be merged with existing folder.`
+                );
+                // move the content of the OSGi config folder to the exiting one
+                for (let file of await fs.promises.readdir(
+                    osgiConfigFolderPath
+                )) {
+                    var oldPath = path.join(osgiConfigFolderPath, file);
+                    var newPath = path.join(newOsgiConfigFolderPath, file);
+                    // if a file/folder with the same name alread exists in the destination
+                    if (fs.existsSync(newPath)) {
+                        conversionStep.addOperation(
+                            new ConversionOperation(
+                                commons_constants.WARNING,
+                                osgiFolderPath,
+                                `OSGI configuration with the same PID/filename already exists at ${targetJcrPath}, '${file}' will not be moved to new location. Please evaluate which configuration to persits.`
+                            )
+                        );
+                        logger.warn(
+                            `RestructureConfig: OSGI configuration with the same PID/filename already exists at ${targetJcrPath}, '${file}' will not be moved to new location. Please evaluate which configuration to persits.`
+                        );
+                    } else {
+                        await fs.promises.rename(oldPath, newPath);
+                    }
+                }
+                // delete the existing content folder if empty
+                deleteEmptyConfigDir(osgiConfigFolderPath);
+            } else {
+                // simply rename the OSGi config folder
+                await fs.promises.rename(
+                    osgiConfigFolderPath,
+                    newOsgiConfigFolderPath
+                );
+                conversionStep.addOperation(
+                    new ConversionOperation(
+                        commons_constants.ACTION_RENAMED,
+                        path.dirname(osgiFolderPath),
+                        `OSGI config folder '${path.basename(
+                            osgiFolderPath
+                        )}' renamed to '${osgiFoldersToRename[osgiFolderPath]}'`
+                    )
+                );
+                logger.info(
+                    `RestructureConfig: OSGI config folder '${path.basename(
+                        osgiFolderPath
+                    )}' renamed to '${osgiFoldersToRename[osgiFolderPath]}'`
+                );
+            }
+        } else {
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.WARNING,
+                    osgiFolderPath,
+                    "OSGi folder not found! Please verify the entered OSGi configuration folder path."
+                )
+            );
+            logger.warn(
+                `RestructureConfig: OSGi folder '${osgiFolderPath}' not found! Please verify the entered OSGi configuration folder path.`
+            );
+        }
+    }
+}
 
 /**
  *

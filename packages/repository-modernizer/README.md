@@ -66,9 +66,15 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
  according to their paths.
 * The separated content are copied over to the project's `ui.apps` and `ui.content` packages
  as applicable.
+* OSGi configuration folders will be renamed as per the input configuration in `osgiFoldersToRename`.
+   - All OSGi config folders under the same path and with same replacement name will be MERGED.
+   - If there exists OSGi config files with the same pid/filename in more than one config folders which
+     are to be merged, they will not be overwritten. A warning regrading the same will be generated in
+	 the summary report and result log file. User would need to manually evaluate which config to persist. 
 * Find and move the OSGi configurations from the `ui.apps` package to the `ui.configs` package
  (under the path `/apps/my-app/osgiconfig`).
-NOTE : Conflicts during the above move operation will be reported and conflicting content needs to
+ 
+ NOTE : Conflicts during the above move operation will be reported and conflicting content needs to
  be moved over manually.
 
 #### 3. Separate filter paths
@@ -161,12 +167,17 @@ The repository modernizer expects the following configurations to be specified f
     - `appTitle` : The application title.
     - `version` : The version to be set for the all pom.
 -   `projects` : Add the required information about all the projects you want to restructure.
+    
     (NOTE : Expects an array of project details objects.)
+    
     (NOTE : For multiple projects create separate copies of the info section for each project)
-    -   `projectPath` : The absolute path to the project folder.
+    
+	-   `projectPath` : The absolute path to the project folder.
     -   `existingContentPackageFolder` : relative path(s) (w.r.t. the project folder) to the existing
-     content package(s) that needs to be restructured. (NOTE : Expects an array of relative paths to 
-     existing content packages, NOT bundle/jar artifacts.)
+     content package(s) that needs to be restructured.
+	 
+        (NOTE : Expects an array of relative paths to existing content packages, NOT bundle/jar artifacts.)
+
     -   `relativePathToExistingFilterXml` : The relative path (w.r.t. the existing content package
         folder) to the vault filter.xml file. For example : `/src/main/content/META-INF/vault/filter.xml`
     -   `relativePathToExistingJcrRoot` : The relative path (w.r.t. the existing content package
@@ -176,6 +187,16 @@ The repository modernizer expects the following configurations to be specified f
     -   `appTitle` : The application title.
     -   `version` : The version used for content packages.
     -   `appId` : The application Id.
+    -   `osgiFoldersToRename` : OSGi config folders that need to be renamed. The existing/source OSGi
+	    config folder PATH (JCR path starting from '/apps') is expected as key, and the replacement OSGi
+		folder NAME is expected as value.
+		
+        (NOTE 1 : All OSGi config folders under the same path and with same replacement name will be MERGED.)
+
+        (NOTE 2 : If there exists OSGi config files with the same pid/filename in more than one config folders
+                  which are to be merged, they will not be overwritten. A warning regrading the same will be
+                  generated in the summary report and result log file. User would need to manually evaluate
+                  which config to persist.)
 
 
 Example:
@@ -227,6 +248,26 @@ repositoryModernizer:
       appId: xyz-app
       # project specific version to be used for content packages
       version: 2.0.0-SNAPSHOT
+      # OSGi config folders that need to be renamed.
+      # The existing/source OSGi config folder PATH (JCR path starting from '/apps') is expected as key
+      # and the replacement OSGi folder NAME is expected as value. See examples below :
+      #    /apps/xyz/config.prod : config.publish.prod
+      #    /apps/system/config.author.dev1 : config.author.dev
+      #    /apps/system/config.author.dev2 : config.author.dev
+      # NOTE :
+      #    1. All OSGi config folders under the same path and with same replacement name will be MERGED
+      #       (as configured in above example).
+      #    2. If there exists OSGi config files with the same pid/filename in more than one config folders
+      #       which are to be merged, they will not be overwritten. A warning regrading the same will be
+      #       generated in the summary report and result log file. User would need to manually evaluate
+      #       which config to persist
+      osgiFoldersToRename:
+          /apps/xyz/config.dev1: config.author.dev
+          /apps/xyz/config.dev2: config.author.dev
+          /apps/system/config.author.localdev: config.author.dev
+          /apps/system/config.author.dev1: config.author.dev
+          /apps/system/config.prod: config.publish.prod
+          /apps/system/config.publish: config.publish.prod
     - # absolute path to the ABC project folder
       projectPath: /Users/{username}/some/path/to/abc-aem
       # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
@@ -248,6 +289,25 @@ repositoryModernizer:
       appId: abc-app
       # project specific version to be used for content packages
       version: 2.0.0-SNAPSHOT
+      # OSGi config folders that need to be renamed.
+      # The existing/source OSGi config folder PATH (JCR path starting from '/apps') is expected as key
+      # and the replacement OSGi folder NAME is expected as value. See examples below :
+      #    /apps/my-appId/config.prod : config.publish.prod
+      #    /apps/system/config.author.dev1 : config.author.dev
+      #    /apps/system/config.author.dev2 : config.author.dev
+      # NOTE :
+      #    1. All OSGi config folders under the same path and with same replacement name will be MERGED
+      #       (as configured in above example).
+      #    2. If there exists OSGi config files with the same pid/filename in more than one config folders
+      #       which are to be merged, they will not be overwritten. A warning regrading the same will be
+      #       generated in the summary report and result log file. User would need to manually evaluate
+      #       which config to persist
+      osgiFoldersToRename:
+          /apps/abc/config.author.dev1: config.author.dev
+          /apps/abc/config.author.dev2: config.author.dev
+          /apps/abc/config.author.localdev: config.author.dev
+          /apps/abc/config.prod: config.publish.prod
+          /apps/abc/config.publish: config.publish.prod
 ```
 
 # Known Limitations
@@ -262,7 +322,8 @@ The tool has some known limitations (we are working on fixing them) such as :
  dependencies with `aem-sdk-api` dependencies.
 
 #### Things that would need to be handled manually :
-* Conflicts arising during moving content to new packages.
+* Conflicts arising during moving content to new packages or renaming/merging folders. Check the
+ summary report or result log to view all such conflicts.
 * Missing version info in core bundles will be reported; the version will also need to be added in
  the dependency section in the `all/pom.xml`.
 * For core bundles, changes like updating them to use the BND plugin (rather than the old Felix
