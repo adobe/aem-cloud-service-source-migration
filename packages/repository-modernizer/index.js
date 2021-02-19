@@ -50,49 +50,49 @@ var RepositoryModernizer = {
     },
     async checkConfig(config) {
         let valid = true;
-        if (config.groupId == null) {
+        if (config.groupId === null) {
             logger.error(
                 "Expected parameter 'groupId' not defined in configuration file. Please add the missing parameter to execute the tool."
             );
             valid = false;
         }
-        if (config.parentPom.path == null) {
+        if (config.parentPom.path === null) {
             logger.error(
                 "Expected parameter 'path' (under 'parentPom' section) not defined in configuration file. Please add the missing parameter to execute the tool."
             );
             valid = false;
         }
-        if (config.parentPom.artifactId == null) {
+        if (config.parentPom.artifactId === null) {
             logger.error(
                 "Expected parameter 'artifactId' (under 'parentPom' section) not defined in configuration file. Please add the missing parameter to execute the tool."
             );
             valid = false;
         }
-        if (config.parentPom.appTitle == null) {
+        if (config.parentPom.appTitle === null) {
             logger.error(
                 "Expected parameter 'appTitle' (under 'parentPom' section) not defined in configuration file. Please add the missing parameter to execute the tool."
             );
             valid = false;
         }
-        if (config.parentPom.version == null) {
+        if (config.parentPom.version === null) {
             logger.error(
                 "Expected parameter 'version' (under 'parentPom' section) not defined in configuration file. Please add the missing parameter to execute the tool."
             );
             valid = false;
         }
-        if (config.all.artifactId == null) {
+        if (config.all.artifactId === null) {
             logger.error(
                 "Expected parameter 'artifactId' (under 'all' section) not defined in configuration file. Please add the missing parameter to execute the tool."
             );
             valid = false;
         }
-        if (config.all.appTitle == null) {
+        if (config.all.appTitle === null) {
             logger.error(
                 "Expected parameter 'appTitle' (under 'all' section) not defined in configuration file. Please add the missing parameter to execute the tool."
             );
             valid = false;
         }
-        if (config.all.version == null) {
+        if (config.all.version === null) {
             logger.error(
                 "Expected parameter 'version' (under 'all' section) not defined in configuration file. Please add the missing parameter to execute the tool."
             );
@@ -102,7 +102,7 @@ var RepositoryModernizer = {
         let projectIndex = 0;
         for (const project of config.projects) {
             projectIndex++;
-            if (project.projectPath == null) {
+            if (project.projectPath === null) {
                 logger.error(
                     "Expected parameter 'projectPath' (under 'project'" +
                         projectIndex +
@@ -110,7 +110,7 @@ var RepositoryModernizer = {
                 );
                 valid = false;
             }
-            if (project.existingContentPackageFolder[0] == null) {
+            if (project.existingContentPackageFolder[0] === null) {
                 logger.error(
                     "Expected parameter 'existingContentPackageFolder'(under 'project'" +
                         projectIndex +
@@ -118,7 +118,7 @@ var RepositoryModernizer = {
                 );
                 valid = false;
             }
-            if (project.artifactId == null) {
+            if (project.artifactId === null) {
                 logger.error(
                     "Expected parameter 'artifactId' (under 'project'" +
                         projectIndex +
@@ -126,7 +126,7 @@ var RepositoryModernizer = {
                 );
                 valid = false;
             }
-            if (project.appTitle == null) {
+            if (project.appTitle === null) {
                 logger.error(
                     "Expected parameter 'appTitle'(under 'project'" +
                         projectIndex +
@@ -134,7 +134,7 @@ var RepositoryModernizer = {
                 );
                 valid = false;
             }
-            if (project.version == null) {
+            if (project.version === null) {
                 logger.error(
                     "Expected parameter 'version' (under 'project'" +
                         projectIndex +
@@ -142,7 +142,7 @@ var RepositoryModernizer = {
                 );
                 valid = false;
             }
-            if (project.appId == null) {
+            if (project.appId === null) {
                 logger.error(
                     "Expected parameter 'appId' (under 'project'" +
                         projectIndex +

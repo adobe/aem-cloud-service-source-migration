@@ -56,11 +56,16 @@ var RestructureContent = {
                     `RestructureConfig: 'appId' not specified for project ${project.projectPath}.`
                 );
             }
-            await renameConfigFolders(
-                uiAppsJcrRootPath,
-                project.osgiFoldersToRename,
-                conversionStep
-            );
+            if (
+                project.osgiFoldersToRename !== null &&
+                project.osgiFoldersToRename !== undefined
+            ) {
+                await renameConfigFolders(
+                    uiAppsJcrRootPath,
+                    project.osgiFoldersToRename,
+                    conversionStep
+                );
+            }
             await migrateConfig(
                 uiAppsJcrRootPath,
                 project.appId,
