@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 const Constants = require("./constants");
 const {
+    util,
     logger,
     constants: commons_constants,
     ConversionOperation,
@@ -419,7 +420,9 @@ class FileOperations {
 
             isConfString = stringAfterInclude.split("/");
 
-            fileName = isConfString[isConfString.length - 1].trim();
+            fileName = isConfString[isConfString.length - 1]
+                .split('"')[0]
+                .trim();
             line = this.getPathForDir(fileName);
         }
         return line.toString();
@@ -455,6 +458,13 @@ class FileOperations {
         if (fileDirPath == "" && this.config.cfg != null) {
             fileDirPath = this.globGetFilesByExtension(
                 this.config.cfg,
+                isConfString
+            );
+        }
+
+        if (fileDirPath == "" && this.config.cfg != null) {
+            fileDirPath = util.globGetFilesByName(
+                Constants.TARGET_DISPATCHER_SRC_FOLDER,
                 isConfString
             );
         }
@@ -1193,9 +1203,10 @@ class FileOperations {
             //let sectionIndentation = 0;
             let contentIndentation = "";
 
-            let fileContents = this.getContentFromFile(filePath, recursive);
-            let lines = fileContents.split("\n");
-
+            //let fileContents = this.getContentFromFile(filePath, recursive);
+            //let lines = fileContents.split("\n");
+            
+            let lines = util.getXMLContentSync(filePath);
             let returnContent = "";
 
             lines.forEach((line, index) => {
@@ -1890,8 +1901,9 @@ class FileOperations {
         let fileContents = "";
         let fileContentsArray = "";
 
-        fileContents = this.getContentFromFile(file, recursive);
-        fileContentsArray = fileContents.split(os.EOL);
+        //fileContents = this.getContentFromFile(file, recursive);
+        //fileContentsArray = fileContents.split(os.EOL);
+        fileContentsArray = util.getXMLContentSync(file);
 
         return fileContentsArray;
     }
