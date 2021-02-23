@@ -180,9 +180,10 @@ class SingleFilesConverter {
      */
     createFarmFiles() {
         let conversionStep = this.createFarmFilesSummaryGenerator();
-        let fileContentsArray = this.fileOpsUtil.getFileContentsArray(
-            this.dispatcherAnyPath
-        );
+        let fileContentsArray = this.fileOpsUtil.getContentFromFile(
+            this.dispatcherAnyPath,
+            true
+        ).split(os.EOL);
 
         fs.writeFileSync(
             Constants.TARGET_SINGLE_DISPATCHER,
@@ -1205,7 +1206,8 @@ class SingleFilesConverter {
             let ruleFilesIncluded = this.fileOpsUtil.getNamesOfRuleFilesIncluded(
                 farm,
                 ruleFiles,
-                Constants.INCLUDE_SYNTAX_IN_FARM
+                Constants.INCLUDE_SYNTAX_IN_FARM,
+                true
             );
             // delete the rule files not included in the single available farm file, and get the files actually used
             let files = this.filterAndRemoveUnusedFiles(

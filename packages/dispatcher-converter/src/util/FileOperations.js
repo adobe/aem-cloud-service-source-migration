@@ -414,7 +414,12 @@ class FileOperations {
                 stringAfterInclude = line
                     .split(Constants.INCLUDE_SYNTAX_IN_VHOST)[1]
                     .trim();
-            } else {
+            } else if (line.includes(Constants.INCLUDE_SYNTAX_IN_FARM)) {
+                stringAfterInclude = line
+                    .split(Constants.INCLUDE_SYNTAX_IN_FARM)[1]
+                    .trim();
+            } 
+            else {
                 stringAfterInclude = line;
             }
 
@@ -1799,10 +1804,11 @@ class FileOperations {
         if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
             let ruleFilesIncluded = [];
 
-            let fileContentsArray = this.getFileContentsArray(
+            let fileContentsArray = this.getContentFromFile(
                 filePath,
                 recursive
-            );
+            )
+            .split(os.EOL);
             fileContentsArray.forEach((line) => {
                 let strippedLine = line.trim();
                 if (strippedLine.includes(includeSyntax)) {
