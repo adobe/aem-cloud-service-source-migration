@@ -223,7 +223,7 @@ class FileOperations {
         let finalResult = "";
 
         if (filePath.indexOf("*") > -1) {
-            let files = glob.sync(filePath) || [];
+            let files = glob.sync(this.getReadablePath(filePath)) || [];
             files.forEach((file) => {
                 if (file.indexOf("author") === -1) {
                     result += fs.readFileSync(file).toString();
@@ -424,11 +424,8 @@ class FileOperations {
             }
 
             isConfString = stringAfterInclude.split("/");
-
-            fileName = isConfString[isConfString.length - 1]
-                .split('"')[0]
-                .trim();
-            line = this.getPathForDir(fileName);
+            isConfString = isConfString.toString().replace(/^"(.*)"$/, "$1");
+            line = this.getPathForDir(isConfString);
         }
         return line.toString();
     }

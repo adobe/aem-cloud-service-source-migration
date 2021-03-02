@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const Constants = require("../util/constants");
 const FileOperationsUtility = require("../util/FileOperations");
 const {
+    util,
     logger,
     constants: commons_constants,
     ConversionStep,
@@ -180,11 +181,8 @@ class SingleFilesConverter {
      */
     createFarmFiles() {
         let conversionStep = this.createFarmFilesSummaryGenerator();
-        let fileContentsArray = this.fileOpsUtil.getContentFromFile(
-            this.dispatcherAnyPath,
-            true
-        ).split(os.EOL);
 
+        let fileContentsArray = this.fileOpsUtil.getFileContentsArray(this.dispatcherAnyPath);
         fs.writeFileSync(
             Constants.TARGET_SINGLE_DISPATCHER,
             fileContentsArray.join(os.EOL)
@@ -199,6 +197,23 @@ class SingleFilesConverter {
         logger.info(
             "Single File Converter: Creating farm file from dispatcher.any"
         );
+
+        fs.writeFileSync(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
+                        "tempFile.txt"),"");
+        for(let i=0;i<fileContentsArray.length;i++){
+            if(fileContentsArray[i].includes("$include") && fileContentsArray[i].trim().split(" ")[1].includes("farm")) {
+                fileContentsArray[i] = this.fileOpsUtil.getContentFromFile(fileContentsArray[i].trim(),false).split(os.EOL);
+                fileContentsArray[i] = fileContentsArray[i].join(os.EOL);
+            }
+
+                fileContentsArray[i] = fileContentsArray[i] + os.EOL;
+            
+            fs.appendFileSync(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
+                "tempFile.txt"),fileContentsArray[i]);
+        }
+
+        fileContentsArray = this.fileOpsUtil.getFileContentsArray(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
+            "tempFile.txt"));
 
         for (let i = 0; i < fileContentsArray.length; i++) {
             if (rootFlag && farmFlag) {
@@ -284,7 +299,8 @@ class SingleFilesConverter {
                 newFileName = fileContentsArray[i].trim().replace("/", "");
             }
         }
-
+        fs.unlinkSync(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
+            "tempFile.txt"));
         this.conversionSteps.push(conversionStep);
     }
 
@@ -419,10 +435,28 @@ class SingleFilesConverter {
         );
     }
 
+    getAllVhosts(){
+        let allFiles = [];
+        let vhostFiles = this.config.vhostsToConvert;
+
+        vhostFiles.forEach((file) => {
+           if(fs.lstatSync(file).isFile()) {
+            allFiles.push(file);
+           } else if(fs.lstatSync(file).isDirectory()){
+            let globPattern = file + "/**/*";
+            let files = glob.sync(globPattern);
+
+               files.forEach(fetchedFiles => {
+                allFiles.push(fetchedFiles);
+              });
+           }
+        });
+        return allFiles;
+    }
     createVirtualHostFiles() {
         let conversionStep = this.createVirtualHostsSummary();
         if (this.config.vhostsToConvert) {
-            let vhostFiles = this.config.vhostsToConvert;
+            let vhostFiles = this.getAllVhosts();
             vhostFiles.forEach((file) => {
                 logger.info(
                     "Single File Converter: Creating Virtual Host File from config parameter: vhostsToConvert for " +
@@ -1242,7 +1276,7 @@ class SingleFilesConverter {
         let conversionStep = this.checkForUndefinedVariablesSummaryGenerator();
 
         if (this.config.vhostsToConvert) {
-            let vhostFiles = this.config.vhostsToConvert;
+            let vhostFiles = this.getAllVhosts();
             vhostFiles.forEach((file) => {
                 let variablesUsedList = [];
                 let variablesDefinedList = [];
@@ -1429,7 +1463,7 @@ class SingleFilesConverter {
         });
 
         if (this.config.vhostsToConvert) {
-            let vhostFiles = this.config.vhostsToConvert;
+            let vhostFiles = this.getAllVhosts();
             vhostFiles.forEach((file) => {
                 this.replaceVariableNames(this, file, variableList);
             });
