@@ -104,6 +104,7 @@ async function migrateConfig(uiAppsJcrRootPath, appId, conversionStep) {
                         newConfigFilePath,
                         conversionStep
                     );
+                    await formatConfig(newConfigFilePath);
                 }
             }
         }
@@ -133,6 +134,7 @@ async function migrateConfig(uiAppsJcrRootPath, appId, conversionStep) {
                     newConfigFilePath,
                     conversionStep
                 );
+                await formatConfig(newConfigFilePath);
             }
         }
         conversionStep.addOperation(
@@ -229,5 +231,152 @@ async function deleteEmptyConfigDir(oldConfigFilePath) {
         oldConfigFileParent = path.dirname(oldConfigFileParent);
     }
 }
+/**
+ *
+ * @param String newConfigFilePath the new config file path in ui.config package
+ *
+ * format config in xml ,cfg,config format to cfg.json
+ */
+async function formatConfig(newConfigFilePath) {
+    let fileName = newConfigFilePath.substring(
+        newConfigFilePath.lastIndexOf("/") + 1
+    );
 
+    if (
+        !fileName.startsWith(
+            "org.apache.sling.jcr.repoinit.RepositoryInitializer"
+        ) &&
+        (newConfigFilePath.endsWith(".xml") ||
+            newConfigFilePath.endsWith(".config") ||
+            newConfigFilePath.endsWith(".cfg"))
+    ) {
+        let fileContent = util.getXMLContentSync(newConfigFilePath);
+        let contentToBeWritten = [];
+        let pushContent = false;
+        let path = "";
+        if (newConfigFilePath.endsWith(".xml")) {
+            path =
+                newConfigFilePath.substring(
+                    0,
+                    newConfigFilePath.lastIndexOf(".xml")
+                ) + ".cfg.json";
+            contentToBeWritten.push("{");
+            let jsonObject = JSON.parse(
+                xmljs.xml2json(
+                    await fs.promises.readFile(
+                        newConfigFilePath,
+                        constants.UTF_8
+                    ),
+                    {
+                        compact: true,
+                    }
+                )
+            );
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    jsonObject[constants.JCR_ROOT][
+                        constants.JSON_ATTRIBUTES_KEY
+                    ],
+                    constants.JCR_PRIMARY_TYPE
+                )
+            ) {
+                let obj =
+                    jsonObject[constants.JCR_ROOT][
+                        constants.JSON_ATTRIBUTES_KEY
+                    ];
+                for (var key in obj) {
+                    if (
+                        key == constants.JCR_PRIMARY_TYPE &&
+                        Object.prototype.hasOwnProperty.call(obj, key)
+                    ) {
+                        pushContent = true;
+                        continue;
+                    }
+                    if (pushContent) {
+                        var val = obj[key];
+                        let str = removeUnwantedChars(
+                            key,
+                            val,
+                            newConfigFilePath
+                        );
+                        contentToBeWritten.push(str + ",");
+                    }
+                }
+                if (contentToBeWritten.length > 1) {
+                    let lastStr = contentToBeWritten[
+                        contentToBeWritten.length - 1
+                    ].substring(
+                        0,
+                        contentToBeWritten[contentToBeWritten.length - 1]
+                            .length - 1
+                    );
+                    contentToBeWritten.pop();
+                    contentToBeWritten.push(lastStr);
+                }
+            }
+            contentToBeWritten.push("}");
+            await util.writeDataToFileAsync(path, contentToBeWritten);
+        } else {
+            if (newConfigFilePath.endsWith(".config")) {
+                path =
+                    newConfigFilePath.substring(
+                        0,
+                        newConfigFilePath.lastIndexOf(".config")
+                    ) + ".cfg.json";
+            } else {
+                path =
+                    newConfigFilePath.substring(
+                        0,
+                        newConfigFilePath.lastIndexOf(".cfg")
+                    ) + ".cfg.json";
+            }
+            contentToBeWritten.push("{");
+            fileContent = fileContent.filter((a) => a);
+            for (let line = 0; line < fileContent.length; line++) {
+                let configLine = fileContent[line].trim();
+                let key = configLine.substring(0, configLine.indexOf("="));
+                let val = configLine.substring(configLine.indexOf("=") + 1);
+                let str = removeUnwantedChars(key, val, newConfigFilePath);
+                if (key != "") {
+                    if (line == fileContent.length - 1) {
+                        contentToBeWritten.push(str);
+                    } else {
+                        contentToBeWritten.push(str + ",");
+                    }
+                }
+            }
+            contentToBeWritten.push("}");
+            await util.writeDataToFileAsync(path, contentToBeWritten);
+        }
+        fs.unlinkSync(newConfigFilePath);
+    }
+}
+/**
+ * @param String key which will be added as key in resultant file
+ * @param String val which will be added as value in resultant file
+ * @param String FilePath the new config file path in ui.config package
+ *
+ * format generate line which will be added to resultant cfg.json file
+ */
+function removeUnwantedChars(key, val, filePath) {
+    val = val.replace(/\\/g, "");
+    let str = "";
+    if (filePath.endsWith(".xml")) {
+        if (val.charAt(0) == "{") {
+            let type = val.substring(1, val.indexOf("}"));
+            val = val.substring(val.indexOf("}") + 1);
+            val = val.replace(/[^\x20-\x7E]/gim, "");
+            str = '"' + key + ":" + type + '"' + ":" + '"' + val + '"';
+        } else {
+            val = val.replace(/[^\x20-\x7E]/gim, "");
+            str = '"' + key + '"' + ":" + '"' + val + '"';
+        }
+    } else if (filePath.endsWith(".config") || filePath.endsWith(".cfg")) {
+        if (val.charAt(0) !== '"' && val.charAt(0) !== "[") {
+            val = val.substring(1);
+        }
+        str = '"' + key + '"' + ":" + val;
+    }
+    return str;
+}
 module.exports = RestructureContent;
