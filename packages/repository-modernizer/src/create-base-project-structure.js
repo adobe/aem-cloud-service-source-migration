@@ -40,7 +40,8 @@ var CreateBaseProjectStructure = {
                 " Create an `all` container package for including the ui.apps and ui.content packages as embeds."
         );
         let projects = config.projects;
-        let allPackagePomFile = "";
+        let allPackagePomFile = "",
+            analysePackagePomFile = "";
         // if there are more than one project, create the all package at the projects' root level
         if (projects.length > 1) {
             fsExtra.copySync(
@@ -64,9 +65,35 @@ var CreateBaseProjectStructure = {
                 "CreateBaseProjectStructure: Base `all` package created at " +
                     commons_constants.TARGET_PROJECT_SRC_FOLDER
             );
+            fsExtra.copySync(
+                path.join(basePath, constants.BASE_ANALYSE_PACKAGE),
+                path.join(
+                    commons_constants.TARGET_PROJECT_SRC_FOLDER,
+                    constants.ANALYSE
+                )
+            );
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    path.join(
+                        commons_constants.TARGET_PROJECT_SRC_FOLDER,
+                        constants.ANALYSE
+                    ),
+                    "Created `analyse` package"
+                )
+            );
+            logger.info(
+                "CreateBaseProjectStructure: Base `analyse` package created at " +
+                    commons_constants.TARGET_PROJECT_SRC_FOLDER
+            );
             allPackagePomFile = path.join(
                 commons_constants.TARGET_PROJECT_SRC_FOLDER,
                 constants.ALL,
+                constants.POM_XML
+            );
+            analysePackagePomFile = path.join(
+                commons_constants.TARGET_PROJECT_SRC_FOLDER,
+                constants.ANALYSE,
                 constants.POM_XML
             );
             fs.copyFileSync(
@@ -120,6 +147,26 @@ var CreateBaseProjectStructure = {
                     constants.ALL,
                     constants.POM_XML
                 );
+                // create the analyse package at the same level
+                fsExtra.copySync(
+                    path.join(basePath, constants.BASE_ANALYSE_PACKAGE),
+                    path.join(projectPath, constants.ANALYSE)
+                );
+                conversionStep.addOperation(
+                    new ConversionOperation(
+                        commons_constants.ACTION_ADDED,
+                        path.join(projectPath, constants.ANALYSE),
+                        "Created `analyse` package"
+                    )
+                );
+                logger.info(
+                    `CreateBaseProjectStructure: Base analyse package created at ${projectPath}.`
+                );
+                analysePackagePomFile = path.join(
+                    projectPath,
+                    constants.ANALYSE,
+                    constants.POM_XML
+                );
                 fs.copyFileSync(
                     path.join(basePath, constants.BASE_PARENT_POM),
                     path.join(projectPath, constants.POM_XML)
@@ -144,6 +191,17 @@ var CreateBaseProjectStructure = {
                     commons_constants.ACTION_ADDED,
                     path.join(projectPath, constants.UI_APPS),
                     "Created package `ui.apps` for immutable code to be deployed to `/apps` or `/oak:index`"
+                )
+            );
+            fsExtra.copySync(
+                path.join(basePath, constants.BASE_UI_APPS_STRUCTURE_PACKAGE),
+                path.join(projectPath, constants.UI_APPS_STRUCTURE)
+            );
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    path.join(projectPath, constants.UI_APPS_STRUCTURE),
+                    "Created package `ui.apps.structure` to define the JCR repository roots in which the project’s code sub-packages deploy into"
                 )
             );
             fsExtra.copySync(
@@ -239,10 +297,20 @@ var CreateBaseProjectStructure = {
                 [constants.DEFAULT_GROUP_ID]: config.groupId,
                 [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
                 [constants.DEFAULT_VERSION]: config.all.version,
-                [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId.concat(
-                    ".",
-                    constants.ALL
-                ),
+                [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId,
+                [constants.DEFAULT_APP_TITLE]: config.all.appTitle,
+                [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    config.parentPom.artifactId,
+            },
+            conversionStep
+        );
+        await pomManipulationUtil.replaceVariables(
+            analysePackagePomFile,
+            {
+                [constants.DEFAULT_GROUP_ID]: config.groupId,
+                [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+                [constants.DEFAULT_VERSION]: config.all.version,
+                [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId,
                 [constants.DEFAULT_APP_TITLE]: config.all.appTitle,
                 [constants.DEFAULT_ROOT_ARTIFACT_ID]:
                     config.parentPom.artifactId,
@@ -273,12 +341,9 @@ async function setPackageArtifactAndGroupId(
     relativeParentPomPath,
     conversionStep
 ) {
-    let ui_apps_artifactId = artifactId.concat(".", constants.UI_APPS);
-    let ui_content_artifactId = artifactId.concat(".", constants.UI_CONTENT);
-    let ui_config_artifactId = artifactId.concat(".", constants.UI_CONFIG);
     let uiAppsReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: ui_apps_artifactId,
+        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
         [constants.DEFAULT_VERSION]: version,
         [constants.DEFAULT_APP_TITLE]: appTitle,
         [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
@@ -290,9 +355,23 @@ async function setPackageArtifactAndGroupId(
         uiAppsReplacementObj,
         conversionStep
     );
+    let uiAppsStructureReplacementObj = {
+        [constants.DEFAULT_GROUP_ID]: config.groupId,
+        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
+        [constants.DEFAULT_VERSION]: version,
+        [constants.DEFAULT_APP_TITLE]: appTitle,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+        [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
+    };
+    await pomManipulationUtil.replaceVariables(
+        path.join(projectPath, constants.UI_APPS_STRUCTURE, constants.POM_XML),
+        uiAppsStructureReplacementObj,
+        conversionStep
+    );
     let uiContentReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: ui_content_artifactId,
+        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
         [constants.DEFAULT_VERSION]: version,
         [constants.DEFAULT_APP_TITLE]: appTitle,
         [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
@@ -306,7 +385,7 @@ async function setPackageArtifactAndGroupId(
     );
     let uiConfigReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: ui_config_artifactId,
+        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
         [constants.DEFAULT_VERSION]: version,
         [constants.DEFAULT_APP_TITLE]: appTitle,
         [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,

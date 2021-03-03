@@ -1209,6 +1209,8 @@ class FileOperations {
                         let nextLine = lines[index + 1];
                         returnContent += nextLine + os.EOL;
                         //sectionIndentation = nextLine.length - nextLine.trim().length;
+                    } else {
+                        sectionArrays.push("1");
                     }
                 } else if (sectionFlag) {
                     if (trimmedLine.includes("{")) {

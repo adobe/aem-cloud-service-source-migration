@@ -13,6 +13,13 @@ jest.mock("@adobe/aem-cs-source-migration-commons");
 jest.mock("../src/util/pom-manipulation-util");
 jest.mock("fs");
 jest.mock("fs-extra");
+jest.mock("node-pom-parser", () => {
+    const pomObj = {
+        artifactId: "test.artifactId",
+        version: "1.0.0",
+    };
+    return { parsePom: jest.fn(() => pomObj) };
+});
 
 const {
     constants: commons_constants,
@@ -55,18 +62,6 @@ describe("create-base-project-structure", function () {
             commons_constants.TARGET_PROJECT_SRC_FOLDER,
             path.basename(config.projects[0].projectPath)
         );
-        let ui_content_artifactId = config.projects[0].artifactId.concat(
-            ".",
-            constants.UI_CONTENT
-        );
-        let ui_apps_artifactId = config.projects[0].artifactId.concat(
-            ".",
-            constants.UI_APPS
-        );
-        let ui_config_artifactId = config.projects[0].artifactId.concat(
-            ".",
-            constants.UI_CONFIG
-        );
         // mock the methods
         pomManipulationUtil.replaceVariables.mockResolvedValue(true);
         pomManipulationUtil.verifyArtifactPackagingType.mockReturnValue(false);
@@ -86,8 +81,16 @@ describe("create-base-project-structure", function () {
                 path.join(projectPath, constants.ALL)
             );
             expect(fsExtra.copySync).toHaveBeenCalledWith(
+                path.join(constants.BASE_ANALYSE_PACKAGE),
+                path.join(projectPath, constants.ANALYSE)
+            );
+            expect(fsExtra.copySync).toHaveBeenCalledWith(
                 path.join(constants.BASE_UI_APPS_PACKAGE),
                 path.join(projectPath, constants.UI_APPS)
+            );
+            expect(fsExtra.copySync).toHaveBeenCalledWith(
+                path.join(constants.BASE_UI_APPS_STRUCTURE_PACKAGE),
+                path.join(projectPath, constants.UI_APPS_STRUCTURE)
             );
             expect(fsExtra.copySync).toHaveBeenCalledWith(
                 path.join(constants.BASE_UI_CONTENT_PACKAGE),
@@ -105,12 +108,35 @@ describe("create-base-project-structure", function () {
                 path.join(projectPath, constants.UI_APPS, constants.POM_XML),
                 {
                     [constants.DEFAULT_GROUP_ID]: config.groupId,
-                    [constants.DEFAULT_ARTIFACT_ID]: ui_apps_artifactId,
+                    [constants.DEFAULT_ARTIFACT_ID]:
+                        config.projects[0].artifactId,
                     [constants.DEFAULT_APP_TITLE]: config.projects[0].appTitle,
+                    [constants.DEFAULT_VERSION]: config.projects[0].version,
                     [constants.DEFAULT_ROOT_ARTIFACT_ID]:
                         config.parentPom.artifactId,
                     [constants.DEFAULT_RELATIVE_PATH]:
                         constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+                },
+                expect.anything()
+            );
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(
+                    projectPath,
+                    constants.UI_APPS_STRUCTURE,
+                    constants.POM_XML
+                ),
+                {
+                    [constants.DEFAULT_GROUP_ID]: config.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]:
+                        config.projects[0].artifactId,
+                    [constants.DEFAULT_APP_TITLE]: config.projects[0].appTitle,
+                    [constants.DEFAULT_VERSION]: config.projects[0].version,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                        config.parentPom.artifactId,
+                    [constants.DEFAULT_RELATIVE_PATH]:
+                        constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
                 },
                 expect.anything()
             );
@@ -118,12 +144,15 @@ describe("create-base-project-structure", function () {
                 path.join(projectPath, constants.UI_CONTENT, constants.POM_XML),
                 {
                     [constants.DEFAULT_GROUP_ID]: config.groupId,
-                    [constants.DEFAULT_ARTIFACT_ID]: ui_content_artifactId,
+                    [constants.DEFAULT_ARTIFACT_ID]:
+                        config.projects[0].artifactId,
                     [constants.DEFAULT_APP_TITLE]: config.projects[0].appTitle,
+                    [constants.DEFAULT_VERSION]: config.projects[0].version,
                     [constants.DEFAULT_ROOT_ARTIFACT_ID]:
                         config.parentPom.artifactId,
                     [constants.DEFAULT_RELATIVE_PATH]:
                         constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
                 },
                 expect.anything()
             );
@@ -131,12 +160,15 @@ describe("create-base-project-structure", function () {
                 path.join(projectPath, constants.UI_CONFIG, constants.POM_XML),
                 {
                     [constants.DEFAULT_GROUP_ID]: config.groupId,
-                    [constants.DEFAULT_ARTIFACT_ID]: ui_config_artifactId,
+                    [constants.DEFAULT_ARTIFACT_ID]:
+                        config.projects[0].artifactId,
                     [constants.DEFAULT_APP_TITLE]: config.projects[0].appTitle,
+                    [constants.DEFAULT_VERSION]: config.projects[0].version,
                     [constants.DEFAULT_ROOT_ARTIFACT_ID]:
                         config.parentPom.artifactId,
                     [constants.DEFAULT_RELATIVE_PATH]:
                         constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
                 },
                 expect.anything()
             );
@@ -144,13 +176,25 @@ describe("create-base-project-structure", function () {
                 path.join(projectPath, constants.ALL, constants.POM_XML),
                 {
                     [constants.DEFAULT_GROUP_ID]: config.groupId,
-                    [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId.concat(
-                        ".",
-                        constants.ALL
-                    ),
+                    [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId,
+                    [constants.DEFAULT_VERSION]: config.all.version,
                     [constants.DEFAULT_APP_TITLE]: config.all.appTitle,
                     [constants.DEFAULT_ROOT_ARTIFACT_ID]:
                         config.parentPom.artifactId,
+                    [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+                },
+                expect.anything()
+            );
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(projectPath, constants.ANALYSE, constants.POM_XML),
+                {
+                    [constants.DEFAULT_GROUP_ID]: config.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]: config.all.artifactId,
+                    [constants.DEFAULT_APP_TITLE]: config.all.appTitle,
+                    [constants.DEFAULT_VERSION]: config.all.version,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                        config.parentPom.artifactId,
+                    [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
                 },
                 expect.anything()
             );
