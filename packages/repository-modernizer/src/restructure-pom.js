@@ -660,13 +660,15 @@ async function addParentAndModuleinfo(pomFile, originalParent) {
 function getModuleList(projectRootPath) {
     let moduleList = [];
     fs.readdirSync(projectRootPath).forEach(function (file) {
-        var currentPath = path.join(projectRootPath, file);
-        // if entry is a directory, copy it to the respective package
-        if (
-            fs.lstatSync(currentPath).isDirectory() &&
-            fs.existsSync(path.join(currentPath, constants.POM_XML))
-        ) {
-            moduleList.push(file);
+        if (file !== constants.UI_APPS_STRUCTURE) {
+            var currentPath = path.join(projectRootPath, file);
+            // if entry is a directory, copy it to the respective package
+            if (
+                fs.lstatSync(currentPath).isDirectory() &&
+                fs.existsSync(path.join(currentPath, constants.POM_XML))
+            ) {
+                moduleList.push(file);
+            }
         }
     });
     return moduleList;

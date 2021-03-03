@@ -15,7 +15,7 @@
     <!-- ====================================================================== -->
     <!-- P R O J E C T  D E S C R I P T I O N                                   -->
     <!-- ====================================================================== -->
-    <artifactId>${artifactId}</artifactId>
+    <artifactId>${artifactId}.ui.apps</artifactId>
     <packaging>content-package</packaging>
     <version>${version}</version>
     <name>${appTitle} - UI apps</name>
@@ -37,13 +37,18 @@
                 <extensions>true</extensions>
                 <configuration>
                     <group>${groupId}</group>
-                    <name>${artifactId}</name>
+                    <name>${artifactId}.ui.apps</name>
                     <packageType>application</packageType>
-                    <failOnDependencyErrors>false</failOnDependencyErrors>
                     <accessControlHandling>merge</accessControlHandling>
                     <properties>
                         <cloudManagerTarget>none</cloudManagerTarget>
                     </properties>
+					<repositoryStructurePackages>
+                        <repositoryStructurePackage>
+                            <groupId>${groupId}</groupId>
+                            <artifactId>${artifactId}.ui.apps.structure</artifactId>
+                        </repositoryStructurePackage>
+                    </repositoryStructurePackages>
                     <embeddeds>
                     </embeddeds>
                     <subPackages>
@@ -90,6 +95,12 @@
     <!-- D E P E N D E N C I E S                                                -->
     <!-- ====================================================================== -->
     <dependencies>
+        <dependency>
+            <groupId>${groupId}</groupId>
+            <artifactId>${artifactId}.ui.apps.structure</artifactId>
+            <version>${version}</version>
+            <type>zip</type>
+        </dependency>
         <!-- HTL dependencies needed for the HTL Maven Plugin source code generation -->
         <dependency>
             <groupId>org.apache.sling</groupId>

@@ -55,6 +55,21 @@ const expectedUIAppsFilterPaths = [
     '	 <filter root="/apps/dam/content/schemaeditors/reports"/>',
 ];
 
+const uiAppsStructurePomFileContent = `
+                    <filters>
+                    </filters>
+`;
+
+const uiAppsStructurePomFileWriteContent = `
+                    <filters>
+                        <filter><root>/apps</root></filter>
+                        <filter><root>/apps/dam</root></filter>
+                        <filter><root>/apps/dam/content</root></filter>
+                        <filter><root>/apps/dam/content/schemaeditors</root></filter>
+                        <filter><root>/apps/test</root></filter>
+                    </filters>
+`;
+
 const configFilterContent = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<workspaceFilter version="1.0">',
@@ -98,6 +113,11 @@ describe(" restructure filter", function () {
             constants.UI_APPS,
             constants.FILTER_PATH
         );
+        let uiAppsStructurePomFilePath = path.join(
+            targetProjectPath,
+            constants.UI_APPS_STRUCTURE,
+            constants.POM_XML
+        );
         let uiContentFilterPath = path.join(
             targetProjectPath,
             constants.UI_CONTENT,
@@ -117,6 +137,7 @@ describe(" restructure filter", function () {
         fs.existsSync.mockReturnValue(true);
         util.getXMLContentSync
             .mockReturnValueOnce(xmlContent)
+            .mockReturnValueOnce(uiAppsStructurePomFileContent.split(/\r?\n/))
             .mockReturnValueOnce(configFilterContent)
             .mockReturnValueOnce(allFilterContent);
         util.writeDataToFileSync.mockResolvedValue(true);
@@ -142,6 +163,14 @@ describe(" restructure filter", function () {
                 constants.FILTER_XML_END
             ),
             `RestructureFilterPaths: Error while trying to add filters to ${uiContentFilterPath}.`
+        );
+        expect(util.getXMLContentSync).toHaveBeenCalledWith(
+            uiAppsStructurePomFilePath
+        );
+        expect(util.writeDataToFileSync).toHaveBeenCalledWith(
+            uiAppsStructurePomFilePath,
+            uiAppsStructurePomFileWriteContent.split(/\r?\n/),
+            `RestructureFilterPaths: Error while trying to add  JCR repository roots to ${uiAppsStructurePomFilePath}.`
         );
         expect(fs.existsSync).toHaveBeenCalledWith(uiConfigFilterPath);
         expect(util.getXMLContentSync).toHaveBeenCalledWith(uiConfigFilterPath);

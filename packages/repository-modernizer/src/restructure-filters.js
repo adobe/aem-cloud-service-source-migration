@@ -61,6 +61,11 @@ var RestructureFilterPaths = {
                 constants.UI_CONFIG,
                 constants.FILTER_PATH
             );
+            let uiAppsStructurePom = path.join(
+                targetProjectPath,
+                constants.UI_APPS_STRUCTURE,
+                constants.POM_XML
+            );
             const filterPaths = {
                 uiAppsFilters: [],
                 uiContentFilters: [],
@@ -101,6 +106,15 @@ var RestructureFilterPaths = {
             writeFilterPathsToFilterXml(
                 filterPaths.uiContentFilters,
                 uiContentFilterPath,
+                conversionStep
+            );
+            let enumeratedAppsFilterPaths = getEnumeratedAppsFilters(
+                filterPaths.uiAppsFilters,
+                project.appId
+            );
+            addUiAppsStructureFilters(
+                uiAppsStructurePom,
+                enumeratedAppsFilterPaths,
                 conversionStep
             );
             replaceAppIdInFilterXml(
@@ -285,6 +299,9 @@ function writeFilterPathsToFilterXml(filterPaths, filePath, conversionStep) {
     }
 }
 
+/**
+ * Check if a given filter path entry represents an immutable or mutable section of JCR repository.
+ */
 function isImmutableContentFilter(line) {
     if (line.indexOf('"') == -1) {
         line = line.substring(
@@ -361,6 +378,87 @@ function replaceAppIdInFilterXml(
                 `RestructureFilterPaths: Filters added to  ${filterPath}.`
             );
         }
+    }
+}
+
+/**
+ * Get the enumerated JCR root paths from the ui.apps filter paths.
+ */
+function getEnumeratedAppsFilters(uiAppsFilters, appId) {
+    // use a set to keep unique JCR root paths only
+    // initialized with '/apps' and `/apps/${appId}'
+    let enumeratedAppsFilterPaths = new Set(["/apps", "/apps/" + appId]);
+    uiAppsFilters.forEach((filterPath) => {
+        if (filterPath.trim().startsWith(constants.FILTER_ROOT_START_TAG)) {
+            // extract the path from the filter entry
+            let path = filterPath.split('"')[1];
+            // while path has not been completely enumerated
+            while (path.indexOf("/") !== path.lastIndexOf("/")) {
+                path = path.substring(0, path.lastIndexOf("/"));
+                // if path is already present in the set, no further enumertation required
+                if (enumeratedAppsFilterPaths.has(path)) {
+                    break;
+                } else {
+                    enumeratedAppsFilterPaths.add(path);
+                }
+            }
+        }
+    });
+    // return a sorted list of enumerated JCR root paths
+    return Array.from(enumeratedAppsFilterPaths).sort();
+}
+
+/**
+ * Add the enumerated JCR root paths to ui.apps.structure pom file.
+ */
+function addUiAppsStructureFilters(
+    pomFile,
+    enumeratedJcrRootPaths,
+    conversionStep
+) {
+    if (!fs.existsSync(pomFile)) {
+        logger.error(
+            `RestructureFilterPaths: Cannot find pom file at ${pomFile}`
+        );
+    } else {
+        let writeContent = [];
+        let fileContent = util.getXMLContentSync(pomFile);
+        fileContent.forEach((line) => {
+            writeContent.push(line);
+            // if '<filters>' tag if found add the enumerated JCR root paths
+            if (line.trim() === constants.ROOT_FILTER_SECTION_START) {
+                // get the starting spaces to adjust the new filter root entries accordingly
+                let startingIndentation = line.substring(
+                    0,
+                    line.length - line.trim().length
+                );
+                enumeratedJcrRootPaths.forEach((rootPath) => {
+                    writeContent.push(
+                        startingIndentation +
+                            constants.JCR_REPOSITORY_ROOT_ENTRY.replace(
+                                constants.ROOT_PATH,
+                                rootPath
+                            )
+                    );
+                });
+            }
+        });
+        // write back the file content (the filter root paths have been added)
+        util.writeDataToFileSync(
+            pomFile,
+            writeContent,
+            `RestructureFilterPaths: Error while trying to add  JCR repository roots to ${pomFile}.`
+        );
+        conversionStep.addOperation(
+            new ConversionOperation(
+                commons_constants.ACTION_ADDED,
+                pomFile,
+                "Included JCR repository roots paths to Repository Structure package `pom.xml`"
+            )
+        );
+        logger.info(
+            `RestructureFilterPaths: JCR repository root paths added to ${pomFile}.`
+        );
     }
 }
 

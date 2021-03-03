@@ -15,7 +15,7 @@
     <!-- ====================================================================== -->
     <!-- P R O J E C T  D E S C R I P T I O N                                   -->
     <!-- ====================================================================== -->
-    <artifactId>${artifactId}</artifactId>
+    <artifactId>${artifactId}.ui.config</artifactId>
     <packaging>content-package</packaging>
     <version>${version}</version>
     <name>${appTitle} - UI config</name>
@@ -35,7 +35,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <group>${groupId}</group>
-                    <name>${artifactId}</name>
+                    <name>${artifactId}.ui.config</name>
                     <packageType>application</packageType>
                     <failOnDependencyErrors>false</failOnDependencyErrors>
                     <accessControlHandling>merge</accessControlHandling>
