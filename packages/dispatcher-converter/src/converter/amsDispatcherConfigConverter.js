@@ -1254,7 +1254,7 @@ class AEMDispatcherConfigConverter {
                     Constants.FARM,
                     Constants.INCLUDE_SYNTAX_IN_FARM,
                     path.basename(amsFile),
-                    '$include "../cache/rules.any"',
+                    "rules.any",
                     conversionStep
                 );
             });
@@ -1275,7 +1275,7 @@ class AEMDispatcherConfigConverter {
                 Constants.FARM,
                 Constants.INCLUDE_SYNTAX_IN_FARM,
                 old_file_name,
-                '"../cache/rules.any"',
+                new_file_name,
                 conversionStep
             );
         }
