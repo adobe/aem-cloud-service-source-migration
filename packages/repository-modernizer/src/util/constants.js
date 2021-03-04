@@ -282,9 +282,17 @@ module.exports = {
         "org.*.cfg",
     ],
 
+    REPO_INIT: "org.apache.sling.jcr.repoinit.RepositoryInitializer",
+
     XML_EXTENSION: ".xml",
 
+    CONFIG_EXTENSION: ".config",
+
+    CFG_EXTENSION: ".cfg",
+
     UTF_8: "utf8",
+
+    CFG_JSON_EXTENSION: ".cfg.json",
 
     SLING_OSGI_CONFIG: "sling:OsgiConfig",
 
