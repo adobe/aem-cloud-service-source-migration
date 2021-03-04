@@ -424,7 +424,10 @@ class FileOperations {
             }
 
             isConfString = stringAfterInclude.split("/");
-            isConfString = isConfString.toString().replace(/^"(.*)"$/, "$1");
+            if(isConfString.length > 1){
+                isConfString = isConfString[isConfString.length - 1].trim();
+            }
+            isConfString = isConfString.toString().replace(/^"(.*)"$/g, "$1");
             line = this.getPathForDir(isConfString);
         }
         return line.toString();

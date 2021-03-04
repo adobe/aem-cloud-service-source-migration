@@ -317,7 +317,9 @@ class AEMDispatcherConfigConverter {
             let new_file_name = "rewrite.rules";
 
             // it should be renamed to rewrite.rules
-            let renamed_file_path = path.join(path.dirname(files[0]) , new_file_name);
+            let renamed_file_path = path.join(path.dirname(files[0]),
+            new_file_name
+            );
             this.FileOperationsUtility.renameFile(files[0], renamed_file_path);
             // adapt the Include statements referring to that file in the virtual host files as well.
             this.FileOperationsUtility.replaceIncludeStatementWithNewRule(

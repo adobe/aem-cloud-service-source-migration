@@ -181,7 +181,7 @@ class SingleFilesConverter {
      */
     createFarmFiles() {
         let conversionStep = this.createFarmFilesSummaryGenerator();
-
+        let TEMP_FILE = "tempFile.txt";
         let fileContentsArray = this.fileOpsUtil.getFileContentsArray(this.dispatcherAnyPath);
         fs.writeFileSync(
             Constants.TARGET_SINGLE_DISPATCHER,
@@ -199,21 +199,21 @@ class SingleFilesConverter {
         );
 
         fs.writeFileSync(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
-                        "tempFile.txt"),"");
+            TEMP_FILE),"");
         for(let i=0;i<fileContentsArray.length;i++){
             if(fileContentsArray[i].includes("$include") && fileContentsArray[i].trim().split(" ")[1].includes("farm")) {
                 fileContentsArray[i] = this.fileOpsUtil.getContentFromFile(fileContentsArray[i].trim(),false).split(os.EOL);
                 fileContentsArray[i] = fileContentsArray[i].join(os.EOL);
             }
 
-                fileContentsArray[i] = fileContentsArray[i] + os.EOL;
+            fileContentsArray[i] = fileContentsArray[i] + os.EOL;
             
             fs.appendFileSync(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
-                "tempFile.txt"),fileContentsArray[i]);
+                TEMP_FILE),fileContentsArray[i]);
         }
 
         fileContentsArray = this.fileOpsUtil.getFileContentsArray(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
-            "tempFile.txt"));
+            TEMP_FILE));
 
         for (let i = 0; i < fileContentsArray.length; i++) {
             if (rootFlag && farmFlag) {
