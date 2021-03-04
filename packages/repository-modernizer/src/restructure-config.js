@@ -213,6 +213,7 @@ async function migrateConfig(uiAppsJcrRootPath, appId, conversionStep) {
                         newConfigFilePath,
                         conversionStep
                     );
+                    await formatConfig(newConfigFilePath, conversionStep);
                 }
             }
         }
@@ -242,6 +243,7 @@ async function migrateConfig(uiAppsJcrRootPath, appId, conversionStep) {
                     newConfigFilePath,
                     conversionStep
                 );
+                await formatConfig(newConfigFilePath, conversionStep);
             }
         }
         conversionStep.addOperation(
@@ -339,4 +341,175 @@ async function deleteEmptyConfigDir(oldConfigFilePath) {
     }
 }
 
+/**
+ *
+ * @param String osgiConfigFilePath the new config file path in ui.config package
+ *
+ * format config in xml ,cfg,config format to cfg.json
+ */
+async function formatConfig(osgiConfigFilePath, conversionStep) {
+    let fileName = path.basename(osgiConfigFilePath);
+
+    if (
+        !fileName.startsWith(constants.REPO_INIT) &&
+        (osgiConfigFilePath.endsWith(constants.XML_EXTENSION) ||
+            osgiConfigFilePath.endsWith(constants.CONFIG_EXTENSION) ||
+            osgiConfigFilePath.endsWith(constants.CFG_EXTENSION))
+    ) {
+        let fileContent = util.getXMLContentSync(osgiConfigFilePath);
+        let contentToBeWritten = [];
+        let pushContent = false;
+        let formattedOsgiConfigFilepath = "";
+        if (osgiConfigFilePath.endsWith(constants.XML_EXTENSION)) {
+            formattedOsgiConfigFilepath =
+                osgiConfigFilePath.substring(
+                    0,
+                    osgiConfigFilePath.lastIndexOf(constants.XML_EXTENSION)
+                ) + constants.CFG_JSON_EXTENSION;
+            contentToBeWritten.push("{");
+            let jsonObject = JSON.parse(
+                xmljs.xml2json(
+                    await fs.promises.readFile(
+                        osgiConfigFilePath,
+                        constants.UTF_8
+                    ),
+                    {
+                        compact: true,
+                    }
+                )
+            );
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    jsonObject[constants.JCR_ROOT][
+                        constants.JSON_ATTRIBUTES_KEY
+                    ],
+                    constants.JCR_PRIMARY_TYPE
+                )
+            ) {
+                let obj =
+                    jsonObject[constants.JCR_ROOT][
+                        constants.JSON_ATTRIBUTES_KEY
+                    ];
+                for (var key in obj) {
+                    if (
+                        key == constants.JCR_PRIMARY_TYPE &&
+                        Object.prototype.hasOwnProperty.call(obj, key)
+                    ) {
+                        pushContent = true;
+                        continue;
+                    }
+                    if (pushContent) {
+                        var val = obj[key];
+                        let str = removeUnwantedChars(
+                            key,
+                            val,
+                            osgiConfigFilePath
+                        );
+                        contentToBeWritten.push(str + ",");
+                    }
+                }
+                if (contentToBeWritten.length > 1) {
+                    let lastStr = contentToBeWritten[
+                        contentToBeWritten.length - 1
+                    ].substring(
+                        0,
+                        contentToBeWritten[contentToBeWritten.length - 1]
+                            .length - 1
+                    );
+                    contentToBeWritten.pop();
+                    contentToBeWritten.push(lastStr);
+                }
+            }
+            contentToBeWritten.push("}");
+            await util.writeDataToFileAsync(
+                formattedOsgiConfigFilepath,
+                contentToBeWritten
+            );
+        } else {
+            if (osgiConfigFilePath.endsWith(constants.CONFIG_EXTENSION)) {
+                formattedOsgiConfigFilepath =
+                    osgiConfigFilePath.substring(
+                        0,
+                        osgiConfigFilePath.lastIndexOf(
+                            constants.CONFIG_EXTENSION
+                        )
+                    ) + constants.CFG_JSON_EXTENSION;
+            } else {
+                formattedOsgiConfigFilepath =
+                    osgiConfigFilePath.substring(
+                        0,
+                        osgiConfigFilePath.lastIndexOf(constants.CFG_EXTENSION)
+                    ) + constants.CFG_JSON_EXTENSION;
+            }
+            contentToBeWritten.push("{");
+            fileContent = fileContent.filter((a) => a);
+            for (let line = 0; line < fileContent.length; line++) {
+                let configLine = fileContent[line].trim();
+                let key = configLine.substring(0, configLine.indexOf("="));
+                let val = configLine.substring(configLine.indexOf("=") + 1);
+                let str = removeUnwantedChars(key, val, osgiConfigFilePath);
+                if (key != "") {
+                    if (line == fileContent.length - 1) {
+                        contentToBeWritten.push(str);
+                    } else {
+                        contentToBeWritten.push(str + ",");
+                    }
+                }
+            }
+            contentToBeWritten.push("}");
+            await util.writeDataToFileAsync(
+                formattedOsgiConfigFilepath,
+                contentToBeWritten
+            );
+        }
+        fs.unlinkSync(osgiConfigFilePath);
+        conversionStep.addOperation(
+            new ConversionOperation(
+                commons_constants.ACTION_ADDED,
+                path.dirname(formattedOsgiConfigFilepath),
+                `Formatted OSGi config file '${fileName}' to '${path.basename(
+                    formattedOsgiConfigFilepath
+                )}'.`
+            )
+        );
+        logger.info(
+            `RestructureConfig: Formatted OSGi config file '${fileName}' to '${path.basename(
+                formattedOsgiConfigFilepath
+            )}'.`
+        );
+    }
+}
+/**
+ * @param String key which will be added as key in resultant file
+ * @param String val which will be added as value in resultant file
+ * @param String FilePath the new config file path in ui.config package
+ *
+ * format generate line which will be added to resultant cfg.json file
+ */
+function removeUnwantedChars(key, val, filePath) {
+    //replace \ with empty space
+    val = val.replace(/\\/g, "");
+    let str = "";
+    if (filePath.endsWith(constants.XML_EXTENSION)) {
+        if (val.charAt(0) == "{") {
+            let type = val.substring(1, val.indexOf("}"));
+            val = val.substring(val.indexOf("}") + 1);
+            // to remove extra space and new line
+            val = val.replace(/[^\x20-\x7E]/gim, "");
+            str = '"' + key + ":" + type + '"' + ":" + '"' + val + '"';
+        } else {
+            val = val.replace(/[^\x20-\x7E]/gim, "");
+            str = '"' + key + '"' + ":" + '"' + val + '"';
+        }
+    } else if (
+        filePath.endsWith(constants.CONFIG_EXTENSION) ||
+        filePath.endsWith(constants.CFG_EXTENSION)
+    ) {
+        if (val.charAt(0) !== '"' && val.charAt(0) !== "[") {
+            val = val.substring(1);
+        }
+        str = '"' + key + '"' + ":" + val;
+    }
+    return str;
+}
 module.exports = RestructureContent;

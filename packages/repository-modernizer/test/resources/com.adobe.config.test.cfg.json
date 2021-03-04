@@ -1,0 +1,5 @@
+{
+"enabled:Boolean":"true",
+"error-page.system-path":"/content/404",
+"serve-authenticated-from-cache:Boolean":"true"
+}
