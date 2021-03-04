@@ -203,6 +203,7 @@ class SingleFilesConverter {
             path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE),
             ""
         );
+        // adding content of a farm file to a temporary file for processing non - recursively
         for (let i = 0; i < fileContentsArray.length; i++) {
             if (
                 fileContentsArray[i].includes("$include") &&
@@ -225,7 +226,7 @@ class SingleFilesConverter {
         fileContentsArray = this.fileOpsUtil.getFileContentsArray(
             path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE)
         );
-
+        // adding the required changes to the main farm file by reading content from temp file
         for (let i = 0; i < fileContentsArray.length; i++) {
             if (rootFlag && farmFlag) {
                 if (fileContentsArray[i].trim().includes("{")) {

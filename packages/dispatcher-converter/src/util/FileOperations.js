@@ -425,6 +425,7 @@ class FileOperations {
             if (isConfString.length > 1) {
                 isConfString = isConfString[isConfString.length - 1].trim();
             }
+            // replacing special characters from file name
             isConfString = isConfString.toString().replace(/^"(.*)"$/g, "$1");
             line = this.getPathForDir(isConfString);
         }
