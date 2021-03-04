@@ -317,8 +317,9 @@ class AEMDispatcherConfigConverter {
             let new_file_name = "rewrite.rules";
 
             // it should be renamed to rewrite.rules
-            let renamed_file_path = path.join(path.dirname(files[0]),
-            new_file_name
+            let renamed_file_path = path.join(
+                path.dirname(files[0]),
+                new_file_name
             );
             this.FileOperationsUtility.renameFile(files[0], renamed_file_path);
             // adapt the Include statements referring to that file in the virtual host files as well.
@@ -336,9 +337,7 @@ class AEMDispatcherConfigConverter {
                 files.forEach((file) => {
                     let old_file_name = path.basename(file);
                     // their contents should be copied to the Include statement referring to them in the virtual host files.
-                    let fileContents = util.getXMLContentSync(
-                        file
-                    );
+                    let fileContents = util.getXMLContentSync(file);
                     this.FileOperationsUtility.replaceIncludeStatementWithContentOfRuleFile(
                         conf_d_dir_path,
                         Constants.VHOST,
@@ -951,9 +950,7 @@ class AEMDispatcherConfigConverter {
             if (availableFarmFiles.length > 1) {
                 files.forEach((file) => {
                     if (file.endsWith("_filters.any")) {
-                        let filterFileContents = util.getXMLContentSync(
-                            file
-                        );
+                        let filterFileContents = util.getXMLContentSync(file);
                         this.FileOperationsUtility.replaceIncludeStatementWithContentOfRuleFile(
                             conf_dispatcher_d_dir_path,
                             Constants.FARM,
@@ -1289,9 +1286,7 @@ class AEMDispatcherConfigConverter {
             if (availableFarmFiles.length > 1) {
                 availableFarmFiles.forEach((file) => {
                     if (file.endsWith("_cache.any")) {
-                        let cacheFileContents = util.getXMLContentSync(
-                            file
-                        );
+                        let cacheFileContents = util.getXMLContentSync(file);
                         this.FileOperationsUtility.replaceIncludeStatementWithContentOfRuleFile(
                             conf_dispatcher_d_dir_path,
                             Constants.FARM,
@@ -1549,9 +1544,7 @@ class AEMDispatcherConfigConverter {
             if (availableFarmFiles.length > 1) {
                 files.forEach((file) => {
                     if (file.endsWith("_vhosts.any")) {
-                        let vhostFileContents = util.getXMLContentSync(
-                            file
-                        );
+                        let vhostFileContents = util.getXMLContentSync(file);
                         this.FileOperationsUtility.replaceIncludeStatementWithContentOfRuleFile(
                             conf_dispatcher_d_dir_path,
                             Constants.FARM,

@@ -406,7 +406,6 @@ class FileOperations {
         if (!fs.existsSync(line)) {
             let stringAfterInclude = "";
             let isConfString = "";
-            let fileName = "";
 
             line = line.toString().replace(/^"(.*)"$/, "$1");
 
@@ -418,13 +417,12 @@ class FileOperations {
                 stringAfterInclude = line
                     .split(Constants.INCLUDE_SYNTAX_IN_FARM)[1]
                     .trim();
-            } 
-            else {
+            } else {
                 stringAfterInclude = line;
             }
 
             isConfString = stringAfterInclude.split("/");
-            if(isConfString.length > 1){
+            if (isConfString.length > 1) {
                 isConfString = isConfString[isConfString.length - 1].trim();
             }
             isConfString = isConfString.toString().replace(/^"(.*)"$/g, "$1");
@@ -1198,8 +1196,7 @@ class FileOperations {
         filePath,
         sectionHeader,
         includeStatementToReplaceWith,
-        conversionStep,
-        recursive = true
+        conversionStep
     ) {
         if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
             let sectionFlag = false;
@@ -1208,9 +1205,6 @@ class FileOperations {
             //let sectionIndentation = 0;
             let contentIndentation = "";
 
-            //let fileContents = this.getContentFromFile(filePath, recursive);
-            //let lines = fileContents.split("\n");
-            
             let lines = util.getXMLContentSync(filePath);
             let returnContent = "";
 
@@ -1289,8 +1283,7 @@ class FileOperations {
         extension,
         sectionHeader,
         includeStatementToReplaceWith,
-        conversionStep,
-        recursive = true
+        conversionStep
     ) {
         if (
             fs.existsSync(directoryPath) &&
@@ -1305,8 +1298,7 @@ class FileOperations {
                     file,
                     sectionHeader,
                     includeStatementToReplaceWith,
-                    conversionStep,
-                    recursive
+                    conversionStep
                 );
             });
         }
@@ -1807,8 +1799,7 @@ class FileOperations {
             let fileContentsArray = this.getContentFromFile(
                 filePath,
                 recursive
-            )
-            .split(os.EOL);
+            ).split(os.EOL);
             fileContentsArray.forEach((line) => {
                 let strippedLine = line.trim();
                 if (strippedLine.includes(includeSyntax)) {
@@ -1904,12 +1895,9 @@ class FileOperations {
      * @param file
      */
     getFileContentsArray(file, recursive = true) {
-        let fileContents = "";
         let fileContentsArray = "";
 
-        //fileContents = this.getContentFromFile(file, recursive);
-        //fileContentsArray = fileContents.split(os.EOL);
-        fileContentsArray = util.getXMLContentSync(file);
+        fileContentsArray = util.getXMLContentSync(file, recursive);
 
         return fileContentsArray;
     }

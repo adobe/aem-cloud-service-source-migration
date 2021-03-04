@@ -495,13 +495,11 @@ describe("FileOperations", function () {
     });
 
     it("should successfully remove All Usage Of Old Variable", function () {
-        fs.appendFileSync(
-            testFolder + "/newtestfile.vhost",
-            "",
-            function (err) {
-                if (err) throw err;
-            }
-        );
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "", function (
+            err
+        ) {
+            if (err) throw err;
+        });
         fs.writeFileSync(
             testFolder + "/newtestfile.vhost",
             "VirtualHost ${HOSTADDRESS}:80 "

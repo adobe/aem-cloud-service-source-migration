@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 const Constants = require("../util/constants");
 const FileOperationsUtility = require("../util/FileOperations");
 const {
-    util,
     logger,
     constants: commons_constants,
     ConversionStep,
@@ -182,7 +181,9 @@ class SingleFilesConverter {
     createFarmFiles() {
         let conversionStep = this.createFarmFilesSummaryGenerator();
         let TEMP_FILE = "tempFile.txt";
-        let fileContentsArray = this.fileOpsUtil.getFileContentsArray(this.dispatcherAnyPath);
+        let fileContentsArray = this.fileOpsUtil.getFileContentsArray(
+            this.dispatcherAnyPath
+        );
         fs.writeFileSync(
             Constants.TARGET_SINGLE_DISPATCHER,
             fileContentsArray.join(os.EOL)
@@ -198,22 +199,32 @@ class SingleFilesConverter {
             "Single File Converter: Creating farm file from dispatcher.any"
         );
 
-        fs.writeFileSync(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
-            TEMP_FILE),"");
-        for(let i=0;i<fileContentsArray.length;i++){
-            if(fileContentsArray[i].includes("$include") && fileContentsArray[i].trim().split(" ")[1].includes("farm")) {
-                fileContentsArray[i] = this.fileOpsUtil.getContentFromFile(fileContentsArray[i].trim(),false).split(os.EOL);
+        fs.writeFileSync(
+            path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE),
+            ""
+        );
+        for (let i = 0; i < fileContentsArray.length; i++) {
+            if (
+                fileContentsArray[i].includes("$include") &&
+                fileContentsArray[i].trim().split(" ")[1].includes("farm")
+            ) {
+                fileContentsArray[i] = this.fileOpsUtil
+                    .getContentFromFile(fileContentsArray[i].trim(), false)
+                    .split(os.EOL);
                 fileContentsArray[i] = fileContentsArray[i].join(os.EOL);
             }
 
             fileContentsArray[i] = fileContentsArray[i] + os.EOL;
-            
-            fs.appendFileSync(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
-                TEMP_FILE),fileContentsArray[i]);
+
+            fs.appendFileSync(
+                path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE),
+                fileContentsArray[i]
+            );
         }
 
-        fileContentsArray = this.fileOpsUtil.getFileContentsArray(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
-            TEMP_FILE));
+        fileContentsArray = this.fileOpsUtil.getFileContentsArray(
+            path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE)
+        );
 
         for (let i = 0; i < fileContentsArray.length; i++) {
             if (rootFlag && farmFlag) {
@@ -299,8 +310,9 @@ class SingleFilesConverter {
                 newFileName = fileContentsArray[i].trim().replace("/", "");
             }
         }
-        fs.unlinkSync(path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER,
-            "tempFile.txt"));
+        fs.unlinkSync(
+            path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, "tempFile.txt")
+        );
         this.conversionSteps.push(conversionStep);
     }
 
@@ -435,21 +447,21 @@ class SingleFilesConverter {
         );
     }
 
-    getAllVhosts(){
+    getAllVhosts() {
         let allFiles = [];
         let vhostFiles = this.config.vhostsToConvert;
 
         vhostFiles.forEach((file) => {
-           if(fs.lstatSync(file).isFile()) {
-            allFiles.push(file);
-           } else if(fs.lstatSync(file).isDirectory()){
-            let globPattern = file + "/**/*";
-            let files = glob.sync(globPattern);
+            if (fs.lstatSync(file).isFile()) {
+                allFiles.push(file);
+            } else if (fs.lstatSync(file).isDirectory()) {
+                let globPattern = file + "/**/*";
+                let files = glob.sync(globPattern);
 
-               files.forEach(fetchedFiles => {
-                allFiles.push(fetchedFiles);
-              });
-           }
+                files.forEach((fetchedFiles) => {
+                    allFiles.push(fetchedFiles);
+                });
+            }
         });
         return allFiles;
     }
