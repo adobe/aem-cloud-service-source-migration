@@ -467,13 +467,15 @@ async function formatConfig(osgiConfigFilePath, conversionStep) {
             new ConversionOperation(
                 commons_constants.ACTION_ADDED,
                 path.dirname(formattedOsgiConfigFilepath),
-                `Formatted OSGI config file ${path.basename(
+                `Formatted OSGi config file '${fileName}' to '${path.basename(
                     formattedOsgiConfigFilepath
-                )}`
+                )}'.`
             )
         );
         logger.info(
-            `RestructureConfig: Formatted OSGI config file ${formattedOsgiConfigFilepath}.`
+            `RestructureConfig: Formatted OSGi config file '${fileName}' to '${path.basename(
+                formattedOsgiConfigFilepath
+            )}'.`
         );
     }
 }
