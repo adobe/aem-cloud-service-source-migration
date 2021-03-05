@@ -73,6 +73,8 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
 	 the summary report and result log file. User would need to manually evaluate which config to persist. 
 * Find and move the OSGi configurations from the `ui.apps` package to the `ui.configs` package
  (under the path `/apps/my-app/osgiconfig`).
+* As per AEM as a Cloud Service best practice, all OSGi configs (except Repo Init OSGi configs) will be
+ translated to `.cfg.json` format.
  
  NOTE : Conflicts during the above move operation will be reported and conflicting content needs to
  be moved over manually.
