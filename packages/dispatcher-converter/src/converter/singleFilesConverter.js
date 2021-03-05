@@ -180,10 +180,10 @@ class SingleFilesConverter {
      */
     createFarmFiles() {
         let conversionStep = this.createFarmFilesSummaryGenerator();
+        let TEMP_FILE = "tempFile.txt";
         let fileContentsArray = this.fileOpsUtil.getFileContentsArray(
             this.dispatcherAnyPath
         );
-
         fs.writeFileSync(
             Constants.TARGET_SINGLE_DISPATCHER,
             fileContentsArray.join(os.EOL)
@@ -199,6 +199,34 @@ class SingleFilesConverter {
             "Single File Converter: Creating farm file from dispatcher.any"
         );
 
+        fs.writeFileSync(
+            path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE),
+            ""
+        );
+        // adding content of a farm file to a temporary file for processing non - recursively
+        for (let i = 0; i < fileContentsArray.length; i++) {
+            if (
+                fileContentsArray[i].includes("$include") &&
+                fileContentsArray[i].trim().split(" ")[1].includes("farm")
+            ) {
+                fileContentsArray[i] = this.fileOpsUtil
+                    .getContentFromFile(fileContentsArray[i].trim(), false)
+                    .split(os.EOL);
+                fileContentsArray[i] = fileContentsArray[i].join(os.EOL);
+            }
+
+            fileContentsArray[i] = fileContentsArray[i] + os.EOL;
+
+            fs.appendFileSync(
+                path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE),
+                fileContentsArray[i]
+            );
+        }
+
+        fileContentsArray = this.fileOpsUtil.getFileContentsArray(
+            path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE)
+        );
+        // adding the required changes to the main farm file by reading content from temp file
         for (let i = 0; i < fileContentsArray.length; i++) {
             if (rootFlag && farmFlag) {
                 if (fileContentsArray[i].trim().includes("{")) {
@@ -283,7 +311,9 @@ class SingleFilesConverter {
                 newFileName = fileContentsArray[i].trim().replace("/", "");
             }
         }
-
+        fs.unlinkSync(
+            path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE)
+        );
         this.conversionSteps.push(conversionStep);
     }
 
@@ -418,10 +448,28 @@ class SingleFilesConverter {
         );
     }
 
+    getAllVhosts() {
+        let allFiles = [];
+        let vhostFiles = this.config.vhostsToConvert;
+
+        vhostFiles.forEach((file) => {
+            if (fs.lstatSync(file).isFile()) {
+                allFiles.push(file);
+            } else if (fs.lstatSync(file).isDirectory()) {
+                let globPattern = path.join(file, "**", "*");
+                let files = glob.sync(globPattern);
+
+                files.forEach((fetchedFiles) => {
+                    allFiles.push(fetchedFiles);
+                });
+            }
+        });
+        return allFiles;
+    }
     createVirtualHostFiles() {
         let conversionStep = this.createVirtualHostsSummary();
         if (this.config.vhostsToConvert) {
-            let vhostFiles = this.config.vhostsToConvert;
+            let vhostFiles = this.getAllVhosts();
             vhostFiles.forEach((file) => {
                 logger.info(
                     "Single File Converter: Creating Virtual Host File from config parameter: vhostsToConvert for " +
@@ -1205,7 +1253,8 @@ class SingleFilesConverter {
             let ruleFilesIncluded = this.fileOpsUtil.getNamesOfRuleFilesIncluded(
                 farm,
                 ruleFiles,
-                Constants.INCLUDE_SYNTAX_IN_FARM
+                Constants.INCLUDE_SYNTAX_IN_FARM,
+                true
             );
             // delete the rule files not included in the single available farm file, and get the files actually used
             let files = this.filterAndRemoveUnusedFiles(
@@ -1240,7 +1289,7 @@ class SingleFilesConverter {
         let conversionStep = this.checkForUndefinedVariablesSummaryGenerator();
 
         if (this.config.vhostsToConvert) {
-            let vhostFiles = this.config.vhostsToConvert;
+            let vhostFiles = this.getAllVhosts();
             vhostFiles.forEach((file) => {
                 let variablesUsedList = [];
                 let variablesDefinedList = [];
@@ -1427,7 +1476,7 @@ class SingleFilesConverter {
         });
 
         if (this.config.vhostsToConvert) {
-            let vhostFiles = this.config.vhostsToConvert;
+            let vhostFiles = this.getAllVhosts();
             vhostFiles.forEach((file) => {
                 this.replaceVariableNames(this, file, variableList);
             });

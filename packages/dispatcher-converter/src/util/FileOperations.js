@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 const Constants = require("./constants");
 const {
+    util,
     logger,
     constants: commons_constants,
     ConversionOperation,
@@ -222,7 +223,7 @@ class FileOperations {
         let finalResult = "";
 
         if (filePath.indexOf("*") > -1) {
-            let files = glob.sync(filePath) || [];
+            let files = glob.sync(this.getReadablePath(filePath)) || [];
             files.forEach((file) => {
                 if (file.indexOf("author") === -1) {
                     result += fs.readFileSync(file).toString();
@@ -405,7 +406,6 @@ class FileOperations {
         if (!fs.existsSync(line)) {
             let stringAfterInclude = "";
             let isConfString = "";
-            let fileName = "";
 
             line = line.toString().replace(/^"(.*)"$/, "$1");
 
@@ -413,14 +413,21 @@ class FileOperations {
                 stringAfterInclude = line
                     .split(Constants.INCLUDE_SYNTAX_IN_VHOST)[1]
                     .trim();
+            } else if (line.includes(Constants.INCLUDE_SYNTAX_IN_FARM)) {
+                stringAfterInclude = line
+                    .split(Constants.INCLUDE_SYNTAX_IN_FARM)[1]
+                    .trim();
             } else {
                 stringAfterInclude = line;
             }
 
             isConfString = stringAfterInclude.split("/");
-
-            fileName = isConfString[isConfString.length - 1].trim();
-            line = this.getPathForDir(fileName);
+            if (isConfString.length > 1) {
+                isConfString = isConfString[isConfString.length - 1].trim();
+            }
+            // replacing special characters from file name
+            isConfString = isConfString.toString().replace(/^"(.*)"$/g, "$1");
+            line = this.getPathForDir(isConfString);
         }
         return line.toString();
     }
@@ -455,6 +462,13 @@ class FileOperations {
         if (fileDirPath == "" && this.config.cfg != null) {
             fileDirPath = this.globGetFilesByExtension(
                 this.config.cfg,
+                isConfString
+            );
+        }
+
+        if (fileDirPath == "" && this.config.cfg != null) {
+            fileDirPath = util.globGetFilesByName(
+                Constants.TARGET_DISPATCHER_SRC_FOLDER,
                 isConfString
             );
         }
@@ -1183,8 +1197,7 @@ class FileOperations {
         filePath,
         sectionHeader,
         includeStatementToReplaceWith,
-        conversionStep,
-        recursive = true
+        conversionStep
     ) {
         if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
             let sectionFlag = false;
@@ -1193,9 +1206,7 @@ class FileOperations {
             //let sectionIndentation = 0;
             let contentIndentation = "";
 
-            let fileContents = this.getContentFromFile(filePath, recursive);
-            let lines = fileContents.split("\n");
-
+            let lines = util.getXMLContentSync(filePath);
             let returnContent = "";
 
             lines.forEach((line, index) => {
@@ -1273,8 +1284,7 @@ class FileOperations {
         extension,
         sectionHeader,
         includeStatementToReplaceWith,
-        conversionStep,
-        recursive = true
+        conversionStep
     ) {
         if (
             fs.existsSync(directoryPath) &&
@@ -1289,8 +1299,7 @@ class FileOperations {
                     file,
                     sectionHeader,
                     includeStatementToReplaceWith,
-                    conversionStep,
-                    recursive
+                    conversionStep
                 );
             });
         }
@@ -1788,10 +1797,10 @@ class FileOperations {
         if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
             let ruleFilesIncluded = [];
 
-            let fileContentsArray = this.getFileContentsArray(
+            let fileContentsArray = this.getContentFromFile(
                 filePath,
                 recursive
-            );
+            ).split(os.EOL);
             fileContentsArray.forEach((line) => {
                 let strippedLine = line.trim();
                 if (strippedLine.includes(includeSyntax)) {
@@ -1883,15 +1892,13 @@ class FileOperations {
     }
 
     /**
-     *
+     * To get the content array non-recursively from file
      * @param file
      */
-    getFileContentsArray(file, recursive = true) {
-        let fileContents = "";
+    getFileContentsArray(file) {
         let fileContentsArray = "";
 
-        fileContents = this.getContentFromFile(file, recursive);
-        fileContentsArray = fileContents.split(os.EOL);
+        fileContentsArray = util.getXMLContentSync(file);
 
         return fileContentsArray;
     }
