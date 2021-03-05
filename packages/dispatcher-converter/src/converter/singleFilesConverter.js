@@ -1154,8 +1154,7 @@ class SingleFilesConverter {
             let sectionIndentation = 0;
 
             let fileContentsArray = this.fileOpsUtil.getFileContentsArray(
-                filePath,
-                false
+                filePath
             );
             let returnContent = "";
 
