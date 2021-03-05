@@ -85,7 +85,7 @@ As sample configuration is below:
 | sdkSrc* | Path to your dispatcher sdk source code.  You must include the `src` folder itself in the path. |
 | onPremise/dispatcherAnySrc | Path to the dispatcher.any file. |
 | onPremise/httpdSrc | Path to the httpd.conf file (the main apache config file) - If `vhostsToConvert` is not specified you can use this property to find vhosts by parsing the main apache file. |
-| onPremise/vhostsToConvert | Array of paths to vhosts files you wish to convert to cloud service configurations. |
+| onPremise/vhostsToConvert | Array of paths to vhosts files and/or vhost folders containing vhost files you wish to convert to cloud service configurations. |
 | onPremise/variablesToReplace | Array of mapped objects that replace existing variables with new variables. The original variable is first and the variable to replace is second. |
 | onPremise/appendToVhosts | This can be a file that you want to append to every vhost file in case you need logic added to all configurations. This is useful to replace logic that was once stored in your main apache config file. |
 | onPremise/pathToPrepend | Array of paths to existing dispatcher configuration root folders to scan for the included files. These paths help to map includes in the configurations to their current location in the provided folder structure. |
@@ -104,10 +104,11 @@ dispatcherConverter:
         # Path to the httpd.conf file (the main apache config file)
         # If `vhostsToConvert` is not specified you can use this property to find vhosts by parsing the main apache file
         httpdSrc: "/Users/{username}/some/path/to/httpd.conf"
-        # Array of paths to vhosts files you wish to convert to cloud service configurations
+        # Array of paths to vhosts files and/or vhost folders containing vhost files you wish to convert to cloud service configurations
         vhostsToConvert:
             - "/Users/{username}/some/path/to/mywebsite.vhost"
             - "/Users/{username}/some/path/to/myotherwebsite.vhost"
+            - "/Users/{username}/some/path/to/vhostfolder"
         # Array of mapped objects that replace existing variables with new variables.
         # The original variable is first and the variable to replace is second
         variablesToReplace:
