@@ -1892,13 +1892,13 @@ class FileOperations {
     }
 
     /**
-     *
+     * To get the content array non-recursively from file
      * @param file
      */
-    getFileContentsArray(file, recursive = true) {
+    getFileContentsArray(file) {
         let fileContentsArray = "";
 
-        fileContentsArray = util.getXMLContentSync(file, recursive);
+        fileContentsArray = util.getXMLContentSync(file);
 
         return fileContentsArray;
     }

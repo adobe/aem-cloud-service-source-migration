@@ -495,21 +495,29 @@ describe("FileOperations", function () {
     });
 
     it("should successfully remove All Usage Of Old Variable", function () {
-        fs.appendFileSync(testFolder + "/newtestfile.vhost", "", function (
-            err
-        ) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "",
+            function (err) {
+                if (err) throw err;
+            }
+        );
         fs.writeFileSync(
-            testFolder + "/newtestfile.vhost",
+            path.join(testFolder, "newtestfile.vhost"),
             "VirtualHost ${HOSTADDRESS}:80 "
         );
-        fs.writeFileSync(testFolder + "/newtestfile.vhost", "<If HOSTADDRESS>");
         fs.writeFileSync(
-            testFolder + "/newtestfile.vhost",
+            path.join(testFolder, "newtestfile.vhost"),
+            "<If HOSTADDRESS>"
+        );
+        fs.writeFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
             "This is test content"
         );
-        fs.writeFileSync(testFolder + "/newtestfile.vhost", "Test </If>");
+        fs.writeFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "Test </If>"
+        );
         let fileOperation = new fileOperations("");
         fileOperation.removeAllUsageOfOldVariable(
             testFolder + "/",
@@ -518,7 +526,7 @@ describe("FileOperations", function () {
             new ConversionStep()
         );
         let content = fileOperation.getContentFromFile(
-            testFolder + "/newtestfile.vhost",
+            path.join(testFolder, "newtestfile.vhost"),
             true
         );
         assert.notInclude(content, "HOSTADDRESS");

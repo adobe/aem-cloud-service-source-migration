@@ -312,7 +312,7 @@ class SingleFilesConverter {
             }
         }
         fs.unlinkSync(
-            path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, "tempFile.txt")
+            path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE)
         );
         this.conversionSteps.push(conversionStep);
     }
@@ -456,7 +456,7 @@ class SingleFilesConverter {
             if (fs.lstatSync(file).isFile()) {
                 allFiles.push(file);
             } else if (fs.lstatSync(file).isDirectory()) {
-                let globPattern = file + "/**/*";
+                let globPattern = path.join(file, "**", "*");
                 let files = glob.sync(globPattern);
 
                 files.forEach((fetchedFiles) => {
