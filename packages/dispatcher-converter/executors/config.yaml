@@ -8,7 +8,7 @@ dispatcherConverter:
         # Path to the httpd.conf file (the main apache config file).
         # If `vhostsToConvert` is not specified you can use this property to find vhosts by parsing the main apache file
         httpdSrc:
-        # Array of paths to vhosts files you wish to convert to cloud service configurations.
+        # Array of paths to vhosts files and/or vhost folders containing vhost files you wish to convert to cloud service configurations.
         vhostsToConvert:
         # Array of mapped objects that replace existing variables with new variables.
         # The original variable is first and the variable to replace is second.
