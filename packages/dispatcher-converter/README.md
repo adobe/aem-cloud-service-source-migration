@@ -104,7 +104,7 @@ dispatcherConverter:
         # Path to the httpd.conf file (the main apache config file)
         # If `vhostsToConvert` is not specified you can use this property to find vhosts by parsing the main apache file
         httpdSrc: "/Users/{username}/some/path/to/httpd.conf"
-        # Array of paths to vhosts files you wish to convert to cloud service configurations
+        # Array of paths to vhosts files and/or vhost folders containing vhost files you wish to convert to cloud service configurations
         vhostsToConvert:
             - "/Users/{username}/some/path/to/mywebsite.vhost"
             - "/Users/{username}/some/path/to/myotherwebsite.vhost"
