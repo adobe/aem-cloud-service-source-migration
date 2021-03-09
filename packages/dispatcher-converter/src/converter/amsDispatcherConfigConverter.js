@@ -1199,8 +1199,9 @@ class AEMDispatcherConfigConverter {
         );
         ams_files.forEach((amsFile) => {
             // if not all files start with 'ams' prefix
+            let amsFilePath = amsFile;
             amsFile = path.basename(amsFile);
-            if (cache_files.length >= ams_files.length) {
+            if (cache_files.length > ams_files.length) {
                 this.FileOperationsUtility.removeIncludeStatementForSomeRule(
                     conf_dispatcher_d_dir_path,
                     Constants.INCLUDE_SYNTAX_IN_FARM,
@@ -1209,8 +1210,8 @@ class AEMDispatcherConfigConverter {
                     conversionStep,
                     '"../cache/default_rules.any"'
                 );
-                this.FileOperationsUtility.deleteFile(amsFile, conversionStep);
             }
+            this.FileOperationsUtility.deleteFile(amsFilePath, conversionStep);
         });
 
         let files = this.FileOperationsUtility.globGetFilesByPattern(
@@ -1247,17 +1248,40 @@ class AEMDispatcherConfigConverter {
         // The standard dispatcher configuration can be found in the folder src of the SDK
 
         if (file_count === 0) {
+            let rules_file_from_sdk = path.join(
+                this.sdkSrcPath,
+                "conf.dispatcher.d",
+                "cache",
+                "rules.any"
+            );
+            fs.copyFileSync(
+                rules_file_from_sdk,
+                path.join(cache_dir_path, "rules.any")
+            );
+            logger.info(
+                "AMSDispatcherConfigConverter: Copied file 'conf.dispatcher.d/cache/rules.any' from the standard dispatcher configuration to %s.",
+                cache_dir_path
+            );
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    cache_dir_path,
+                    "Copied file 'conf.dispatcher.d/cache/rules.any " +
+                        "from the standard dispatcher configuration to " +
+                        cache_dir_path
+                )
+            );
+
+            let includeStatementToReplaceWith = '$include "../cache/rules.any"';
+
             // adapt the $include statements referring to the the ams_*_cache.any rule files in the farm file
-            ams_files.forEach((amsFile) => {
-                this.FileOperationsUtility.replaceIncludeStatementWithNewRule(
-                    conf_dispatcher_d_dir_path,
-                    Constants.FARM,
-                    Constants.INCLUDE_SYNTAX_IN_FARM,
-                    path.basename(amsFile),
-                    "rules.any",
-                    conversionStep
-                );
-            });
+            this.FileOperationsUtility.replaceContentOfSection(
+                conf_dispatcher_d_dir_path,
+                Constants.FARM,
+                Constants.RULES_SECTION,
+                includeStatementToReplaceWith,
+                conversionStep
+            );
         }
         // If instead conf.dispatcher.d/cache now contains a single file with suffix _cache.any
         else if (file_count === 1 && files[0].endsWith("_cache.any")) {
@@ -1275,7 +1299,7 @@ class AEMDispatcherConfigConverter {
                 Constants.FARM,
                 Constants.INCLUDE_SYNTAX_IN_FARM,
                 old_file_name,
-                new_file_name,
+                '"../cache/rules.any"',
                 conversionStep
             );
         }
@@ -1284,7 +1308,7 @@ class AEMDispatcherConfigConverter {
         else if (file_count > 1) {
             let availableFarmFiles = this.getAllAvailableFarmFiles();
             if (availableFarmFiles.length > 1) {
-                availableFarmFiles.forEach((file) => {
+                files.forEach((file) => {
                     if (file.endsWith("_cache.any")) {
                         let cacheFileContents = util.getXMLContentSync(file);
                         this.FileOperationsUtility.replaceIncludeStatementWithContentOfRuleFile(
