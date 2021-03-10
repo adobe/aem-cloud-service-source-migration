@@ -584,7 +584,8 @@ class FileOperations {
         includeStatementSyntax,
         oldRuleName,
         newRuleName = null,
-        conversionStep
+        conversionStep,
+        replaceRule = null
     ) {
         if (fs.existsSync(filePath)) {
             let returnContent = "";
@@ -604,15 +605,20 @@ class FileOperations {
                     );
                     // in the include statements, replace the old rule file with the new one
                     if (newRuleName) {
-                        line =
-                            line.substring(
-                                0,
-                                line.length - line.trim().length - 1
-                            ) +
-                            includeStatementSyntax +
-                            " " +
-                            newRuleName +
-                            os.EOL;
+                        if (replaceRule != null) {
+                            line =
+                                line.substring(
+                                    0,
+                                    line.length - line.trim().length - 1
+                                ) +
+                                includeStatementSyntax +
+                                " " +
+                                newRuleName +
+                                os.EOL;
+                        } else {
+                            line = line.replace(oldRuleName, newRuleName);
+                        }
+
                         returnContent += line;
                         returnContent += os.EOL;
                         logger.info(
@@ -715,7 +721,8 @@ class FileOperations {
                     includeStatementSyntax,
                     ruleFileToReplace,
                     ruleFileToReplaceWith,
-                    conversionStep
+                    conversionStep,
+                    true
                 );
             });
         }
@@ -1792,7 +1799,7 @@ class FileOperations {
         filePath,
         ruleFilesToCheck,
         includeSyntax,
-        recursive = true
+        recursive = false
     ) {
         if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
             let ruleFilesIncluded = [];
@@ -1803,7 +1810,10 @@ class FileOperations {
             ).split(os.EOL);
             fileContentsArray.forEach((line) => {
                 let strippedLine = line.trim();
-                if (strippedLine.includes(includeSyntax)) {
+                if (
+                    strippedLine.includes(includeSyntax) &&
+                    !strippedLine.includes("#")
+                ) {
                     if (includeSyntax === Constants.INCLUDE_SYNTAX_IN_FARM) {
                         let includedFileName = path.basename(
                             strippedLine

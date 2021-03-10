@@ -323,13 +323,13 @@ class AEMDispatcherConfigConverter {
             );
             this.FileOperationsUtility.renameFile(files[0], renamed_file_path);
             // adapt the Include statements referring to that file in the virtual host files as well.
-            this.FileOperationsUtility.replaceIncludeStatementWithNewRule(
+            this.FileOperationsUtility.removeIncludeStatementForSomeRule(
                 conf_d_dir_path,
-                Constants.VHOST,
                 Constants.INCLUDE_SYNTAX_IN_VHOST,
+                Constants.VHOST,
                 old_file_name,
-                new_file_name,
-                conversionStep
+                conversionStep,
+                new_file_name
             );
         } else if (fileCount > 1) {
             let availableVhostFiles = this.getAllAvailableVhostFiles();
@@ -503,7 +503,7 @@ class AEMDispatcherConfigConverter {
                 Constants.FARM,
                 Constants.INCLUDE_SYNTAX_IN_FARM,
                 old_file_name,
-                new_file_name,
+                '"../clientheaders/clientheaders.any"',
                 conversionStep
             );
         }
@@ -1202,13 +1202,13 @@ class AEMDispatcherConfigConverter {
             let amsFilePath = amsFile;
             amsFile = path.basename(amsFile);
             if (cache_files.length > ams_files.length) {
-                this.FileOperationsUtility.removeIncludeStatementForSomeRule(
+                this.FileOperationsUtility.replaceIncludeStatementWithNewRule(
                     conf_dispatcher_d_dir_path,
-                    Constants.INCLUDE_SYNTAX_IN_FARM,
                     Constants.FARM,
+                    Constants.INCLUDE_SYNTAX_IN_FARM,
                     amsFile,
-                    conversionStep,
-                    '"../cache/default_rules.any"'
+                    '"../cache/default_rules.any"',
+                    conversionStep
                 );
             }
             this.FileOperationsUtility.deleteFile(amsFilePath, conversionStep);
@@ -1708,14 +1708,12 @@ class AEMDispatcherConfigConverter {
             // $include "/etc/httpd/conf.dispatcher.d/vhosts/ams_publish_vhosts.any"
             // with the statement:
             // $include "../virtualhosts/virtualhosts.any"
-            let replacement_include_file = path.join(
-                Constants.INCLUDE_SYNTAX_IN_FARM,
-                ' "../virtualhosts/virtualhosts.any"'
-            );
-            let include_pattern_to_replace = path.join(
-                Constants.INCLUDE_SYNTAX_IN_FARM,
-                ' "/etc/httpd/conf.dispatcher.d/vhosts/ams_'
-            );
+            let replacement_include_file =
+                Constants.INCLUDE_SYNTAX_IN_FARM +
+                ' "../virtualhosts/virtualhosts.any"';
+            let include_pattern_to_replace =
+                Constants.INCLUDE_SYNTAX_IN_FARM +
+                ' "/etc/httpd/conf.dispatcher.d/vhosts/ams_';
             this.FileOperationsUtility.replaceIncludePatternInSection(
                 dispatcherDirPath,
                 Constants.FARM,

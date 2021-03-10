@@ -895,7 +895,8 @@ class SingleFilesConverter {
                 let ruleFilesIncluded = this.fileOpsUtil.getNamesOfRuleFilesIncluded(
                     availableFarmFiles[0],
                     ruleFiles,
-                    Constants.INCLUDE_SYNTAX_IN_FARM
+                    Constants.INCLUDE_SYNTAX_IN_FARM,
+                    true
                 );
                 // delete the rule files not included in the single available farm file, and get the files actually used
                 files = this.filterAndRemoveUnusedFiles(
