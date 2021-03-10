@@ -198,9 +198,9 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
             if (isImmutableContentFilter(line)) {
                 prevState = true;
                 if (
-                    line.trim().startsWith("<include") ||
-                    (line.trim().startsWith("<exclude") &&
-                        line.includes("mode="))
+                    (line.trim().startsWith("<include") ||
+                        line.trim().startsWith("<exclude")) &&
+                    line.includes("mode=")
                 ) {
                     filterPaths.uiAppsFilters.push(
                         line.substring(0, line.indexOf("mode")) + "/>"
@@ -242,9 +242,9 @@ function segregateFilterPaths(filterFileContent, filterPaths) {
                     filterPaths.uiAppsFilters.push(line);
                 } else {
                     if (
-                        line.trim().startsWith("<include") ||
-                        (line.trim().startsWith("<exclude") &&
-                            line.includes("mode="))
+                        (line.trim().startsWith("<include") ||
+                            line.trim().startsWith("<exclude")) &&
+                        line.includes("mode=")
                     ) {
                         filterPaths.uiContentFilters.push(
                             line.substring(0, line.indexOf("mode")) + "/>"
@@ -392,6 +392,17 @@ function getEnumeratedAppsFilters(uiAppsFilters, appId) {
         if (filterPath.trim().startsWith(constants.FILTER_ROOT_START_TAG)) {
             // extract the path from the filter entry
             let path = filterPath.split('"')[1];
+            // handle paths like /apps/settings/i18n(/.+)
+            path =
+                path.indexOf("(") > -1
+                    ? path.substring(0, path.indexOf("("))
+                    : path;
+            if (
+                path.lastIndexOf("/") === 0 &&
+                !enumeratedAppsFilterPaths.has(path)
+            ) {
+                enumeratedAppsFilterPaths.add(path);
+            }
             // while path has not been completely enumerated
             while (path.indexOf("/") !== path.lastIndexOf("/")) {
                 path = path.substring(0, path.lastIndexOf("/"));

@@ -1,7 +1,7 @@
 {
     "name": "@adobe/aem-cs-source-migration-dispatcher-converter",
     "description": "AEM as a Cloud Service Dispatcher Converter tool",
-    "version": "0.0.2",
+    "version": "1.1.0",
     "repository": "https://github.com/adobe/aem-cloud-service-source-migration/tree/master/packages/dispatcher-converter",
     "author": "Adobe Inc.",
     "license": "Apache-2.0",

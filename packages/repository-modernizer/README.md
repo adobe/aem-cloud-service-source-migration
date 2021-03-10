@@ -73,6 +73,8 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
 	 the summary report and result log file. User would need to manually evaluate which config to persist. 
 * Find and move the OSGi configurations from the `ui.apps` package to the `ui.configs` package
  (under the path `/apps/my-app/osgiconfig`).
+* As per AEM as a Cloud Service best practice, all OSGi configs (except Repo Init OSGi configs) will be
+ translated to `.cfg.json` format.
  
  NOTE : Conflicts during the above move operation will be reported and conflicting content needs to
  be moved over manually.
@@ -315,10 +317,7 @@ The tool has some known limitations (we are working on fixing them) such as :
 1. It does not create Reactor `pom.xml` files for individual projects.
  A parent `pom.xml` file is created at the root level, but for multi-project structures,
  we do not create reactor pom files for individual projects.
-2. It does not work on nested maven artifacts.
- The tool can process multiple projects, each project can have multiple content packages,
- but if such packages have nested packages within, the tool will not be able to process them.
-3. It does not make any modifications to existing core bundles, apart from replacing `uber-jar`
+2. It does not make any modifications to existing core bundles, apart from replacing `uber-jar`
  dependencies with `aem-sdk-api` dependencies.
 
 #### Things that would need to be handled manually :
