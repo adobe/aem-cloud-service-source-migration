@@ -160,9 +160,10 @@ indexConverter:
 
 # Known Limitations
 The tool has some known limitations (we are working on fixing them) such as :
-1. This utility transforms only lucene type Custom Oak Index Definitions which are present under
+1. This utility transforms Custom Oak Index Definitions `aemVersion` 6.3 onwards.
+2. This utility transforms only lucene type Custom Oak Index Definitions which are present under
  `/apps` or `/oak:index`.
-2. It will not transform those lucene type indexes which are created for `nt:base`.
+3. It will not transform those lucene type indexes which are created for `nt:base`.
 
 #### Things that would need to be handled manually :
 * copy the converted index definitions to the `/oak:index` folder inside `ui.apps` package.
