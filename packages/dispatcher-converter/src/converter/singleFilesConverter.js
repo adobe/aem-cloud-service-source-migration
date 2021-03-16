@@ -840,7 +840,7 @@ class SingleFilesConverter {
                     Constants.FARM,
                     Constants.INCLUDE_SYNTAX_IN_FARM,
                     path.basename(amsFile),
-                    "rules.any",
+                    '$include "../cache/rules.any"',
                     conversionStep
                 );
             });
@@ -861,7 +861,7 @@ class SingleFilesConverter {
                 Constants.FARM,
                 Constants.INCLUDE_SYNTAX_IN_FARM,
                 old_file_name,
-                new_file_name,
+                '"../cache/rules.any"',
                 conversionStep
             );
         }
