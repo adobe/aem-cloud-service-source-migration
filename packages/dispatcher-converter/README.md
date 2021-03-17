@@ -53,6 +53,35 @@ To add the module to your `Node.js` project:
 ```javascript
 const DispatcherConverter = require('@adobe/aem-cs-source-migration-dispatcher-converter');
 ```
+## How it works
+
+#### 1. Copy the configuration to Target Folder
+* The `dispatcher configuration path` provided in the `config.yaml` is used to copy the configuration to the `target folder`.
+* The copied `dispatcher configurations` are processed by the tool and `converted dispatcher configurations` are placed 
+    under `target folder`.
+
+#### 2. Remove non-conforming segments
+In this part below non-conforming segments are removed:
+* `Unused Folders` are removed
+* `Non Publish Vhost Files` are removed
+* `Vhost sections not referring to Port 80` are removed
+* `Variables` used in configuration can also be renamed as per the requirement.
+    For `On Premise` configurations, additional variables can be defined in `variablesToReplace` section in `config file` to be replaced.
+
+#### 3. Convert configuration segment related to httd.conf
+In this phase the `tool` changes the `configuration` dependent on `httpd.conf` which includes below operations:
+* Change `virtualhost` files.
+* Create `symlinks` for `virtualhost` files in `enabled vhost` section.
+* Checking for `non-whitelisted directives` in the configuration.
+
+#### 4. Convert configuration segment related to dispatcher.any
+In this phase the `tool` changes the `configuration` dependent on `dispatcher.any` which includes below operations:
+* Creating/Changing `farm` files.
+* Creating `symlinks` for `farm` files under `enabled farms` section.
+* Creating `render`, `rules`, `filter`, `clientheaders` and `rewrite` files.
+
+#### 5. Summary report 
+* Every operation which is performed during the conversion it is tracked and written to `dispatcher-converter-report.md`.
 
 ## How to execute
 
@@ -63,7 +92,7 @@ To execute the repository-modernizer tool locally :
 3. Run `npm install` to install all the required dependencies
 4. Inside the `executors` folder:
     * add the required configurations to `config.yaml`. Refer to [Configurations](#configurations)
-     sections bellow to know more.
+     sections below to know more.
     * run `node main.js` to execute the tool on customer's Adobe Managed Services (AMS) dispatcher
      configurations
     * run `node singleFileMain.js` to execute the tool on customer's on-Premise dispatcher
@@ -149,6 +178,11 @@ dispatcherConverter:
 1. If you see errors concerning undefined variable `PUBLISH_DOCROOT`, rename it to `DOCROOT`.
 
 For troubleshooting other errors, refer to [Troubleshooting & Local Validation of Dispatcher Configuration](https://docs.adobe.com/content/help/en/experience-manager-learn/cloud-service/local-development-environment-set-up/dispatcher-tools.html#troubleshooting).
+
+## Known Limitations
+
+1. Any file which exists in original configuration and non - conforming to `Skyline Guidelines` will be removed.
+2. If removed file is required, it should be converted manually and used.
 
 # Contributing
 
