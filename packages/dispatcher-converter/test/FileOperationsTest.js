@@ -346,13 +346,14 @@ describe("FileOperations", function () {
             "Include",
             "vhost",
             "test",
-            new ConversionStep()
+            new ConversionStep(),
+            "newRule"
         );
         let content = fileOperation.getContentFromFile(
             testFolder + "/newtestfile.vhost",
             true
         );
-        assert.include(content, "# Include");
+        assert.include(content, "newRule");
     });
 
     it("should successfully replace include statement with content of rule file", function () {
