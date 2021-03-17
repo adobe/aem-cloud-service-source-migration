@@ -1,16 +1,6 @@
 {
     "packages": ["packages/*"],
     "version": "independent",
-    "ignoreChanges": ["**/test/**"],
     "npmClient": "yarn",
-    "useWorkspaces": true,
-    "command": {
-        "version": {
-            "message": "@releng version update"
-        },
-        "publish": {
-            "allowBranch": ["master"],
-            "ignoreChanges": ["**/*.md"]
-        }
-    }
+    "useWorkspaces": true
 }
