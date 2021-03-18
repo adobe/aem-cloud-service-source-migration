@@ -1,0 +1,37 @@
+name: Publish Packages
+
+on:
+  push:
+    branches:
+      - master  # Change this to your default branch
+
+jobs:
+
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
+
+      - name: Setup Node.js 10
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+          
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Execute Tests
+        run: yarn test
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@master
+        with:
+          publish: yarn changeset publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}      # Leave this as is, it's automatically generated
+          NPM_TOKEN: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}  # This will be shared with your repo as an org secret

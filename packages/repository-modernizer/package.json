@@ -1,7 +1,7 @@
 {
     "name": "@adobe/aem-cs-source-migration-repository-modernizer",
     "description": "AEM as a Cloud Service Project Restructuring tool",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "repository": "https://github.com/adobe/aem-cloud-service-source-migration/tree/master/packages/repository-modernizer",
     "author": "Adobe Inc.",
     "license": "Apache-2.0",
