@@ -840,7 +840,7 @@ class SingleFilesConverter {
                     Constants.FARM,
                     Constants.INCLUDE_SYNTAX_IN_FARM,
                     path.basename(amsFile),
-                    "rules.any",
+                    '$include "../cache/rules.any"',
                     conversionStep
                 );
             });
@@ -861,7 +861,7 @@ class SingleFilesConverter {
                 Constants.FARM,
                 Constants.INCLUDE_SYNTAX_IN_FARM,
                 old_file_name,
-                new_file_name,
+                '"../cache/rules.any"',
                 conversionStep
             );
         }
@@ -895,7 +895,8 @@ class SingleFilesConverter {
                 let ruleFilesIncluded = this.fileOpsUtil.getNamesOfRuleFilesIncluded(
                     availableFarmFiles[0],
                     ruleFiles,
-                    Constants.INCLUDE_SYNTAX_IN_FARM
+                    Constants.INCLUDE_SYNTAX_IN_FARM,
+                    true
                 );
                 // delete the rule files not included in the single available farm file, and get the files actually used
                 files = this.filterAndRemoveUnusedFiles(
