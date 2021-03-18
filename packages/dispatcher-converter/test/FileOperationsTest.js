@@ -231,8 +231,9 @@ describe("FileOperations", function () {
         );
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
-            "## client headers which should be passed through to the render instances"
+            "## client headers which should be passed through to the render instances \n"
         );
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "default");
         fs.appendFileSync(testFolder + "/newtestfile.vhost", "}");
         let fileOperation = new fileOperations("");
         fileOperation.replaceIncludePatternInSection(
@@ -240,13 +241,14 @@ describe("FileOperations", function () {
             ".vhost",
             "/publishfarm",
             "default",
+            "test",
             new ConversionStep()
         );
         let content = fileOperation.getContentFromFile(
             testFolder + "/newtestfile.vhost",
             true
         );
-        assert.include(content, "/publishfarm");
+        assert.include(content, "test");
     });
 
     it("should successfully consolidate rules file into single file", function () {
@@ -585,11 +587,11 @@ describe("FileOperations", function () {
         fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
-            "VirtualHost ${HOSTADDRESS} :80 "
+            "VirtualHost ${HOSTADDRESS} :80 \n"
         );
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
-            "VirtualHost ${PORT} :80 "
+            "VirtualHost ${PORT} :80 \n"
         );
         fs.appendFileSync(testFolder + "/newtestfile.vhost", "<If HOSTADDRESS");
         let fileOperation = new fileOperations("");
@@ -601,7 +603,7 @@ describe("FileOperations", function () {
             testFolder + "/newfile.vhost"
         );
         assert.isTrue(
-            result.toString() === "VirtualHost",
+            result.toString().includes("VirtualHost"),
             "Desired keyword is returned"
         );
 
