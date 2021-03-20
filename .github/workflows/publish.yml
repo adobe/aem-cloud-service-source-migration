@@ -20,9 +20,16 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 10
-          
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install Dependencies
-        run: yarn
+        run: yarn --frozen-lockfile --non-interactive        
+    
+      - name: Install Dependencies
+        run: yarn install
 
       - name: Execute Tests
         run: yarn test
