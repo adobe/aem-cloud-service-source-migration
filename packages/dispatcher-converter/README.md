@@ -181,7 +181,7 @@ For troubleshooting other errors, refer to [Troubleshooting & Local Validation o
 
 ## Known Limitations
 
-1. Any file which exists in original configuration and having name non-conforming to `Skyline Guidelines` will be removed.
+1. Rule file which exists in original configuration and having name non-conforming to `Skyline Guidelines` can be removed.
 2. If removed file is required, it should be converted manually and used.
 
 # Contributing
