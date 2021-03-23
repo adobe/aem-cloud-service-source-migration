@@ -84,13 +84,13 @@ In this phase the `tool` changes the `configuration` dependent on `dispatcher.an
       farm with different rules. 
     - Files are created in the available_farms directory and enabled with a symbolic link in the enabled_farms directory.
 * Creating `symlinks` for `farm` files under `enabled farms` section.
-* Creating `render`
+* Creating `render` files
     - Part of base framework, this file gets generated on startup. You are required to include this file in every farm you define, in the renders section.
-* Creating `rules` 
+* Creating `rules` files
     - This file is included from inside your .farm files. It specifies caching preferences.
-* Creating `filter`
+* Creating `filter` files
     - This file is included from inside your .farm files. It has a set of rules that change what traffic should be filtered out and not make it to the backend.
-* Creating `clientheaders` 
+* Creating `clientheaders` files
     - This file is included from inside your .farm files. It specifies what request headers should be forwarded to the backend.
 * Creating `rewrite` files.
     - This file is included from inside your .vhost files. It has a set of rewrite rules for mod_rewrite.
