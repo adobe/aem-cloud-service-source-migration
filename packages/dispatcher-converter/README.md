@@ -72,8 +72,8 @@ In this part below non-conforming segments are removed:
 In this phase the `tool` changes the `configuration` dependent on `httpd.conf` which includes below operations:
 * Change `virtualhost` files.
     - You can have one or more of these files. 
-    - They contain <VirtualHost> entries that match host names and allow Apache to handle each domain traffic with different rules. 
-    - Files are created in the available_vhosts directory and enabled with a symbolic link in the enabled_vhosts directory.
+    - They contain `<VirtualHost>` entries that match host names and allow Apache to handle each domain traffic with different rules. 
+    - Files are created in the `available_vhosts` directory and enabled with a `symbolic link` in the `enabled_vhosts` directory.
 * Create `symlinks` for `virtualhost` files in `enabled vhost` section.
 * Checking for `non-whitelisted directives` in the configuration.
 
@@ -81,19 +81,19 @@ In this phase the `tool` changes the `configuration` dependent on `httpd.conf` w
 In this phase the `tool` changes the `configuration` dependent on `dispatcher.any` which includes below operations:
 * Creating/Changing `farm` files.
     - You can have one or more of these files, and they contain farms to match host names and allow the dispatcher module to handle each 
-      farm with different rules. 
-    - Files are created in the available_farms directory and enabled with a symbolic link in the enabled_farms directory.
+      `farm` with different `rules`. 
+    - Files are created in the `available_farms` directory and enabled with a `symbolic link` in the `enabled_farms` directory.
 * Creating `symlinks` for `farm` files under `enabled farms` section.
 * Creating `render` files
-    - Part of base framework, this file gets generated on startup. You are required to include this file in every farm you define, in the renders section.
+    - Part of base framework, this file gets generated on startup. You are required to include this file in every `farm` you define, in the `renders` section.
 * Creating `rules` files
     - This file is included from inside your .farm files. It specifies caching preferences.
 * Creating `filter` files
-    - This file is included from inside your .farm files. It has a set of rules that change what traffic should be filtered out and not make it to the backend.
+    - This file is included from inside your `.farm` files. It has a set of rules that change what traffic should be filtered out and not make it to the backend.
 * Creating `clientheaders` files
-    - This file is included from inside your .farm files. It specifies what request headers should be forwarded to the backend.
+    - This file is included from inside your `.farm` files. It specifies what request headers should be forwarded to the backend.
 * Creating `rewrite` files.
-    - This file is included from inside your .vhost files. It has a set of rewrite rules for mod_rewrite.
+    - This file is included from inside your `.vhost` files. It has a set of `rewrite rules` for `mod_rewrite`.
 
 #### 5. Summary report 
 * Every operation which is performed during the conversion it is tracked and written to `dispatcher-converter-report.md`.
