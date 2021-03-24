@@ -108,7 +108,7 @@ var IndexConverter = {
             wasEnsureDefinitionConverted,
             writer_buffer
         );
-        writer_buffer.push("Note: For transforming `property` type index into `lucence` type index. Please refer at "+
+        writer_buffer.push("Note: For transforming `property` type index into `lucence` type index. Please refer "+
         "`http://jackrabbit.apache.org/oak/docs/query/lucene.html`.");
         let reportMessage =
             "Index Converter Report can be found at '" +
