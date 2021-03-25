@@ -93,4 +93,6 @@ module.exports = {
     JSON_ATTRIBUTES_KEY: "_attributes",
 
     JSON_DECLARATION_KEY: "_declaration",
+
+    INDEX_ANALYZERS: "analyzers",
 };
