@@ -1,7 +1,7 @@
 {
     "name": "@adobe/aem-cs-source-migration-index-converter",
     "description": "AEM as a Cloud Service Index Converter tool",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/adobe/aem-cloud-service-source-migration/tree/master/packages/index-converter"
