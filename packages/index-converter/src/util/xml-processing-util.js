@@ -252,15 +252,26 @@ module.exports = {
         return jsonObject2;
     },
 
-    copyAnalyzersFolder: (basePath, transformationMap) =>{
+    copyAnalyzersFolder: (basePath, transformationMap) => {
         for (let entry of transformationMap.entries()) {
-           let analyzersFolderPath = path.join(basePath,entry[0],constants.INDEX_ANALYZERS);
-           fs.exists(analyzersFolderPath,(exists) =>{
-               if(exists){
-               let analyzersTargetPath = path.join(commons_constants.TARGET_INDEX_FOLDER,entry[1],constants.INDEX_ANALYZERS);
-               util.copyFolderSync(analyzersFolderPath,analyzersTargetPath);
-               }
-           });
+            let analyzersFolderPath = path.join(
+                basePath,
+                entry[0],
+                constants.INDEX_ANALYZERS
+            );
+            fs.exists(analyzersFolderPath, (exists) => {
+                if (exists) {
+                    let analyzersTargetPath = path.join(
+                        commons_constants.TARGET_INDEX_FOLDER,
+                        entry[1],
+                        constants.INDEX_ANALYZERS
+                    );
+                    util.copyFolderSync(
+                        analyzersFolderPath,
+                        analyzersTargetPath
+                    );
+                }
+            });
         }
     },
     removeKeys,
