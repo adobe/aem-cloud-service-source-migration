@@ -1382,10 +1382,55 @@ class FileOperations {
                             let directive = "";
                             if (trimmedLine.startsWith("</")) {
                                 directive = trimmedLine.replace("/", "");
+
+                                if (
+                                    !whitelistedDirectivesSet.includes(
+                                        directive.toLowerCase()
+                                    )
+                                ) {
+                                    nonWhiteListedDirectiveUsage.push(
+                                        filePathWithLine + " " + directive
+                                    );
+
+                                    returnContent +=
+                                        Constants.COMMENT_ANNOTATION +
+                                        line +
+                                        os.EOL;
+                                    logger.info(
+                                        "FileOperationsUtility: Commenting non-whitelisted directive usage in ",
+                                        filePathWithLine
+                                    );
+                                } else {
+                                    returnContent += line + os.EOL;
+                                }
                             } else if (trimmedLine.startsWith("<")) {
                                 // check if start of section
                                 directive = trimmedLine.split(" ")[0] + ">";
                                 // if non-whitelisted directive is found, add to log and comment line
+
+                                if (
+                                    !whitelistedDirectivesSet.includes(
+                                        directive.toLowerCase()
+                                    )
+                                ) {
+                                    startOfSectionDerivativesList.push(
+                                        directive
+                                    );
+                                    nonWhiteListedDirectiveUsage.push(
+                                        filePathWithLine + " " + directive
+                                    );
+
+                                    returnContent +=
+                                        Constants.COMMENT_ANNOTATION +
+                                        line +
+                                        os.EOL;
+                                    logger.info(
+                                        "FileOperationsUtility: Commenting non-whitelisted directive usage in ",
+                                        filePathWithLine
+                                    );
+                                } else {
+                                    returnContent += line + os.EOL;
+                                }
                             } else {
                                 // if non-whitelisted directive is used, comment the line
                                 directive =
@@ -1554,7 +1599,7 @@ class FileOperations {
                     if (
                         !strippedLine.startsWith(Constants.COMMENT_ANNOTATION)
                     ) {
-                        let match = strippedLine.match("${([^}]+)");
+                        let match = strippedLine.match(/\${([^:]*?)\}/g);
                         if (match && !definedVariablesList.includes(match[0])) {
                             if (flag) {
                                 flag = false;
