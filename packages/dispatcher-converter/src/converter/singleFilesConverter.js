@@ -514,7 +514,8 @@ class SingleFilesConverter {
                     line
                         .trim()
                         .startsWith(Constants.VIRTUAL_HOST_SECTION_START) &&
-                    line.trim().indexOf("80") > -1
+                    (line.trim().indexOf("80") > -1 ||
+                        this.fileOpsUtil.isPortExists(line.trim()))
                 ) {
                     vHostFlag = true;
                     logger.debug(
