@@ -38,6 +38,14 @@ describe("FolderOperations", () => {
         }
     });
 
+    it("should not delete folder if does not exist", () => {
+        let folderName = "dummyFolder";
+        let folderOperation = new folderOperations();
+
+        folderOperation.deleteFolder(folderName, new ConversionStep());
+        assert.equal(fs.existsSync(testFolder), true);
+    });
+
     it("should rename folder", () => {
         if (fs.existsSync(testFolder)) {
             let folderOperation = new folderOperations();
@@ -54,5 +62,17 @@ describe("FolderOperations", () => {
         } else if (!fs.existsSync(testFolder)) {
             assert.fail(fs.existsSync(testFolder), false);
         }
+    });
+
+    it("should not rename folder if does not exist", () => {
+        let folderName = "dummyFolder";
+        let folderOperation = new folderOperations();
+
+        folderOperation.renameFolder(
+            folderName,
+            renamedFolder,
+            new ConversionStep()
+        );
+        assert.equal(fs.existsSync(testFolder), true);
     });
 });

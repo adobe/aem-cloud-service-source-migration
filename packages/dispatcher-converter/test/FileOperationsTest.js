@@ -6,6 +6,7 @@ const constants = require("../src/util/constants");
 const { ConversionStep } = require("@adobe/aem-cs-source-migration-commons");
 const fs = require("fs");
 const path = require("path");
+const yaml = require("js-yaml");
 
 let testFolder = "test/newtest";
 
@@ -132,7 +133,7 @@ describe("FileOperations", function () {
         try {
             fs.appendFileSync(testFolder + "/newfile.txt", "Hello content!");
             let fileOperation = new fileOperations("");
-            fileOperation.renameFile(
+            fileOperation.renameFileSync(
                 testFolder + "/newfile.txt",
                 testFolder + "/renameFile.txt"
             );
@@ -147,8 +148,30 @@ describe("FileOperations", function () {
         }
     });
 
+    it("should not rename a file if it does not exist", function () {
+        try {
+            let fileOperation = new fileOperations("");
+            fileOperation.renameFileSync(
+                testFolder + "/newfile.txt",
+                testFolder + "/renameFile.txt"
+            );
+            assert.isFalse(
+                fs.existsSync(testFolder + "/renameFile.txt"),
+                "File Renamed"
+            );
+        } catch (e) {
+            assert.isFalse(
+                fs.existsSync(
+                    testFolder + "/renameFile.txt",
+                    "File does not exist"
+                )
+            );
+        }
+    });
+
     it("should successfully get content from file", function () {
         try {
+            fs.appendFileSync(testFolder + "oldfile.txt", "Test Content");
             fs.appendFileSync(
                 testFolder + "/newfile.txt",
                 "Include Hello content!"
@@ -159,9 +182,56 @@ describe("FileOperations", function () {
             );
             fs.appendFileSync(
                 testFolder + "/newfile.txt",
-                "Include test/newtest/newtestfile.txt"
+                "Include test/newtest/old*.txt"
             );
-            let fileOperation = new fileOperations("");
+
+            let path = { cfg: testFolder };
+            let yamlStr = yaml.safeDump(path);
+            fs.writeFileSync(testFolder + "/config.yaml", yamlStr, "utf8");
+
+            const yamlFile = fs.readFileSync(
+                testFolder + "/config.yaml",
+                "utf8"
+            );
+            let config = yaml.safeLoad(yamlFile);
+            let fileOperation = new fileOperations(config);
+            let content = fileOperation.getContentFromFile(
+                testFolder + "/newfile.txt",
+                true
+            );
+            assert.include(content, "Hello content!");
+        } catch (e) {
+            if (e instanceof AssertionError) {
+                throw e;
+            }
+        }
+    });
+
+    it("should successfully get content from file with * in name", function () {
+        try {
+            fs.appendFileSync(testFolder + "oldfile.txt", "Test Content");
+            fs.appendFileSync(
+                testFolder + "/newfile.txt",
+                "Include Hello content!"
+            );
+            fs.appendFileSync(
+                testFolder + "/newfile.txt",
+                "$include test/newtest/newtestfile.txt"
+            );
+            fs.appendFileSync(
+                testFolder + "/newfile.txt",
+                "Include test/newtest/oldfile.txt"
+            );
+            let path = { cfg: testFolder };
+            let yamlStr = yaml.safeDump(path);
+            fs.writeFileSync(testFolder + "/config.yaml", yamlStr, "utf8");
+
+            const yamlFile = fs.readFileSync(
+                testFolder + "/config.yaml",
+                "utf8"
+            );
+            let config = yaml.safeLoad(yamlFile);
+            let fileOperation = new fileOperations(config);
             let content = fileOperation.getContentFromFile(
                 testFolder + "/*.txt",
                 true
@@ -178,9 +248,13 @@ describe("FileOperations", function () {
         fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
-            "VirtualHost ${HOSTADDRESS}:80 "
+            "VirtualHost ${HOSTADDRESS}:80 \n"
         );
-        fs.appendFileSync(testFolder + "/newtestfile.vhost", "<If HOSTADDRESS");
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "<If HOSTADDRESS \n"
+        );
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "<If HOST \n");
         let fileOperation = new fileOperations("");
         fileOperation.replaceAllUsageOfOldVariableWithNewVariable(
             testFolder + "/",
@@ -233,8 +307,8 @@ describe("FileOperations", function () {
             testFolder + "/newtestfile.vhost",
             "## client headers which should be passed through to the render instances \n"
         );
-        fs.appendFileSync(testFolder + "/newtestfile.vhost", "default");
-        fs.appendFileSync(testFolder + "/newtestfile.vhost", "}");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "default \n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "} \n");
         let fileOperation = new fileOperations("");
         fileOperation.replaceIncludePatternInSection(
             testFolder + "/",
@@ -287,6 +361,14 @@ describe("FileOperations", function () {
             testFolder + "/newtestfile.vhost",
             "<VirtualHost ${HOSTADDRESS}:80>\n"
         );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "<VirtualHost ${HOSTADDRESS}:443>\n"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "This is a test content \n"
+        );
         fs.appendFileSync(testFolder + "/newtestfile.vhost", "</VirtualHost>");
 
         let fileOperation = new fileOperations("");
@@ -330,7 +412,7 @@ describe("FileOperations", function () {
         assert.include(content, "content");
     });
 
-    it("should successfully replace include statement for some rule", function () {
+    it("should successfully replace include statement for some rule with new rule", function () {
         fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
             if (err) throw err;
         });
@@ -356,6 +438,37 @@ describe("FileOperations", function () {
             true
         );
         assert.include(content, "newRule");
+    });
+
+    it("should successfully replace include statement for some rule without new rule", function () {
+        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
+            if (err) throw err;
+        });
+
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "Include This is a test\n"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "This is a content text"
+        );
+
+        let fileOperation = new fileOperations("");
+
+        fileOperation.removeIncludeStatementForSomeRule(
+            testFolder,
+            "Include",
+            "vhost",
+            "test",
+            new ConversionStep(),
+            null
+        );
+        let content = fileOperation.getContentFromFile(
+            testFolder + "/newtestfile.vhost",
+            true
+        );
+        assert.equal(content.includes("test"), false);
     });
 
     it("should successfully replace include statement with content of rule file", function () {
@@ -391,7 +504,19 @@ describe("FileOperations", function () {
             testFolder + "/newtestfile.vhost",
             "Virtual This is a test\n"
         );
-        fs.appendFileSync(testFolder + "/newtestfile.vhost", "</ HOSTADDRESS>");
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "</ HOSTADDRESS> \n"
+        );
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "</ TESTVAR> \n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "< VARTEST> \n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "</ TESTVAR1> \n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "< VARTEST1> \n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "< TESTVAR3> \n");
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "This is a test content \n"
+        );
 
         let fileOperation = new fileOperations("");
 
@@ -442,6 +567,10 @@ describe("FileOperations", function () {
         fs.appendFileSync(
             testFolder + "/newtestfile.farm",
             "# Disallow any caching by default and subsequently allow caching\n"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.farm",
+            "$include test/newtest/newtfile.any \n"
         );
         fs.appendFileSync(testFolder + "/newtestfile.farm", "}\n");
         fs.appendFileSync(testFolder + "/newtestfile.farm", "}");
@@ -507,19 +636,19 @@ describe("FileOperations", function () {
         );
         fs.writeFileSync(
             path.join(testFolder, "newtestfile.vhost"),
-            "VirtualHost ${HOSTADDRESS}:80 "
+            "VirtualHost ${HOSTADDRESS}:80 \n"
         );
         fs.writeFileSync(
             path.join(testFolder, "newtestfile.vhost"),
-            "<If HOSTADDRESS>"
+            "<If HOSTADDRESS> \n"
         );
         fs.writeFileSync(
             path.join(testFolder, "newtestfile.vhost"),
-            "This is test content"
+            "This is test content \n"
         );
         fs.writeFileSync(
             path.join(testFolder, "newtestfile.vhost"),
-            "Test </If>"
+            "Test </If> \n"
         );
         let fileOperation = new fileOperations("");
         fileOperation.removeAllUsageOfOldVariable(
@@ -533,6 +662,46 @@ describe("FileOperations", function () {
             true
         );
         assert.notInclude(content, "HOSTADDRESS");
+    });
+
+    it("should return error if file does not exist to remove All Usage Of Old Variable", function () {
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "",
+            function (err) {
+                if (err) throw err;
+            }
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "VirtualHost ${HOSTADDRESS}:80 \n"
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "<If HOSTADDRESS> \n"
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "This is test content \n"
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "Test </If> \n"
+        );
+
+        let fileOperation = new fileOperations("");
+
+        fileOperation.removeAllUsageOfOldVariable(
+            testFolder + "/newtest/test/",
+            "vhost",
+            "HOSTADDRESS",
+            new ConversionStep()
+        );
+        let content = fileOperation.getContentFromFile(
+            path.join(testFolder, "newtestfile.vhost"),
+            true
+        );
+        assert.isTrue(content.includes(""), true);
     });
 
     it("should successfully get Names Of Rule Files Included", function () {
@@ -637,5 +806,230 @@ describe("FileOperations", function () {
 
         assert.isTrue(result[0].toString()==="HOSTADDRESS", "Desired keyword is returned");
         */
+    });
+
+    it("should successfully get Names Of Rule Files Included in Vhost Files", function () {
+        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
+            if (err) throw err;
+        });
+
+        fs.appendFile(testFolder + "/newtfile.any", "", function (err) {
+            if (err) throw err;
+        });
+
+        fs.appendFileSync(
+            testFolder + "/newtfile.any",
+            "<VirtualHost ${HOSTADDRESS}:80> \n"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtfile.any",
+            "ServerName www.beecube.com"
+        );
+        fs.appendFileSync(testFolder + "/newtfile.any", "</VirtualHost>");
+
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "<VirtualHost:80>\n"
+        );
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "{\n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "Test Content\n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "{\n");
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "Include test/newtest/newtfile.any \n"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "# Disallow any caching by default and subsequently allow caching\n"
+        );
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "}\n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "}");
+
+        let fileOperation = new fileOperations("");
+        let result = fileOperation.getNamesOfRuleFilesIncluded(
+            testFolder + "/newtestfile.vhost",
+            "test/newtest/newtfile.any",
+            constants.INCLUDE_SYNTAX_IN_VHOST,
+            false
+        );
+
+        assert.isTrue(
+            result.toString() === "newtfile.any",
+            " Desired File is Returned"
+        );
+    });
+
+    it("should check for undefined variables", function () {
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "\n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "VirtualHost \n");
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "${HOSTADDRESS} \n"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "<If HOSTADDRESS\n"
+        );
+        let fileOperation = new fileOperations("");
+        let definedList = [];
+        definedList.push("HOST");
+
+        let list = fileOperation.checkForUndefinedVariables(
+            testFolder,
+            definedList
+        );
+
+        assert.isTrue(
+            list.toString() === "${HOSTADDRESS}",
+            " Desired variable is returned"
+        );
+    });
+
+    it("should successfully remove Non Whitelisted Directives In Vhost Files containing start of section", function () {
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "Virtual This is a test\n"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "</ HOSTADDRESS> \n"
+        );
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "</ TESTVAR> \n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "< VARTEST> \n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "</ TESTVAR1> \n");
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "< VARTEST1> \n");
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "This is a test content \n"
+        );
+
+        let fileOperation = new fileOperations("");
+
+        let whitelistedDirectivesSet = [];
+
+        for (const directive of constants.WHITELISTED_DIRECTIVES_LIST) {
+            whitelistedDirectivesSet.push(directive.toLowerCase());
+        }
+
+        fileOperation.removeNonWhitelistedDirectivesInVhostFiles(
+            testFolder,
+            whitelistedDirectivesSet,
+            new ConversionStep()
+        );
+        let content = fileOperation.getContentFromFile(
+            testFolder + "/newtestfile.vhost",
+            true
+        );
+        assert.include(content, "#");
+    });
+
+    it("should successfully replace Content Of Section bracket in next line", function () {
+        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
+            if (err) throw err;
+        });
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "/publishfarm \n { \n"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "## client headers which should be passed through to the render instances"
+        );
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "}");
+        let fileOperation = new fileOperations("");
+        fileOperation.replaceContentOfSection(
+            testFolder + "/",
+            ".vhost",
+            "/publishfarm",
+            "default",
+            new ConversionStep()
+        );
+        let content = fileOperation.getContentFromFile(
+            testFolder + "/newtestfile.vhost",
+            true
+        );
+        assert.include(content, "/publishfarm");
+    });
+
+    it("should successfully remove variable usage", function () {
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "",
+            function (err) {
+                if (err) throw err;
+            }
+        );
+        fs.writeFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "<If HOSTADDRESS> \n"
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "<If HOSTADDRESS> \n"
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "HOSTADDRESS \n"
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "This is test content \n"
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "</If>\n"
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfile.vhost"),
+            "</If>\n"
+        );
+        let fileOperation = new fileOperations("");
+        fileOperation.removeVariableUsage(
+            testFolder + "/" + "newtestfile.vhost",
+            "HOSTADDRESS",
+            new ConversionStep()
+        );
+        let content = fileOperation.getContentFromFile(
+            path.join(testFolder, "newtestfile.vhost"),
+            true
+        );
+        assert.notInclude(content, "HOSTADDRESS");
+    });
+
+    it("should successfully get path for directory with pathToPrepend", function () {
+        let path = { pathToPrepend: ["test/newtest/", "test/newtest/"] };
+
+        let yamlStr = yaml.safeDump(path);
+        fs.writeFileSync(testFolder + "/config.yaml", yamlStr, "utf8");
+
+        const yamlFile = fs.readFileSync(testFolder + "/config.yaml", "utf8");
+        let config = yaml.safeLoad(yamlFile);
+        let fileOperation = new fileOperations(config);
+        let filePath = fileOperation.getPathForDir("config.yaml", true);
+        assert.include(filePath, "test/newtest/config.yaml");
+    });
+
+    it("should successfully get path for directory without pathToPrepend", function () {
+        let path = { cfg: "test/newtest" };
+        let yamlStr = yaml.safeDump(path);
+        fs.writeFileSync(testFolder + "/config.yaml", yamlStr, "utf8");
+
+        const yamlFile = fs.readFileSync(testFolder + "/config.yaml", "utf8");
+        let config = yaml.safeLoad(yamlFile);
+        let fileOperation = new fileOperations(config);
+        let filePath = fileOperation.getPathForDir("config.yaml", true);
+        assert.include(filePath, "test/newtest/config.yaml");
+    });
+
+    it("should successfully check isPortExist", function () {
+        let port = { portsToMap: ["443", "80"] };
+        let yamlStr = yaml.safeDump(port);
+        fs.writeFileSync(testFolder + "/config.yaml", yamlStr, "utf8");
+
+        const yamlFile = fs.readFileSync(testFolder + "/config.yaml", "utf8");
+        let config = yaml.safeLoad(yamlFile);
+        let fileOperation = new fileOperations(config);
+        let isPresent = fileOperation.isPortExists("443");
+        assert.isTrue(isPresent, true);
     });
 });
