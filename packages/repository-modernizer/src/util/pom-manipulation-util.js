@@ -69,7 +69,7 @@ var PomManipulationUtil = {
     /**
      *
      * @param String pomFilePath  path of pom file in whose packaging type need to be checked
-     * @param Array.<String> expectedPackaging  array of string containing packaging type
+     * @param String expectedPackaging  the expected packaging type
      *
      * Check the artifact's packaging type
      */
@@ -83,7 +83,7 @@ var PomManipulationUtil = {
                     line.indexOf(constants.PACKAGING_TAG_END)
                 );
                 // return whether the packaging type matches
-                return expectedPackaging.includes(packagingType.trim());
+                return expectedPackaging === packagingType.trim();
             }
         }
         // packaging type not found

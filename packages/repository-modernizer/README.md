@@ -189,9 +189,11 @@ The repository modernizer expects the following configurations to be specified f
     -   `appTitle` : The application title.
     -   `version` : The version used for content packages.
     -   `appId` : The application Id.
+    -   `coreBundles` : Array of relative path(s) (w.r.t. the project folder) to the existing code bundles
+        (these bundles will be embedded in the `all` package).
     -   `osgiFoldersToRename` : OSGi config folders that need to be renamed. The existing/source OSGi
-	    config folder PATH (JCR path starting from '/apps') is expected as key, and the replacement OSGi
-		folder NAME is expected as value.
+        config folder PATH (JCR path starting from '/apps') is expected as key, and the replacement OSGi
+        folder NAME is expected as value.
 		
         (NOTE 1 : All OSGi config folders under the same path and with same replacement name will be MERGED.)
 
@@ -250,6 +252,10 @@ repositoryModernizer:
       appId: xyz-app
       # project specific version to be used for content packages
       version: 2.0.0-SNAPSHOT
+      # Array of relative path(s) (w.r.t. the project folder) to the existing code bundles (will be embedded in the all package).
+      coreBundles:
+          - /core
+          - /api
       # OSGi config folders that need to be renamed.
       # The existing/source OSGi config folder PATH (JCR path starting from '/apps') is expected as key
       # and the replacement OSGi folder NAME is expected as value. See examples below :
@@ -291,6 +297,9 @@ repositoryModernizer:
       appId: abc-app
       # project specific version to be used for content packages
       version: 2.0.0-SNAPSHOT
+      # Array of relative path(s) (w.r.t. the project folder) to the existing code bundles (will be embedded in the all package).
+      coreBundles:
+         - /core
       # OSGi config folders that need to be renamed.
       # The existing/source OSGi config folder PATH (JCR path starting from '/apps') is expected as key
       # and the replacement OSGi folder NAME is expected as value. See examples below :

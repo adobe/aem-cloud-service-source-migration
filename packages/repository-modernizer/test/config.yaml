@@ -40,3 +40,6 @@ projects:
       version: 2.0.0-SNAPSHOT
       # application ID (will be used for config and package folder names)
       appId: test
+      # Array of relative path(s) (w.r.t. the project folder) to the existing code bundles (will be embedded in the all package).
+      coreBundles:
+          - /core

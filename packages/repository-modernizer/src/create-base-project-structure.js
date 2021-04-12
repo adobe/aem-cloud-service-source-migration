@@ -239,27 +239,11 @@ var CreateBaseProjectStructure = {
                     : constants.RELATIVE_PATH_TWO_LEVEL_UP,
                 conversionStep
             );
-            // copy misc packages from source
-            copyCoreBundlesOrContentPackages(
-                project.projectPath,
-                projectPath,
-                constants.CONTENT_PACKAGING_TYPES,
-                project.existingContentPackageFolder.map((folder) =>
-                    path.join(project.projectPath, folder)
-                ),
-                project.appId,
-                conversionStep
-            );
+            // copy other packages from source
+            copyOtherModules(project, conversionStep);
             // copy core bundles from source
             let allPackageDependencyList = [];
-            let artifactIdInfoList = copyCoreBundlesOrContentPackages(
-                project.projectPath,
-                projectPath,
-                constants.BUNDLE_PACKAGING_TYPES,
-                [],
-                project.appId,
-                conversionStep
-            );
+            let artifactIdInfoList = copyCoreBundles(project, conversionStep);
             artifactIdInfoList.forEach((artifactIdInfo) => {
                 allPackageDependencyList.push(
                     constants.BUNDLE_DEPENDENCY_TEMPLATE.replace(
@@ -400,25 +384,54 @@ async function setPackageArtifactAndGroupId(
 }
 
 /**
- *
- * @param String source path of the source project from where the artifacts need to be copied
- * @param String destination  path of target project
- * @param String[] packagingType array for packaging types to match against
- * @param String[] ignoredPaths array of path to be ignored
+ * @param String project project info object, from where modules need to be copied
  * @param object conversionStep  object containing info about rule and  details of the rule that is being followed
  *
- * Copy all jar artifacts from source projects to target projects
+ * Copy all core bundles from source project to target project
  */
-function copyCoreBundlesOrContentPackages(
-    source,
-    destination,
-    packagingType,
-    ignoredPaths,
-    appId,
-    conversionStep
-) {
+function copyCoreBundles(project, conversionStep) {
     // the path.join() is to standardize the paths to use '\' irrespective of OS
-    source = path.join(source);
+    let source = path.join(project.projectPath);
+    let destination = path.join(
+        commons_constants.TARGET_PROJECT_SRC_FOLDER,
+        path.basename(project.projectPath)
+    );
+    let artifactIdInfoList = [];
+    project.coreBundles.forEach((bundle) => {
+        let sourceBundlePath = path.join(project.projectPath, bundle);
+        let destinationBundlePath = path.join(
+            destination,
+            sourceBundlePath.replace(source, "")
+        );
+        artifactIdInfoList.push(
+            copyModuleFromSource(
+                sourceBundlePath,
+                destinationBundlePath,
+                project.appId,
+                constants.BUNDLE,
+                conversionStep
+            )
+        );
+    });
+    return artifactIdInfoList;
+}
+
+/**
+ * @param String project project info object, from where modules need to be copied
+ * @param object conversionStep  object containing info about rule and  details of the rule that is being followed
+ *
+ * Copy all modules (expect bundles) from source project to target project
+ */
+function copyOtherModules(project, conversionStep) {
+    let ignoredPaths = project.existingContentPackageFolder.map((folder) =>
+        path.join(project.projectPath, folder)
+    );
+    // the path.join() is to standardize the paths to use '\' irrespective of OS
+    let source = path.join(project.projectPath);
+    let destination = path.join(
+        commons_constants.TARGET_PROJECT_SRC_FOLDER,
+        path.basename(project.projectPath)
+    );
     // get all pom files
     let allPomFiles = util.globGetFilesByName(source, constants.POM_XML);
     let artifactIdInfoList = [];
@@ -436,46 +449,63 @@ function copyCoreBundlesOrContentPackages(
             !ignoredPaths.includes(srcFolderPath) &&
             pomManipulationUtil.verifyArtifactPackagingType(
                 pomFile,
-                packagingType
+                constants.CONTENT_PACKAGE
             )
         ) {
-            util.copyFolderSync(srcFolderPath, destinationFolderPath);
-            logger.info(
-                `CreateBaseProjectStructure: Copied ${
-                    packagingType.includes("bundle")
-                        ? "bundle"
-                        : "content-package"
-                } from ${srcFolderPath} to ${destinationFolderPath}.`
+            copyModuleFromSource(
+                srcFolderPath,
+                destination,
+                project.appId,
+                constants.CONTENT_PACKAGE,
+                conversionStep
             );
-            conversionStep.addOperation(
-                new ConversionOperation(
-                    commons_constants.ACTION_ADDED,
-                    destinationFolderPath,
-                    "Copied " + packagingType.includes("bundle")
-                        ? "bundle"
-                        : "content-package" +
-                          " from " +
-                          srcFolderPath +
-                          " to " +
-                          destinationFolderPath
-                )
-            );
-            var pom = pomParser.parsePom({ filePath: pomFile });
-            var artifactId = pom.artifactId;
-            var version = pom.version;
-            if (typeof version === "undefined") {
-                logger.warn(
-                    pomFile +
-                        " does not have version defined. Please add version in 'all' pom file."
-                );
-            }
-            artifactIdInfoList.push({
-                artifactId: artifactId,
-                appId: appId,
-                version: version,
-            });
         }
     });
     return artifactIdInfoList;
 }
+
+/**
+ * Function to copy given source module to destination, and get the module info (artifactId, version).
+ * NOTE : type expects `bundle` or `content-package`
+ *
+ * @returns the module info (artifactId, version).
+ */
+function copyModuleFromSource(
+    srcFolderPath,
+    destinationFolderPath,
+    appId,
+    type,
+    conversionStep
+) {
+    let pomFile = path.join(srcFolderPath, constants.POM_XML);
+    util.copyFolderSync(srcFolderPath, destinationFolderPath);
+    logger.info(
+        `CreateBaseProjectStructure: Copied ${type} from ${srcFolderPath} to ${destinationFolderPath}.`
+    );
+    conversionStep.addOperation(
+        new ConversionOperation(
+            commons_constants.ACTION_ADDED,
+            destinationFolderPath,
+            "Copied " +
+                type +
+                " from " +
+                srcFolderPath +
+                " to " +
+                destinationFolderPath
+        )
+    );
+    let pom = pomParser.parsePom({ filePath: pomFile });
+    if (typeof pom.version === "undefined") {
+        logger.warn(
+            pomFile +
+                " does not have version defined. Please add version in 'all' pom file."
+        );
+    }
+    return {
+        artifactId: pom.artifactId,
+        appId: appId,
+        version: pom.version,
+    };
+}
+
 module.exports = CreateBaseProjectStructure;

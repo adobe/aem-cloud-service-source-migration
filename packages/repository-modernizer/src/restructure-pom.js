@@ -134,8 +134,7 @@ var RestructurePoms = {
             );
             uiAppsDependencyList.push(sdkDependency);
             addSdkDependencytoCoreBundles(
-                project.projectPath,
-                projectPath,
+                project,
                 sdkDependency,
                 conversionStep
             );
@@ -563,31 +562,28 @@ async function getPluginsFromPom(pomFile, pluginObj) {
  * Function to add sdk dependency to core Bundles
  */
 async function addSdkDependencytoCoreBundles(
-    source,
-    destination,
+    project,
     sdkDependency,
     conversionStep
 ) {
-    let allPomFiles = util.globGetFilesByName(source, constants.POM_XML);
-    for (let pomFile = 0; pomFile < allPomFiles.length; pomFile++) {
-        if (
-            pomManipulationUtil.verifyArtifactPackagingType(
-                allPomFiles[pomFile],
-                constants.BUNDLE_PACKAGING_TYPES
-            )
-        ) {
-            let bundleFolderPath = path.dirname(allPomFiles[pomFile]);
-            let bundlePomFile = path.join(
-                destination,
-                bundleFolderPath.replace(source, ""),
-                constants.POM_XML
-            );
-            await pomManipulationUtil.addSdkDependencies(
-                bundlePomFile,
-                sdkDependency,
-                conversionStep
-            );
-        }
+    // the path.join() is to standardize the paths to use '\' irrespective of OS
+    let source = path.join(project.projectPath);
+    let destination = path.join(
+        commons_constants.TARGET_PROJECT_SRC_FOLDER,
+        path.basename(project.projectPath)
+    );
+    for (const bundle of project.coreBundles) {
+        let bundleFolderPath = path.join(project.projectPath, bundle);
+        let bundlePomFile = path.join(
+            destination,
+            bundleFolderPath.replace(source, ""),
+            constants.POM_XML
+        );
+        await pomManipulationUtil.addSdkDependencies(
+            bundlePomFile,
+            sdkDependency,
+            conversionStep
+        );
     }
 }
 /**

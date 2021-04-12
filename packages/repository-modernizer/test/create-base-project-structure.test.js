@@ -36,9 +36,8 @@ const baseRewired = rewire("../src/create-base-project-structure");
 const setPackageArtifactAndGroupId = baseRewired.__get__(
     "setPackageArtifactAndGroupId"
 );
-const copyCoreBundlesOrContentPackages = baseRewired.__get__(
-    "copyCoreBundlesOrContentPackages"
-);
+const copyCoreBundles = baseRewired.__get__("copyCoreBundles");
+const copyOtherModules = baseRewired.__get__("copyOtherModules");
 const fs = require("fs");
 const fsExtra = require("fs-extra");
 const path = require("path");
@@ -53,7 +52,8 @@ describe("create-base-project-structure", function () {
     test("check type", async () => {
         expect(typeof base.create).toEqual("function");
         expect(typeof setPackageArtifactAndGroupId).toEqual("function");
-        expect(typeof copyCoreBundlesOrContentPackages).toEqual("function");
+        expect(typeof copyCoreBundles).toEqual("function");
+        expect(typeof copyOtherModules).toEqual("function");
     });
 
     test("create", () => {

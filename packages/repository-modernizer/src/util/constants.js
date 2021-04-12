@@ -65,9 +65,9 @@ module.exports = {
 
     NON_ADOBE_DEPENDENCIES: "nonadobedependencies",
 
-    BUNDLE_PACKAGING_TYPES: ["jar", "bundle"],
+    BUNDLE: "bundle",
 
-    CONTENT_PACKAGING_TYPES: ["content-package"],
+    CONTENT_PACKAGE: "content-package",
 
     // POM tags and entries
 
