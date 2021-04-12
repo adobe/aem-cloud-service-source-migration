@@ -55,10 +55,9 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
 * If multiple projects are configured, create project folders (with the same name as source project) inside
  which we create the base template for `ui.apps`,`ui.apps.structure`, `ui.content` and `ui.config` packages.
 * Apply the specified `groupId`, `artifactId` and `version` in the newly created artifact `pom.xml` files.
-* For each project specified in the configuration, copy all packages (other than the packages
- specified under `existingContentPackageFolder`) of the packaging type `jar`, `bundle`,
- `content-package` from the source.
-* Embed the core bundles (copied in the above step) in the `all/pom.xml`.
+* For each project specified in the configuration, copy all packages with the packaging type `content-package`
+ (other than the packages specified under `existingContentPackageFolder`) from the source.
+* Copy core bundles as per input configuration and embed them in the `all/pom.xml`.
 
 #### 2. Separate mutable and immutable content
 * For each project specified in the configuration, traverse the content of the source packages
