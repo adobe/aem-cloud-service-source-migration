@@ -57,6 +57,30 @@ class AEMDispatcherConfigConverter {
         this.checkVhosts();
         this.replaceVariableInFarmFiles();
         this.removeNonWhitelistedDirectives();
+        this.createFarmSymLinks(
+            path.join(
+                commons_constants.TARGET_DISPATCHER_SRC_FOLDER,
+                Constants.CONF_DISPATCHER_D,
+                Constants.ENABLED_FARMS
+            ),
+            path.join(
+                this.dispatcherConfigPath,
+                Constants.CONF_DISPATCHER_D,
+                Constants.AVAILABLE_FARMS
+            )
+        );
+        this.createVhostSymLinks(
+            path.join(
+                commons_constants.TARGET_DISPATCHER_SRC_FOLDER,
+                Constants.CONF_D,
+                Constants.ENABLED_VHOSTS
+            ),
+            path.join(
+                this.dispatcherConfigPath,
+                Constants.CONF_D,
+                Constants.AVAILABLE_VHOSTS
+            )
+        );
 
         // create the summary report for the conversion performed
         SummaryReportWriter.writeSummaryReport(
@@ -1788,6 +1812,66 @@ class AEMDispatcherConfigConverter {
         });
 
         return usedFiles;
+    }
+    /**
+     * Scans the `available_vhosts` folder, and if a symbolic link doesn't already exist in the `enabled_vhosts` folder, one
+     * is created.
+     */
+    createVhostSymLinks(enabledVhostsPath, availableVhostsPath) {
+        let conversionStep = this.createVhostSymLinksSummaryGenerator();
+        let files = glob.sync(path.join(availableVhostsPath, "*.vhost")) || [];
+        files.forEach((file) => {
+            logger.info(
+                "Creating Vhost Symbolic Link in target folder for file : " +
+                    file
+            );
+            let fileName = path.basename(file);
+            this.FileOperationsUtility.createSymLink(
+                "../available_vhosts/" + fileName,
+                path.join(enabledVhostsPath, fileName),
+                fileName,
+                conversionStep
+            );
+        });
+        this.conversionSteps.push(conversionStep);
+    }
+
+    createVhostSymLinksSummaryGenerator() {
+        logger.info("Creating Vhost SymLinks");
+        return new ConversionStep(
+            "Create Vhost SymLinks",
+            "Generate Vhost SymLinks form vhost files"
+        );
+    }
+
+    /**
+     * Scans the `available_farms` folder, and if a symbolic link doesn't already exist in the `enabled_farms` folder, one
+     * is created.
+     */
+    createFarmSymLinks(enabledFarmsPath, availableFarmsPath) {
+        let conversionStep = this.createFarmSymLinksSummaryGenerator();
+        let files = glob.sync(path.join(availableFarmsPath, "*.farm")) || [];
+        files.forEach((file) => {
+            logger.info(
+                "Creating Farm Symbolic Link in target folder for file : " +
+                    file
+            );
+            this.FileOperationsUtility.createSymLink(
+                "../available_farms/" + path.basename(file),
+                path.join(enabledFarmsPath, path.basename(file)),
+                path.basename(file),
+                conversionStep
+            );
+        });
+        this.conversionSteps.push(conversionStep);
+    }
+
+    createFarmSymLinksSummaryGenerator() {
+        logger.info("Creating Farm SymLinks");
+        return new ConversionStep(
+            "Create Farm SymLinks",
+            "Generate Farm SymLinks form farm files"
+        );
     }
 }
 //let aem_dispatcher_config_converter = new AEMDispatcherConfigConverter("/Users/prateeks/Issues/Dispatcher/SDK/dispatcher-sdk-2.0.21.1/src", "../"+commons_constants.TARGET_DISPATCHER_SRC_FOLDER);

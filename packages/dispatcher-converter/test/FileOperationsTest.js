@@ -471,6 +471,36 @@ describe("FileOperations", function () {
         assert.equal(content.includes("test"), false);
     });
 
+    it("should successfully create a symlink from source to target", function () {
+        fs.appendFileSync(
+            testFolder + "/newtestfilesource.vhost",
+            "",
+            function (err) {
+                if (err) throw err;
+            }
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfiletarget.vhost",
+            "",
+            function (err) {
+                if (err) throw err;
+            }
+        );
+        let fileOperation = new fileOperations("");
+        fileOperation.createSymLink(
+            "../newtestfiletarget.vhost",
+            path.join(testFolder, "/newtestfilesource.vhost"),
+            "newtestfiletarget.vhost",
+            new ConversionStep()
+        );
+        fs.lstat(
+            path.join(testFolder, "/newtestfilesource.vhost"),
+            function (err, stats) {
+                assert.equal(stats.isSymbolicLink(), true);
+            }
+        );
+    });
+
     it("should successfully replace include statement with content of rule file", function () {
         fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
             if (err) throw err;

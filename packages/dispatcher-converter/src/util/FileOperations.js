@@ -1063,6 +1063,31 @@ class FileOperations {
     }
 
     /**
+     * creates a symlink from path to target.
+     * @param targetPath
+     * @param path
+     * @param filename
+     * @param conversionStep
+     */
+
+    createSymLink(targetPath, path, filename, conversionStep) {
+        fs.unlinkSync(path);
+        if (!fs.existsSync(path)) {
+            fs.symlinkSync(targetPath, path);
+            logger.info(
+                "Created Symbolic Link in target folder for file : " + filename
+            );
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    path,
+                    `Generated SymLink for the file ${filename}`
+                )
+            );
+        }
+    }
+
+    /**
      * Remove usage of specified variable within a file.  If the variable is used in an if block - the entire
      * if statement is removed.
      *
