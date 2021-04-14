@@ -1071,7 +1071,10 @@ class FileOperations {
      */
 
     createSymLink(targetPath, path, filename, conversionStep) {
-        fs.unlinkSync(path);
+        if (fs.existsSync(path)) {
+            //delete before creating a symlink
+            fs.unlinkSync(path);
+        }
         if (!fs.existsSync(path)) {
             fs.symlinkSync(targetPath, path);
             logger.info(
