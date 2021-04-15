@@ -471,6 +471,57 @@ describe("FileOperations", function () {
         assert.equal(content.includes("test"), false);
     });
 
+    it("should successfully create a symlink from source to target when source exists", function () {
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfilesource.vhost"),
+            "",
+            function (err) {
+                if (err) throw err;
+            }
+        );
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfiletarget.vhost"),
+            "",
+            function (err) {
+                if (err) throw err;
+            }
+        );
+        let fileOperation = new fileOperations("");
+        fileOperation.createSymLink(
+            path.join("..", "newtestfiletarget.vhost"),
+            path.join(testFolder, "newtestfilesource.vhost"),
+            new ConversionStep()
+        );
+        fs.lstat(
+            path.join(testFolder, "newtestfilesource.vhost"),
+            function (err, stats) {
+                assert.equal(stats.isSymbolicLink(), true);
+            }
+        );
+    });
+
+    it("should successfully create a symlink from source to target when source doesn't exist", function () {
+        fs.appendFileSync(
+            path.join(testFolder, "newtestfiletarget.vhost"),
+            "",
+            function (err) {
+                if (err) throw err;
+            }
+        );
+        let fileOperation = new fileOperations("");
+        fileOperation.createSymLink(
+            path.join("..", "newtestfiletarget.vhost"),
+            path.join(testFolder, "newtestfilesource.vhost"),
+            new ConversionStep()
+        );
+        fs.lstat(
+            path.join(testFolder, "newtestfilesource.vhost"),
+            function (err, stats) {
+                assert.equal(stats.isSymbolicLink(), true);
+            }
+        );
+    });
+
     it("should successfully replace include statement with content of rule file", function () {
         fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
             if (err) throw err;
