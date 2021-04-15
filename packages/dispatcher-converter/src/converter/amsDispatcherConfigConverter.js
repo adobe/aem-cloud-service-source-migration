@@ -24,7 +24,6 @@ const {
 const fs = require("fs");
 const glob = require("glob");
 const path = require("path");
-const { AVAILABLE_VHOSTS, AVAILABLE_FARMS } = require("../util/constants");
 
 class AEMDispatcherConfigConverter {
     constructor(config, dispatcherConfigPath) {
@@ -1816,7 +1815,7 @@ class AEMDispatcherConfigConverter {
             );
             let fileName = path.basename(file);
             this.FileOperationsUtility.createSymLink(
-                path.join("..", AVAILABLE_VHOSTS, fileName),
+                path.join("..", Constants.AVAILABLE_VHOSTS, fileName),
                 path.join(enabledVhostsPath, fileName),
                 conversionStep
             );
@@ -1855,7 +1854,7 @@ class AEMDispatcherConfigConverter {
                     file
             );
             this.FileOperationsUtility.createSymLink(
-                path.join("..", AVAILABLE_FARMS, path.basename(file)),
+                path.join("..", Constants.AVAILABLE_FARMS, path.basename(file)),
                 path.join(enabledFarmsPath, path.basename(file)),
                 conversionStep
             );
