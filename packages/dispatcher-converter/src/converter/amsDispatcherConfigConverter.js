@@ -24,6 +24,7 @@ const {
 const fs = require("fs");
 const glob = require("glob");
 const path = require("path");
+const { AVAILABLE_VHOSTS, AVAILABLE_FARMS } = require("../util/constants");
 
 class AEMDispatcherConfigConverter {
     constructor(config, dispatcherConfigPath) {
@@ -57,30 +58,8 @@ class AEMDispatcherConfigConverter {
         this.checkVhosts();
         this.replaceVariableInFarmFiles();
         this.removeNonWhitelistedDirectives();
-        this.createFarmSymLinks(
-            path.join(
-                commons_constants.TARGET_DISPATCHER_SRC_FOLDER,
-                Constants.CONF_DISPATCHER_D,
-                Constants.ENABLED_FARMS
-            ),
-            path.join(
-                this.dispatcherConfigPath,
-                Constants.CONF_DISPATCHER_D,
-                Constants.AVAILABLE_FARMS
-            )
-        );
-        this.createVhostSymLinks(
-            path.join(
-                commons_constants.TARGET_DISPATCHER_SRC_FOLDER,
-                Constants.CONF_D,
-                Constants.ENABLED_VHOSTS
-            ),
-            path.join(
-                this.dispatcherConfigPath,
-                Constants.CONF_D,
-                Constants.AVAILABLE_VHOSTS
-            )
-        );
+        this.createFarmSymLinks();
+        this.createVhostSymLinks();
 
         // create the summary report for the conversion performed
         SummaryReportWriter.writeSummaryReport(
@@ -1817,7 +1796,17 @@ class AEMDispatcherConfigConverter {
      * Scans the `available_vhosts` folder, and if a symbolic link doesn't already exist in the `enabled_vhosts` folder, one
      * is created.
      */
-    createVhostSymLinks(enabledVhostsPath, availableVhostsPath) {
+    createVhostSymLinks() {
+        let enabledVhostsPath = path.join(
+            commons_constants.TARGET_DISPATCHER_SRC_FOLDER,
+            Constants.CONF_D,
+            Constants.ENABLED_VHOSTS
+        );
+        let availableVhostsPath = path.join(
+            this.dispatcherConfigPath,
+            Constants.CONF_D,
+            Constants.AVAILABLE_VHOSTS
+        );
         let conversionStep = this.createVhostSymLinksSummaryGenerator();
         let files = glob.sync(path.join(availableVhostsPath, "*.vhost")) || [];
         files.forEach((file) => {
@@ -1827,9 +1816,8 @@ class AEMDispatcherConfigConverter {
             );
             let fileName = path.basename(file);
             this.FileOperationsUtility.createSymLink(
-                "../available_vhosts/" + fileName,
+                path.join("..", AVAILABLE_VHOSTS, fileName),
                 path.join(enabledVhostsPath, fileName),
-                fileName,
                 conversionStep
             );
         });
@@ -1848,7 +1836,17 @@ class AEMDispatcherConfigConverter {
      * Scans the `available_farms` folder, and if a symbolic link doesn't already exist in the `enabled_farms` folder, one
      * is created.
      */
-    createFarmSymLinks(enabledFarmsPath, availableFarmsPath) {
+    createFarmSymLinks() {
+        let enabledFarmsPath = path.join(
+            commons_constants.TARGET_DISPATCHER_SRC_FOLDER,
+            Constants.CONF_DISPATCHER_D,
+            Constants.ENABLED_FARMS
+        );
+        let availableFarmsPath = path.join(
+            this.dispatcherConfigPath,
+            Constants.CONF_DISPATCHER_D,
+            Constants.AVAILABLE_FARMS
+        );
         let conversionStep = this.createFarmSymLinksSummaryGenerator();
         let files = glob.sync(path.join(availableFarmsPath, "*.farm")) || [];
         files.forEach((file) => {
@@ -1857,9 +1855,8 @@ class AEMDispatcherConfigConverter {
                     file
             );
             this.FileOperationsUtility.createSymLink(
-                "../available_farms/" + path.basename(file),
+                path.join("..", AVAILABLE_FARMS, path.basename(file)),
                 path.join(enabledFarmsPath, path.basename(file)),
-                path.basename(file),
                 conversionStep
             );
         });

@@ -1065,26 +1065,28 @@ class FileOperations {
     /**
      * creates a symlink from path to target.
      * @param targetPath
-     * @param path
-     * @param filename
+     * @param sourcePath
      * @param conversionStep
      */
 
-    createSymLink(targetPath, path, filename, conversionStep) {
-        if (fs.existsSync(path)) {
+    createSymLink(targetPath, sourcePath, conversionStep) {
+        if (fs.existsSync(sourcePath)) {
             //delete before creating a symlink
-            fs.unlinkSync(path);
+            fs.unlinkSync(sourcePath);
         }
-        if (!fs.existsSync(path)) {
-            fs.symlinkSync(targetPath, path);
+        if (!fs.existsSync(sourcePath)) {
+            fs.symlinkSync(targetPath, sourcePath);
             logger.info(
-                "Created Symbolic Link in target folder for file : " + filename
+                "Created Symbolic Link in target folder for file : " +
+                    path.basename(targetPath)
             );
             conversionStep.addOperation(
                 new ConversionOperation(
                     commons_constants.ACTION_ADDED,
-                    path,
-                    `Generated SymLink for the file ${filename}`
+                    sourcePath,
+                    `Generated SymLink for the file ${path.basename(
+                        targetPath
+                    )}`
                 )
             );
         }

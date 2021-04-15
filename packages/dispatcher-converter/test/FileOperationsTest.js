@@ -473,14 +473,14 @@ describe("FileOperations", function () {
 
     it("should successfully create a symlink from source to target when source exists", function () {
         fs.appendFileSync(
-            testFolder + "/newtestfilesource.vhost",
+            path.join(testFolder, "newtestfilesource.vhost"),
             "",
             function (err) {
                 if (err) throw err;
             }
         );
         fs.appendFileSync(
-            testFolder + "/newtestfiletarget.vhost",
+            path.join(testFolder, "newtestfiletarget.vhost"),
             "",
             function (err) {
                 if (err) throw err;
@@ -488,13 +488,12 @@ describe("FileOperations", function () {
         );
         let fileOperation = new fileOperations("");
         fileOperation.createSymLink(
-            "../newtestfiletarget.vhost",
-            path.join(testFolder, "/newtestfilesource.vhost"),
-            "newtestfiletarget.vhost",
+            path.join("..", "newtestfiletarget.vhost"),
+            path.join(testFolder, "newtestfilesource.vhost"),
             new ConversionStep()
         );
         fs.lstat(
-            path.join(testFolder, "/newtestfilesource.vhost"),
+            path.join(testFolder, "newtestfilesource.vhost"),
             function (err, stats) {
                 assert.equal(stats.isSymbolicLink(), true);
             }
@@ -503,7 +502,7 @@ describe("FileOperations", function () {
 
     it("should successfully create a symlink from source to target when source doesn't exist", function () {
         fs.appendFileSync(
-            testFolder + "/newtestfiletarget.vhost",
+            path.join(testFolder, "newtestfiletarget.vhost"),
             "",
             function (err) {
                 if (err) throw err;
@@ -511,13 +510,12 @@ describe("FileOperations", function () {
         );
         let fileOperation = new fileOperations("");
         fileOperation.createSymLink(
-            "../newtestfiletarget.vhost",
-            path.join(testFolder, "/newtestfilesource.vhost"),
-            "newtestfiletarget.vhost",
+            path.join("..", "newtestfiletarget.vhost"),
+            path.join(testFolder, "newtestfilesource.vhost"),
             new ConversionStep()
         );
         fs.lstat(
-            path.join(testFolder, "/newtestfilesource.vhost"),
+            path.join(testFolder, "newtestfilesource.vhost"),
             function (err, stats) {
                 assert.equal(stats.isSymbolicLink(), true);
             }
