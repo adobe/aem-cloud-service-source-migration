@@ -231,9 +231,15 @@ module.exports = {
             );
         }
         writer_buffer.push(detectionList4);
-        logger.info(fileName + ": Updating index name in directory structure.");
-        xmlUtil.copyAnalyzersFolder(customIndexXMLPath, transformationMap);
-        logger.info(fileName + ": Updated index name in directory structure.");
+        if (customIndexXMLPath != null) {
+            logger.info(
+                fileName + ": Updating index name in directory structure."
+            );
+            xmlUtil.copyAnalyzersFolder(customIndexXMLPath, transformationMap);
+            logger.info(
+                fileName + ": Updated index name in directory structure."
+            );
+        }
 
         let finalOutputJsonObject = xmlUtil.constructJsonObject(
             interimOutputJsonObject
