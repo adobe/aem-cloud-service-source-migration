@@ -150,6 +150,14 @@ var RepositoryModernizer = {
                 );
                 valid = false;
             }
+            if (project.coreBundles[0] === null) {
+                logger.error(
+                    "Expected parameter 'coreBundles' (under 'project'" +
+                        projectIndex +
+                        " section) not defined in configuration file. Please add the missing parameter to execute the tool."
+                );
+                valid = false;
+            }
         }
         return valid;
     },
