@@ -441,9 +441,13 @@ describe("FileOperations", function () {
     });
 
     it("should successfully replace include statement for some rule without new rule", function () {
-        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "",
+            function (err) {
+                if (err) throw err;
+            }
+        );
 
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
@@ -502,7 +506,7 @@ describe("FileOperations", function () {
 
     it("should successfully create a symlink from source to target when source doesn't exist", function () {
         fs.appendFileSync(
-            path.join(testFolder, "newtestfiletarget.vhost"),
+            path.join(testFolder, "newtestfiletarget2.vhost"),
             "",
             function (err) {
                 if (err) throw err;
@@ -510,12 +514,12 @@ describe("FileOperations", function () {
         );
         let fileOperation = new fileOperations("");
         fileOperation.createSymLink(
-            path.join("..", "newtestfiletarget.vhost"),
-            path.join(testFolder, "newtestfilesource.vhost"),
+            path.join("..", "newtestfiletarget2.vhost"),
+            path.join(testFolder, "newtestfilesource2.vhost"),
             new ConversionStep()
         );
         fs.lstat(
-            path.join(testFolder, "newtestfilesource.vhost"),
+            path.join(testFolder, "newtestfilesource2.vhost"),
             function (err, stats) {
                 assert.equal(stats.isSymbolicLink(), true);
             }
