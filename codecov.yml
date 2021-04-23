@@ -1,15 +1,27 @@
 coverage:
   status:
     project:
-      default:
-        target: auto
-        threshold: 0%
-        base: auto 
-        flags: 
-          - unit
-        paths: 
-          - packages
-        branches: 
-          - master
-        if_ci_failed: error
-        only_pulls: false
+      default: off
+      dispatcher-converter:
+        target: 80%
+        flags: dispatcher-converter
+      index-converter:
+        target: 80%
+        flags: index-converter
+      repository-modernizer:
+        target: 80%
+        flags: repository-modernizer
+
+flags:
+  dispatcher-converter:
+    paths:
+      - packages/dispatcher-converter/
+  index-converter:
+    paths:
+      - packages/index-converter/
+  repository-modernizer:
+    paths:
+      - packages/repository-modernizer/
+  tests:
+    paths:
+      - test/
