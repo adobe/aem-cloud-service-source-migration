@@ -28,6 +28,7 @@ before_install: cd $APP_BASE
 install:
   - npm version
   - npm install
+  - npm install codecov
 script:
   - npm test
   - npm run coverage
