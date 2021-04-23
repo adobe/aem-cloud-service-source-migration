@@ -442,7 +442,7 @@ describe("FileOperations", function () {
 
     it("should successfully replace include statement for some rule without new rule", function () {
         fs.appendFileSync(
-            testFolder + "/newtestfile.vhost",
+            testFolder + "/newtestfile2.vhost",
             "",
             function (err) {
                 if (err) throw err;
@@ -450,11 +450,11 @@ describe("FileOperations", function () {
         );
 
         fs.appendFileSync(
-            testFolder + "/newtestfile.vhost",
+            testFolder + "/newtestfile2.vhost",
             "Include This is a test\n"
         );
         fs.appendFileSync(
-            testFolder + "/newtestfile.vhost",
+            testFolder + "/newtestfile2.vhost",
             "This is a content text"
         );
 
@@ -469,7 +469,7 @@ describe("FileOperations", function () {
             null
         );
         let content = fileOperation.getContentFromFile(
-            testFolder + "/newtestfile.vhost",
+            testFolder + "/newtestfile2.vhost",
             true
         );
         assert.equal(content.includes("test"), false);
