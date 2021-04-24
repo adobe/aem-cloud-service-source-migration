@@ -23,15 +23,16 @@ matrix:
     env:
       - APP_BASE=packages/repository-modernizer
 
-before_install: cd $APP_BASE
-
 install:
   - npm version
   - npm install
   - npm install codecov
+
+before_script: cd $APP_BASE
+
 script:
   - npm test
-  
+
 after_success:
 - npm run coverage
 
