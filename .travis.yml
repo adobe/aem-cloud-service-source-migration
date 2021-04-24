@@ -9,15 +9,6 @@ matrix:
       - "12"
     os: 
       - linux
-    target: auto
-    threshold: 0%
-    base: auto 
-    flags: 
-      - unit
-    branches: 
-      - master
-    if_ci_failed: error
-    only_pulls: false
     env:
       - APP_BASE=packages/commons
 
@@ -27,15 +18,6 @@ matrix:
       - "12"
     os: 
       - linux
-    target: auto
-    threshold: 0%
-    base: auto 
-    flags: 
-      - unit
-    branches: 
-      - master
-    if_ci_failed: error
-    only_pulls: false
     env:
       - APP_BASE=packages/dispatcher-converter
 
@@ -45,15 +27,6 @@ matrix:
       - "12"
     os: 
       - linux
-    target: auto
-    threshold: 0%
-    base: auto 
-    flags: 
-      - unit
-    branches: 
-      - master
-    if_ci_failed: error
-    only_pulls: false
     env:
       - APP_BASE=packages/index-converter
 
@@ -63,15 +36,6 @@ matrix:
       - "12"
     os: 
       - linux
-    target: auto
-    threshold: 0%
-    base: auto 
-    flags: 
-      - unit
-    branches: 
-      - master
-    if_ci_failed: error
-    only_pulls: false
     env:
       - APP_BASE=packages/repository-modernizer
 
