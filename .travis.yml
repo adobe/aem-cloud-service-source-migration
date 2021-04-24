@@ -28,7 +28,9 @@ install:
   - npm install
   - npm install codecov
 
-before_script: cd $APP_BASE
+before_script: 
+  - cd $APP_BASE
+  - npm install
 
 script:
   - npm test
