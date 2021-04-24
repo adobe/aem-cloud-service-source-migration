@@ -16,7 +16,8 @@
     },
     "scripts": {
         "lint": "eslint index.js src validator executors  --ignore-pattern executors/target/",
-        "test": "jest"
+        "test": "jest",
+        "coverage": "jest --coverage && codeco"
     },
     "dependencies": {
         "@adobe/aem-cs-source-migration-commons": "^0.0.3",

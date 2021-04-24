@@ -14,8 +14,24 @@ matrix:
     base: auto 
     flags: 
       - unit
-    paths: 
-      - packages
+    branches: 
+      - master
+    if_ci_failed: error
+    only_pulls: false
+    env:
+      - APP_BASE=packages/commons
+
+  - language: node_js
+    node_js:
+      - "10"
+      - "12"
+    os: 
+      - linux
+    target: auto
+    threshold: 0%
+    base: auto 
+    flags: 
+      - unit
     branches: 
       - master
     if_ci_failed: error
@@ -34,8 +50,6 @@ matrix:
     base: auto 
     flags: 
       - unit
-    paths: 
-      - packages
     branches: 
       - master
     if_ci_failed: error
@@ -54,8 +68,6 @@ matrix:
     base: auto 
     flags: 
       - unit
-    paths: 
-      - packages
     branches: 
       - master
     if_ci_failed: error
@@ -68,10 +80,11 @@ before_install: cd $APP_BASE
 install:
   - npm version
   - npm install
+  - npm install codecov
 
 script:
   - npm test
-  - bash <(curl -s https://codecov.io/bash)
+  - npm run coverage
  
 
 # safelist (prevent double builds in PRs)
