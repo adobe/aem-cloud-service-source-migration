@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 -->
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/dichaudhary/aem-cloud-service-source-migration/master.svg?style=flat-square)](https://codecov.io/gh/dichaudhary/aem-cloud-service-source-migration/)
 # aem-cloud-service-source-migration
 
 This monorepo contains the code refactoring tools that help customers to migrate to AEM as a
