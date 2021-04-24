@@ -34,7 +34,7 @@ script:
   - npm run coverage
 
 after_success:
-- npm run coverage
+  - npm run coverage
 
 # safelist (prevent double builds in PRs)
 branches:
