@@ -26,17 +26,13 @@ matrix:
 install:
   - npm version
   - npm install
-  - npm install codecov
 
-before_script: 
+after_install:
   - cd $APP_BASE
   - npm install
-
-script:
+  - npm install codecov
   - npm test
-
-after_success:
-- npm run coverage
+  - npm run coverage
 
 # safelist (prevent double builds in PRs)
 branches:
