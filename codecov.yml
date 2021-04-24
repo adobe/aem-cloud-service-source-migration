@@ -3,8 +3,6 @@ coverage:
     project:
       default: off
       dispatcher-converter:
-        target: auto
-        threshold: 0%
         base: auto 
         flags: 
           - unit
