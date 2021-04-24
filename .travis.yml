@@ -1,3 +1,7 @@
+node_js:
+  - "10"
+  - "12"
+
 git:
   depth: 1
 
@@ -31,7 +35,6 @@ install:
 
 script:
   - npm test
-  - npm run coverage
 
 after_success:
   - npm run coverage
