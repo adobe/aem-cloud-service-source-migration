@@ -8,7 +8,6 @@ matrix:
       - "10"
       - "12"
     os: 
-      - windows
       - linux
     env:
       - APP_BASE=packages/dispatcher-converter
@@ -17,7 +16,6 @@ matrix:
       - "10"
       - "12"
     os: 
-      - windows
       - linux
     env:
       - APP_BASE=packages/index-converter
@@ -26,7 +24,6 @@ matrix:
       - "10"
       - "12"
     os: 
-      - windows
       - linux
     env:
       - APP_BASE=packages/repository-modernizer
