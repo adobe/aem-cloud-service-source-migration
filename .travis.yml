@@ -31,10 +31,9 @@ install:
   - npm install codecov
 script:
   - npm test
-  - npm run coverage
-
+  
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+- npm run coverage
 
 # safelist (prevent double builds in PRs)
 branches:
