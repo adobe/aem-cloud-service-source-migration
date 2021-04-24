@@ -40,9 +40,8 @@ install:
 
 script:
   - npm test
-
-after_success:
   - npm run coverage
+ 
 
 # safelist (prevent double builds in PRs)
 branches:
