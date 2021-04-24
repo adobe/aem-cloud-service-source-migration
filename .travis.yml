@@ -1,38 +1,40 @@
-language: node_js
-sudo: false
 git:
-  depth: 10
-
-os:
-  - windows
-  - linux
-
-node_js:
-  - "10"
-  - "12"
+  depth: 1
 
 matrix:
   include:
   - language: node_js
+    os: 
+      - windows
+      - linux
     env:
       - APP_BASE=packages/dispatcher-converter
   - language: node_js
+    os: 
+      - windows
+      - linux
     env:
       - APP_BASE=packages/index-converter
   - language: node_js
+    os: 
+      - windows
+      - linux
     env:
       - APP_BASE=packages/repository-modernizer
+
+before_install: cd $APP_BASE
 
 install:
   - npm version
   - npm install
-
-after_install:
-  - cd $APP_BASE
-  - npm install
   - npm install codecov
+
+script:
   - npm test
   - npm run coverage
+
+after_success:
+- npm run coverage
 
 # safelist (prevent double builds in PRs)
 branches:
