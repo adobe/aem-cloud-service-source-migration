@@ -6,17 +6,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install dependencies
-        run: npm install
       - name: Install codecov
         run: npm install codecov
-      - name: Run tests and collect coverage
-        run: npm run test
       - name: Upload coverage to Codecov (commons)
-        run: cd ./packages/commons && npm run coverage
+        run: cd ./packages/commons
+        run: npm install
+        run: npm run test
+        run: npm run coverage
       - name: Upload coverage to Codecov (dispatcher-converter)
-        run: cd ./packages/dispatcher-converter && npm run coverage
+        run: cd ./packages/dispatcher-converter
+        run: npm install
+        run: npm run test
+        run: npm run coverage
       - name: Upload coverage to Codecov (index-converter)
-        run: cd ./packages/index-converter && npm run coverage
+        run: cd ./packages/index-converter
+        run: npm install
+        run: npm run test
+        run: npm run coverage
       - name: Upload coverage to Codecov (repository-modernizer)
-        run: cd ./packages/repository-modernizer && npm run coverage
+        run: cd ./packages/repository-modernizer
+        run: npm install
+        run: npm run test
+        run: npm run coverage
