@@ -21,13 +21,7 @@ jobs:
         run: yarn test
 
       - name: upload code coverage for commons
-        run: cd ./packages/commons && npm run coverage
-      - name: upload code coverage for dispatcher-converter
-        run: cd ./packages/dispatcher-converter && npm run coverage
-      - name: upload code coverage for index-converter
-        run: cd ./packages/index-converter && npm run coverage
-      - name: upload code coverage for repository-modernizer
-        run: cd ./packages/repository-modernizer && npm run coverage
+        run: bash <(curl -s https://codecov.io/bash)
 
 
 
