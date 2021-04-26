@@ -16,6 +16,9 @@ jobs:
           
       - name: Install Dependencies
         run: yarn
+      
+      - name: Install codecov
+        run: npm install codecov
 
       - name: Execute Tests
         run: yarn test
