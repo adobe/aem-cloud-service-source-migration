@@ -1,30 +1,33 @@
 name: Workflow for Codecov Action
 on: [push, pull_request]
+
 jobs:
-  run:
+
+  codecoverage:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repo
         uses: actions/checkout@v2
-      - name: Install codecov
-        run: npm install codecov
-      - name: Upload coverage to Codecov (commons)
-        run: cd ./packages/commons
-        run: npm install
-        run: npm run test
-        run: npm run coverage
-      - name: Upload coverage to Codecov (dispatcher-converter)
-        run: cd ./packages/dispatcher-converter
-        run: npm install
-        run: npm run test
-        run: npm run coverage
-      - name: Upload coverage to Codecov (index-converter)
-        run: cd ./packages/index-converter
-        run: npm install
-        run: npm run test
-        run: npm run coverage
-      - name: Upload coverage to Codecov (repository-modernizer)
-        run: cd ./packages/repository-modernizer
-        run: npm install
-        run: npm run test
-        run: npm run coverage
+
+      - name: Setup Node.js 10
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+          
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Execute Tests
+        run: yarn test
+
+      - name: upload code coverage for commons
+        run: cd ./packages/commons && npm run coverage
+      - name: upload code coverage for dispatcher-converter
+        run: cd ./packages/dispatcher-converter && npm run coverage
+      - name: upload code coverage for index-converter
+        run: cd ./packages/index-converter && npm run coverage
+      - name: upload code coverage for repository-modernizer
+        run: cd ./packages/repository-modernizer && npm run coverage
+
+
+
