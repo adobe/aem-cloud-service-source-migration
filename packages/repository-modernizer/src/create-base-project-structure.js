@@ -457,7 +457,7 @@ function copyOtherModules(project, conversionStep) {
                 srcFolderPath,
                 destinationFolderPath,
                 project.appId,
-                constants.CONTENT_PACKAGING_TYPES,
+                constants.CONTENT_PACKAGE,
                 conversionStep
             );
         }
