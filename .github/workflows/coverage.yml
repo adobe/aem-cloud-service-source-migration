@@ -1,0 +1,22 @@
+name: Workflow for Codecov Action
+on: [push, pull_request]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm install
+      - name: Install codecov
+        run: npm install codecov
+      - name: Run tests and collect coverage
+        run: npm run test
+      - name: Upload coverage to Codecov (commons)
+        run: cd ./packages/commons && npm run coverage
+      - name: Upload coverage to Codecov (dispatcher-converter)
+        run: cd ./packages/dispatcher-converter && npm run coverage
+      - name: Upload coverage to Codecov (index-converter)
+        run: cd ./packages/index-converter && npm run coverage
+      - name: Upload coverage to Codecov (repository-modernizer)
+        run: cd ./packages/repository-modernizer && npm run coverage
