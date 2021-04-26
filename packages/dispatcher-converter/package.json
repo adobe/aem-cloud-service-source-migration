@@ -1,3 +1,4 @@
+
 {
     "name": "@adobe/aem-cs-source-migration-dispatcher-converter",
     "description": "AEM as a Cloud Service Dispatcher Converter tool",
@@ -33,7 +34,7 @@
     "scripts": {
         "lint": "eslint index.js src test executors  --ignore-pattern executors/target/",
         "test": "nyc mocha",
-        "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
+        "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
         "convert": "node main.js",
         "convertSingleFile": "node singleFileMain.js",
         "generateDocumentation": "node docs.js"

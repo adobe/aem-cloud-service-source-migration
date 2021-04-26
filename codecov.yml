@@ -3,13 +3,37 @@ coverage:
     project:
       default: off
       dispatcher-converter:
-        target: 80%
+        target: auto
+        threshold: 0%
+        base: auto 
+        flags: 
+          - unit
+        branches: 
+          - master
+        if_ci_failed: error
+        only_pulls: false
         flags: dispatcher-converter
       index-converter:
-        target: 80%
+        target: auto
+        threshold: 0%
+        base: auto 
+        flags: 
+          - unit
+        branches: 
+          - master
+        if_ci_failed: error
+        only_pulls: false
         flags: index-converter
       repository-modernizer:
-        target: 80%
+        target: auto
+        threshold: 0%
+        base: auto 
+        flags: 
+          - unit
+        branches: 
+          - master
+        if_ci_failed: error
+        only_pulls: false
         flags: repository-modernizer
 
 flags:
