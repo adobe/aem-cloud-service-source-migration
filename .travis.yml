@@ -11,14 +11,6 @@ matrix:
       - linux
     env:
       - APP_BASE=packages/commons
-
-  - language: node_js
-    node_js:
-      - "10"
-      - "12"
-    os: 
-      - linux
-    env:
       - APP_BASE=packages/dispatcher-converter
       - APP_BASE=packages/index-converter
       - APP_BASE=packages/repository-modernizer
