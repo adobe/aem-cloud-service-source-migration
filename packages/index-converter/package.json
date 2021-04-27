@@ -1,3 +1,4 @@
+
 {
     "name": "@adobe/aem-cs-source-migration-index-converter",
     "description": "AEM as a Cloud Service Index Converter tool",
@@ -40,8 +41,7 @@
     },
     "scripts": {
         "lint": "eslint index.js src test executors  --ignore-pattern executors/target/",
-        "test": "nyc mocha",
-        "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
+        "test": "nyc mocha && nyc report --reporter=text-lcov > coverage.lcov",
         "generateDocumentation": "node docs.js"
     },
     "directories": {
