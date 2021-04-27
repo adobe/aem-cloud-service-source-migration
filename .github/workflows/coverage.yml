@@ -19,9 +19,6 @@ jobs:
 
       - name: Execute Tests & upload coverage
         run: yarn test
-        
-      - name: upload code coverage for commons
-        run: bash <(curl -s https://codecov.io/bash) -F unittests
 
 
 
