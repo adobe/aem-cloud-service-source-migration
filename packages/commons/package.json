@@ -30,7 +30,7 @@
     },
     "scripts": {
         "lint": "eslint index.js src test",
-        "test": "nyc mocha && nyc report --reporter=text-lcov > coverage.lcov && codecov",
+        "test": "nyc mocha && nyc report --reporter=text-lcov > coverage.lcov",
         "generateDocumentation": "node docs.js"
     }
 }
