@@ -9,6 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 -->
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/adobe/aem-cloud-service-source-migration/master.svg?style=flat-square)](https://codecov.io/gh/adobe/aem-cloud-service-source-migration/)
+
 # aem-cloud-service-source-migration
 
 This monorepo contains the code refactoring tools that help customers to migrate to AEM as a

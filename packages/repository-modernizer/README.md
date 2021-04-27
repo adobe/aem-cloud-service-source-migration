@@ -12,8 +12,6 @@ governing permissions and limitations under the License.
 
 [![Version](https://img.shields.io/npm/v/@adobe/aem-cs-source-migration-repository-modernizer.svg)](https://npmjs.org/package/@adobe/aem-cs-source-migration-repository-modernizer)
 [![Downloads/week](https://img.shields.io/npm/dw/@adobe/aem-cs-source-migration-repository-modernizer.svg)](https://npmjs.org/package/@adobe/aem-cs-source-migration-repository-modernizer)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/adobe/aem-cs-source-migration-repository-modernizer/master.svg?style=flat-square)](https://codecov.io/gh/adobe/aem-cs-source-migration-repository-modernizer/)
 
 # @adobe/aem-cs-source-migration-repository-modernizer
 
@@ -42,7 +40,7 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
  to `/apps`
 -   The `ui.config` package, or OSGi Configuration Package, contains all OSGi configurations
 -   The `ui.content` package, or Content Package, contains all content and configuration
--   The `all` package, container package that embeds the core bundles and the ui.apps ,ui.config
+-   The `all` package, container package that embeds the core bundles and the ui.apps ,ui.config
  and ui.content packages
 
 

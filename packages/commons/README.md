@@ -12,8 +12,6 @@ governing permissions and limitations under the License.
 
 [![Version](https://img.shields.io/npm/v/@adobe/aem-cs-source-migration-commons.svg)](https://npmjs.org/package/@adobe/aem-cs-source-migration-commons)
 [![Downloads/week](https://img.shields.io/npm/dw/@adobe/aem-cs-source-migration-commons.svg)](https://npmjs.org/package/@adobe/aem-cs-source-migration-commons)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/adobe/aem-cs-source-migration-commons/master.svg?style=flat-square)](https://codecov.io/gh/adobe/aem-cs-source-migration-commons/)
 
 # @adobe/aem-cs-source-migration-commons
 

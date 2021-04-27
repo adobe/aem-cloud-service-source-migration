@@ -1,0 +1,24 @@
+name: Workflow for Codecov Action
+on: [push, pull_request]
+
+jobs:
+
+  codecoverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js 10
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+          
+      - name: Install Dependencies
+        run: yarn
+        
+      - name: Execute Tests & generate coverage
+        run: yarn test
+        
+      - name: upload code coverage for all packages
+        run: bash <(curl -s https://codecov.io/bash)
