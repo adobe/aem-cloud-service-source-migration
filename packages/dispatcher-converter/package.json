@@ -33,8 +33,7 @@
     },
     "scripts": {
         "lint": "eslint index.js src test executors  --ignore-pattern executors/target/",
-        "test": "nyc mocha",
-        "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+        "test": "nyc mocha && nyc report --reporter=text-lcov > coverage.lcov",
         "convert": "node main.js",
         "convertSingleFile": "node singleFileMain.js",
         "generateDocumentation": "node docs.js"
