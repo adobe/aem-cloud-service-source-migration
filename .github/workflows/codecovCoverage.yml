@@ -16,7 +16,7 @@ jobs:
           
       - name: Install Dependencies
         run: yarn
-
+        
       - name: Execute Tests & generate coverage
         run: yarn test
         
