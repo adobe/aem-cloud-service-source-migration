@@ -41,7 +41,7 @@
     },
     "scripts": {
         "lint": "eslint index.js src test executors  --ignore-pattern executors/target/",
-        "test": "nyc mocha && nyc report --reporter=text-lcov > coverage.lcov && codecov",
+        "test": "nyc mocha && nyc report --reporter=text-lcov > coverage.lcov",
         "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
         "generateDocumentation": "node docs.js"
     },
