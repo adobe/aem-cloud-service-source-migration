@@ -447,14 +447,15 @@ function copyOtherModules(project, conversionStep) {
         if (
             !fs.existsSync(destinationFolderPath) &&
             !ignoredPaths.includes(srcFolderPath) &&
+            !srcFolderPath.includes("dispatcher") &&
             pomManipulationUtil.verifyArtifactPackagingType(
                 pomFile,
-                constants.CONTENT_PACKAGE
+                constants.CONTENT_PACKAGING_TYPES
             )
         ) {
             copyModuleFromSource(
                 srcFolderPath,
-                destination,
+                destinationFolderPath,
                 project.appId,
                 constants.CONTENT_PACKAGE,
                 conversionStep

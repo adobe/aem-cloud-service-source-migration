@@ -69,6 +69,8 @@ module.exports = {
 
     CONTENT_PACKAGE: "content-package",
 
+    CONTENT_PACKAGING_TYPES: ["content-package", "pom"],
+
     // POM tags and entries
 
     PARENT_START_TAG: "<parent>",
