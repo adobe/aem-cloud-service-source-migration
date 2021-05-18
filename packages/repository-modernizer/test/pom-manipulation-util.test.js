@@ -11,15 +11,24 @@ governing permissions and limitations under the License.
 */
 
 const {
-    constants: commons_constants,
     util,
-    logger,
+    ConversionStep,
 } = require("@adobe/aem-cs-source-migration-commons");
-const rewire = require("rewire");
 const pomManipulationUtil = require("./../src/util/pom-manipulation-util");
-const pomUtilRewire = rewire("./../src/util/pom-manipulation-util");
+const constants = require("../src/util/constants");
+const fs = require("fs");
 let path = "./test/resources/pom.xml";
+jest.mock("@adobe/aem-cs-source-migration-commons");
 describe("pom manipulation", function () {
+    const xmlContent = [
+        "      <dependencies>",
+        "        <dependency>",
+        "          <groupId>com.adobe.aem</groupId>",
+        "          <artifactId>uber-jar</artifactId>",
+        "          <version>1.0.1</version>",
+        "        </dependency>",
+        "      </dependencies>",
+    ];
     test("removeDuplicates", () => {
         var list = [
             "      <dependency>",
@@ -55,11 +64,321 @@ describe("pom manipulation", function () {
         expect(result.length).toBe(10);
         expect(result).toEqual(expected);
     });
+
+    test("removeDuplicate plugins", () => {
+        var list = [
+            "      <plugin>",
+            "        <groupId>com.aem.plugin</groupId>",
+            "        <artifactId>test.plugin</artifactId>",
+            "        <version>1.3-SNAPSHOT</version>",
+            "      </plugin>",
+            "      <plugin>",
+            "        <groupId>com.aem.plugin</groupId>",
+            "        <artifactId>test.plugin</artifactId>",
+            "        <version>1.3-SNAPSHOT</version>",
+            "      </plugin>",
+        ];
+        var expected = [
+            "      <plugin>",
+            "        <groupId>com.aem.plugin</groupId>",
+            "        <artifactId>test.plugin</artifactId>",
+            "        <version>1.3-SNAPSHOT</version>",
+            "      </plugin>",
+        ];
+        let result = pomManipulationUtil.removeDuplicatesPlugins(list);
+
+        expect(result.length).toBe(5);
+        expect(result).toEqual(expected);
+    });
+
     test("verifyArtifactPackagingTyperemoveDuplicates", () => {
-        var result = pomManipulationUtil.verifyArtifactPackagingType(path, [
+        util.getXMLContentSync.mockReturnValue(fs.readFileSync(path, "utf8").split(/\r?\n/));
+        const result = pomManipulationUtil.verifyArtifactPackagingType(path, [
             "jar",
             "bundle",
         ]);
         expect(result).toBe(false);
+    });
+
+    test("verify add plugins", async() => {
+        const list = [
+            "      <plugin>",
+            "        <groupId>com.aem.plugin</groupId>",
+            "        <artifactId>test.plugin</artifactId>",
+            "        <version>1.3-SNAPSHOT</version>",
+            "      </plugin>",
+            "      <plugin>",
+            "        <groupId>com.aem.plugin</groupId>",
+            "        <artifactId>test.plugin</artifactId>",
+            "        <version>1.3-SNAPSHOT</version>",
+            "      </plugin>",
+        ];
+        const xmlContent = [
+            '       <pluginManagement>',
+            '         <plugins>',
+            '           <plugin>',
+            '             <groupId>com.aem.custom.plugin</groupId>',
+            '             <artifactId>test.plugin</artifactId>',
+            '             <version>1.3-SNAPSHOT</version>',
+            '           </plugin>',
+            '         </plugins>',
+            '       </pluginManagement>',
+        ];
+        const xmlContentWithoutPluginManagement = [
+            '       <plugins>',
+            '         <plugin>',
+            '           <groupId>com.aem.custom.plugin</groupId>',
+            '           <artifactId>test.plugin</artifactId>',
+            '           <version>1.3-SNAPSHOT</version>',
+            '         </plugin>',
+            '       </plugins>',
+        ];
+        const pluginObj = {
+            pluginList: [],
+            pluginManagementList: list,
+            filevaultPluginEmbeddedList: [],
+        };
+        const conversionStep = new ConversionStep();
+        util.getXMLContent.mockReturnValue(xmlContent);
+        util.writeDataToFileAsync.mockReturnValue(true);
+        await pomManipulationUtil.addPlugins(path, pluginObj, conversionStep);
+        expect(conversionStep.addOperation).toHaveBeenCalledTimes(2);
+    });
+
+    test("verify add plugins with no pluginManagement tags", async() => {
+        const list = [
+            "      <plugin>",
+            "        <groupId>com.aem.plugin</groupId>",
+            "        <artifactId>test.plugin</artifactId>",
+            "        <version>1.3-SNAPSHOT</version>",
+            "      </plugin>",
+            "      <plugin>",
+            "        <groupId>com.aem.plugin</groupId>",
+            "        <artifactId>test.plugin</artifactId>",
+            "        <version>1.3-SNAPSHOT</version>",
+            "      </plugin>",
+        ];
+        const xmlContentWithoutPluginManagement = [
+            '       <plugins>',
+            '         <plugin>',
+            '           <groupId>com.aem.custom.plugin</groupId>',
+            '           <artifactId>test.plugin</artifactId>',
+            '           <version>1.3-SNAPSHOT</version>',
+            '         </plugin>',
+            '       </plugins>',
+        ];
+        const pluginObj = {
+            pluginList: [],
+            pluginManagementList: list,
+            filevaultPluginEmbeddedList: [],
+        };
+        const conversionStep = new ConversionStep();
+        util.getXMLContent.mockReturnValue(xmlContentWithoutPluginManagement);
+        util.writeDataToFileAsync.mockReturnValue(true);
+        await pomManipulationUtil.addPlugins(path, pluginObj, conversionStep);
+        expect(conversionStep.addOperation).toHaveBeenCalledTimes(0);
+    });
+
+    test("verify add sdk dependencies", async() => {
+        const expectedContent = [
+            "      <dependencies>",
+            "        <dependency>\n" +
+            "          <groupId>com.adobe.aem</groupId>\n" + 
+            "          <artifactId>aem-sdk-api</artifactId>\n" +
+            "          <version>2021.5.5257.20210505T101930Z-210429</version>\n" +
+            "          <scope>provided</scope>\n" +
+            "        </dependency>",
+            "      </dependencies>",
+        ];
+        const sdkDependency = constants.SDK_DEPENDENCY_TEMPLATE.replace(
+            "${version}",
+            '2021.5.5257.20210505T101930Z-210429'
+        );
+        const conversionStep = new ConversionStep();
+        util.getXMLContent.mockReturnValue(xmlContent);
+        util.writeDataToFileAsync.mockReturnValue(true);
+        await pomManipulationUtil.addSdkDependencies(path, sdkDependency, conversionStep);
+        expect(conversionStep.addOperation).toHaveBeenCalledTimes(1);
+        expect(util.writeDataToFileAsync).toHaveBeenCalledWith(path, expectedContent);
+    });
+
+    test("verify add dependencies", async() => {
+        const expectedContent = [
+            "      <dependencies>",
+            "        <dependency>\n" +
+            "          <groupId>com.adobe.aem</groupId>\n" + 
+            "          <artifactId>aem-sdk-api</artifactId>\n" +
+            "          <version>2021.5.5257.20210505T101930Z-210429</version>\n" +
+            "          <scope>provided</scope>\n" +
+            "        </dependency>",
+            "        <dependency>",
+            "          <groupId>com.adobe.aem</groupId>",
+            "          <artifactId>uber-jar</artifactId>",
+            "          <version>1.0.1</version>",
+            "        </dependency>",
+            "      </dependencies>",
+        ];
+        const dependencyToAdd = [ constants.SDK_DEPENDENCY_TEMPLATE.replace(
+            "${version}",
+            '2021.5.5257.20210505T101930Z-210429'
+        )];
+        const conversionStep = new ConversionStep();
+        util.getXMLContent.mockReturnValue(xmlContent);
+        util.writeDataToFileAsync.mockReturnValue(true);
+        await pomManipulationUtil.addDependencies(path, dependencyToAdd, conversionStep);
+        expect(conversionStep.addOperation).toHaveBeenCalledTimes(1);
+        expect(util.writeDataToFileAsync).toHaveBeenCalledWith(path, expectedContent);
+    });
+
+    test("embeddedArtifactsToFileVaultPlugin", async() => {
+        const embedPluginContent = [
+        "          <plugin>",
+        "            <groupId>org.apache.jackrabbit</groupId>",
+        "            <artifactId>filevault-package-maven-plugin</artifactId>",
+        "            <version>1.0.3</version>",
+        "            <extensions>true</extensions>",
+        "            <configuration>",
+        "              <group>${groupId}</group>",
+        "              <embeddeds>",
+        "              </embeddeds>",
+        "              <subPackages>",
+        "              </subPackages>",
+        "            </configuration>",
+        "          </plugin>",
+        ];
+        
+        const expectedContent = [
+        "          <plugin>",
+        "            <groupId>org.apache.jackrabbit</groupId>",
+        "            <artifactId>filevault-package-maven-plugin</artifactId>",
+        "            <version>1.0.3</version>",
+        "            <extensions>true</extensions>",
+        "            <configuration>",
+        "              <group>${groupId}</group>",
+        "              <embeddeds>",
+        "                        <embedded>\n"+
+        "                            <groupId>com.adobe.aem</groupId>\n"+
+        "                            <artifactId>${artifactId}</artifactId>\n"+
+        "                            <type>zip</type>\n"+
+        "                            <target>/apps/aem-packages/content/install</target>\n"+
+        "                        </embedded>",
+        "              </embeddeds>",
+        "              <subPackages>",
+        "              </subPackages>",
+        "            </configuration>",
+        "          </plugin>",
+        ];
+        let embedToAdd = [ constants.DEFAULT_EMBEDDED_CONTENT_TEMPLATE.replace(
+                constants.DEFAULT_GROUP_ID,
+                'com.adobe.aem'
+            )
+            .replace(constants.DEFAULT_APP_ID, 'aem')
+        ];
+        const conversionStep = new ConversionStep();
+        util.getXMLContent.mockReturnValue(embedPluginContent);
+        util.writeDataToFileAsync.mockReturnValue(true);
+        await pomManipulationUtil.embeddedArtifactsToFileVaultPlugin(path, embedToAdd, conversionStep);
+        //expect(conversionStep.addOperation).toHaveBeenCalledTimes(1);
+        expect(util.writeDataToFileAsync).toHaveBeenCalledWith(path, expectedContent);
+    });
+
+    test("embeddArtifactsUsingTemplate", async() => {
+        const embedPluginContent = [
+        "          <plugin>",
+        "            <groupId>org.apache.jackrabbit</groupId>",
+        "            <artifactId>filevault-package-maven-plugin</artifactId>",
+        "            <version>1.0.3</version>",
+        "            <extensions>true</extensions>",
+        "            <configuration>",
+        "              <group>${groupId}</group>",
+        "              <embeddeds>",
+        "              </embeddeds>",
+        "              <subPackages>",
+        "              </subPackages>",
+        "            </configuration>",
+        "          </plugin>",
+        ];
+        
+        const expectedContent = [
+        "          <plugin>",
+        "            <groupId>org.apache.jackrabbit</groupId>",
+        "            <artifactId>filevault-package-maven-plugin</artifactId>",
+        "            <version>1.0.3</version>",
+        "            <extensions>true</extensions>",
+        "            <configuration>",
+        "              <group>${groupId}</group>",
+        "              <embeddeds>",
+        "                        <embedded>\n"+
+        "                            <groupId>com.adobe.aem</groupId>\n"+
+        "                            <artifactId>aem.ui.apps</artifactId>\n"+
+        "                            <type>zip</type>\n"+
+        "                            <target>/apps/aem-packages/application/install</target>\n"+
+        "                        </embedded>",
+        "                        <embedded>\n"+
+        "                            <groupId>com.adobe.aem</groupId>\n"+
+        "                            <artifactId>aem.ui.content</artifactId>\n"+
+        "                            <type>zip</type>\n"+
+        "                            <target>/apps/aem-packages/content/install</target>\n"+
+        "                        </embedded>",
+        "              </embeddeds>",
+        "              <subPackages>",
+        "              </subPackages>",
+        "            </configuration>",
+        "          </plugin>",
+        ];
+        let packageArtifactIdInfoList = [];
+        packageArtifactIdInfoList.push({
+            artifactId: 'aem.ui.apps',
+            appId: 'aem',
+            version: '1.1.1',
+        });
+        packageArtifactIdInfoList.push({
+            artifactId: 'aem.ui.content',
+            appId: 'aem',
+            version: '1.1.1',
+        });
+        const conversionStep = new ConversionStep();
+        util.getXMLContent.mockReturnValue(embedPluginContent);
+        util.writeDataToFileAsync.mockReturnValue(true);
+        await pomManipulationUtil.embeddArtifactsUsingTemplate(path, packageArtifactIdInfoList, 'com.adobe.aem', conversionStep);
+        expect(conversionStep.addOperation).toHaveBeenCalledTimes(2);
+        expect(util.writeDataToFileAsync).toHaveBeenCalledWith(path, expectedContent);
+    });
+
+    test("replaceVariables", async() => {
+        const contentToReplace = [
+            "      <dependencies>",
+            "        <dependency>",
+            "          <groupId>${groupId}</groupId>",
+            "          <artifactId>${artifactId}</artifactId>",
+            "          <version>${version}</version>",
+            "        </dependency>",
+            "      </dependencies>",
+        ];
+
+        const expectedContent = [
+            "      <dependencies>",
+            "        <dependency>",
+            "          <groupId>com.adobe.aem</groupId>",
+            "          <artifactId>uber-jar</artifactId>",
+            "          <version>1.0.1</version>",
+            "        </dependency>",
+            "      </dependencies>",
+        ];
+
+        const conversionStep = new ConversionStep();
+        util.getXMLContent.mockReturnValue(contentToReplace);
+        util.writeDataToFileAsync.mockReturnValue(true);
+        await pomManipulationUtil.replaceVariables(
+            path,
+            {
+                [constants.DEFAULT_GROUP_ID]: 'com.adobe.aem',
+                [constants.DEFAULT_ARTIFACT_ID]: 'uber-jar',
+                [constants.DEFAULT_VERSION]: '1.0.1',
+            },
+            conversionStep
+        );        
+        expect(conversionStep.addOperation).toHaveBeenCalledTimes(3);
+        expect(util.writeDataToFileAsync).toHaveBeenCalledWith(path, expectedContent);
     });
 });

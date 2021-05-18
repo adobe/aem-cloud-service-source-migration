@@ -57,6 +57,9 @@
   </dependencyManagement>
 
   <build>
+    <filters>
+			<filter>src/main/filters/testfilter.properties</filter>
+		</filters>
     <plugins>
       <plugin>
         <groupId>io.github.zlika</groupId>
