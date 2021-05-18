@@ -222,4 +222,9 @@ describe(" restructure filter", function () {
         val = filterRewire.__get__("isImmutableContentFilter")(line);
         expect(val).toBe(false);
     });
+
+    test("getFiltersFromPomFile", () => {
+        let val = filterRewire.__get__("getFiltersFromPomFile")(path.join(__dirname, 'resources/pom.xml'));
+        expect(val.length).toEqual(1);
+    });   
 });
