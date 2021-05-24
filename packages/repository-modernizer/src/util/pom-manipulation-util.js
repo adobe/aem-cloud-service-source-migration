@@ -285,9 +285,19 @@ var PomManipulationUtil = {
             let content = await util.getXMLContent(pomFilePath);
             let contentToBeWritten = [];
             let doAdd = !inDependencyManagement;
+            //flag for pushing <type><type> inside <dependency><dependency> as it fails
+            //if pushed in <plugin><plugin> tag
+            let push_typeTag = true;
             for (let index = 0; index < content.length; index++) {
                 let line = content[index];
                 contentToBeWritten.push(line);
+                if (
+                    line.trim() === constants.PLUGIN_START_TAG ||
+                    line.trim() === constants.PLUGIN_END_TAG
+                ) {
+                    //toggle this flag on plugin tags encountered
+                    push_typeTag = !push_typeTag;
+                }
                 if (line.trim() === constants.DEPENDENCY_SECTION_START_TAG) {
                     if (
                         inDependencyManagement &&
@@ -298,6 +308,12 @@ var PomManipulationUtil = {
                     }
                     if (doAdd) {
                         dependencyList.forEach((dependency) => {
+                            if (!push_typeTag) {
+                                dependency = dependency.replace(
+                                    /<type>\w*<\/type>/g,
+                                    ""
+                                );
+                            }
                             contentToBeWritten.push(dependency);
                             if (
                                 dependency.includes(

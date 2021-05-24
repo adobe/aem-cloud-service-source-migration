@@ -69,7 +69,8 @@ class AEMDispatcherConfigConverter {
     }
 
     removeUnusedFoldersFiles() {
-        let conversionStep = this.__remove_unused_folders_files_summary_generator();
+        let conversionStep =
+            this.__remove_unused_folders_files_summary_generator();
         this.FolderOperationsUtility.deleteFolder(
             path.join(this.dispatcherConfigPath, Constants.CONF),
             conversionStep
@@ -98,7 +99,8 @@ class AEMDispatcherConfigConverter {
     }
 
     removeNonPublishVhostFiles() {
-        let conversionStep = this.__remove_non_publish_vhost_files_summary_generator();
+        let conversionStep =
+            this.__remove_non_publish_vhost_files_summary_generator();
         // Remove any vhost file in conf.d/enabled_vhosts that has author, unhealthy, health, lc or flush in its name.
         let enabled_vhosts_dir_path = path.join(
             this.dispatcherConfigPath,
@@ -151,7 +153,8 @@ class AEMDispatcherConfigConverter {
     }
 
     removeVhostSectionNotReferringToPort80() {
-        let conversionStep = this.__remove_vhost_section_not_referring_to_port_80_summary_generator();
+        let conversionStep =
+            this.__remove_vhost_section_not_referring_to_port_80_summary_generator();
         let enabled_vhost_dir_path = path.join(
             this.dispatcherConfigPath,
             Constants.CONF_D,
@@ -354,14 +357,14 @@ class AEMDispatcherConfigConverter {
                 // If the folder however contains multiple rule files specific to a single vhost file, we should
                 // consolidate all the included rule file into a single rule file and include it.
                 // get the all the rewrite rule files names
-                let ruleFiles = this.FileOperationsUtility.getAllFileNames(
-                    files
-                );
-                let ruleFilesIncluded = this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
-                    availableVhostFiles[0],
-                    ruleFiles,
-                    Constants.INCLUDE_SYNTAX_IN_VHOST
-                );
+                let ruleFiles =
+                    this.FileOperationsUtility.getAllFileNames(files);
+                let ruleFilesIncluded =
+                    this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
+                        availableVhostFiles[0],
+                        ruleFiles,
+                        Constants.INCLUDE_SYNTAX_IN_VHOST
+                    );
 
                 files = this.filterAndRemoveUnusedFiles(
                     files,
@@ -408,7 +411,8 @@ class AEMDispatcherConfigConverter {
     }
 
     removeNonWhitelistedDirectives() {
-        let conversionStep = this.removeNonWhitelistedDirectivesSummaryGenerator();
+        let conversionStep =
+            this.removeNonWhitelistedDirectivesSummaryGenerator();
         let available_vhosts_dir_path = path.join(
             this.dispatcherConfigPath,
             Constants.CONF_D,
@@ -482,11 +486,12 @@ class AEMDispatcherConfigConverter {
         ams_files.forEach((file) => {
             this.FileOperationsUtility.deleteFile(file, conversionStep);
         });
-        let files = this.FileOperationsUtility.deleteAllFilesNotConformingToPattern(
-            client_headers_dir_path,
-            "*.any",
-            conversionStep
-        );
+        let files =
+            this.FileOperationsUtility.deleteAllFilesNotConformingToPattern(
+                client_headers_dir_path,
+                "*.any",
+                conversionStep
+            );
 
         let file_count = files.length;
         // If conf.dispatcher.d/clientheaders now contains a single file with suffix _clientheaders.any,
@@ -515,9 +520,8 @@ class AEMDispatcherConfigConverter {
             if (availableFarmFiles.length > 1) {
                 availableFarmFiles.forEach((file) => {
                     if (file.endsWith("_clientheaders.any")) {
-                        let clientHeaderFileContents = util.getXMLContentSync(
-                            file
-                        );
+                        let clientHeaderFileContents =
+                            util.getXMLContentSync(file);
                         this.FileOperationsUtility.replaceIncludeStatementWithContentOfRuleFile(
                             conf_dispatcher_d_dir_path,
                             Constants.FARM,
@@ -535,15 +539,15 @@ class AEMDispatcherConfigConverter {
             } else if (availableFarmFiles.length === 1) {
                 // If the folder however contains multiple rule files specific to a single farm file,, we should
                 // consolidate all the included rule file into a single rule file and include it.
-                let ruleFiles = this.FileOperationsUtility.getAllFileNames(
-                    files
-                );
+                let ruleFiles =
+                    this.FileOperationsUtility.getAllFileNames(files);
                 // find all the rule files that are actually included in single the farm file
-                let ruleFilesIncluded = this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
-                    availableFarmFiles[0],
-                    ruleFiles,
-                    Constants.INCLUDE_SYNTAX_IN_FARM
-                );
+                let ruleFilesIncluded =
+                    this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
+                        availableFarmFiles[0],
+                        ruleFiles,
+                        Constants.INCLUDE_SYNTAX_IN_FARM
+                    );
                 // delete the rule files not included in the single available farm file, and get the files actually used
                 files = this.filterAndRemoveUnusedFiles(
                     files,
@@ -745,18 +749,20 @@ class AEMDispatcherConfigConverter {
             );
         }
 
-        let files = this.FileOperationsUtility.deleteAllFilesNotConformingToPattern(
-            variables_dir_path,
-            "*.vars",
-            conversionStep
-        );
+        let files =
+            this.FileOperationsUtility.deleteAllFilesNotConformingToPattern(
+                variables_dir_path,
+                "*.vars",
+                conversionStep
+            );
         // consolidate all variable file into once "custom.vars"
         if (files.length > 0) {
             let custom_vars_file = path.join(variables_dir_path, "custom.vars");
-            let variables_list = this.FileOperationsUtility.consolidateVariableFiles(
-                files,
-                custom_vars_file
-            );
+            let variables_list =
+                this.FileOperationsUtility.consolidateVariableFiles(
+                    files,
+                    custom_vars_file
+                );
             // adapt the Include statements referring to the old var files in the vhost files.
             files.forEach((file) => {
                 this.FileOperationsUtility.replaceIncludeStatementWithNewRule(
@@ -970,15 +976,15 @@ class AEMDispatcherConfigConverter {
             } else if (availableFarmFiles.length === 1) {
                 // If the folder however contains multiple rule files specific to a single farm file,, we should
                 // consolidate all the included rule file into a single rule file and include it.
-                let ruleFiles = this.FileOperationsUtility.getAllFileNames(
-                    files
-                );
+                let ruleFiles =
+                    this.FileOperationsUtility.getAllFileNames(files);
                 // find all the rule files that are actually included in single the farm file
-                let ruleFilesIncluded = this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
-                    availableFarmFiles[0],
-                    ruleFiles,
-                    Constants.INCLUDE_SYNTAX_IN_FARM
-                );
+                let ruleFilesIncluded =
+                    this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
+                        availableFarmFiles[0],
+                        ruleFiles,
+                        Constants.INCLUDE_SYNTAX_IN_FARM
+                    );
                 // delete the rule files not included in the single available farm file, and get the files actually used
                 files = this.filterAndRemoveUnusedFiles(
                     files,
@@ -1330,15 +1336,15 @@ class AEMDispatcherConfigConverter {
             } else if (availableFarmFiles.length === 1) {
                 // If the folder however contains multiple rule files specific to a single farm file,, we should
                 // consolidate all the included rule file into a single rule file and include it.
-                let ruleFiles = this.FileOperationsUtility.getAllFileNames(
-                    files
-                );
+                let ruleFiles =
+                    this.FileOperationsUtility.getAllFileNames(files);
                 // find all the rule files that are actually included in single the farm file
-                let ruleFilesIncluded = this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
-                    availableFarmFiles[0],
-                    ruleFiles,
-                    Constants.INCLUDE_SYNTAX_IN_FARM
-                );
+                let ruleFilesIncluded =
+                    this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
+                        availableFarmFiles[0],
+                        ruleFiles,
+                        Constants.INCLUDE_SYNTAX_IN_FARM
+                    );
                 // delete the rule files not included in the single available farm file, and get the files actually used
                 files = this.filterAndRemoveUnusedFiles(
                     files,
@@ -1539,11 +1545,12 @@ class AEMDispatcherConfigConverter {
             "ams_",
             conversionStep
         );
-        let files = this.FileOperationsUtility.deleteAllFilesNotConformingToPattern(
-            renamed_virtualhosts_dir_path,
-            "*.any",
-            conversionStep
-        );
+        let files =
+            this.FileOperationsUtility.deleteAllFilesNotConformingToPattern(
+                renamed_virtualhosts_dir_path,
+                "*.any",
+                conversionStep
+            );
 
         let fileCount = files.length;
 
@@ -1588,15 +1595,15 @@ class AEMDispatcherConfigConverter {
             } else if (availableFarmFiles.length === 1) {
                 // If the folder however contains multiple rule files specific to a single farm file,, we should
                 // consolidate all the included rule file into a single rule file and include it.
-                let ruleFiles = this.FileOperationsUtility.getAllFileNames(
-                    files
-                );
+                let ruleFiles =
+                    this.FileOperationsUtility.getAllFileNames(files);
                 // find all the rule files that are actually included in single the farm file
-                let ruleFilesIncluded = this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
-                    availableFarmFiles[0],
-                    ruleFiles,
-                    Constants.INCLUDE_SYNTAX_IN_FARM
-                );
+                let ruleFilesIncluded =
+                    this.FileOperationsUtility.getNamesOfRuleFilesIncluded(
+                        availableFarmFiles[0],
+                        ruleFiles,
+                        Constants.INCLUDE_SYNTAX_IN_FARM
+                    );
                 // delete the rule files not included in the single available farm file, and get the files actually used
                 files = this.filterAndRemoveUnusedFiles(
                     files,

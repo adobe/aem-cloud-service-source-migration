@@ -25,8 +25,10 @@ describe("ensure-definition-converter-util", function () {
     describe("Convert Ensure Definitions", function () {
         it("should convert to Oak Index Definitions", function () {
             let config = {
-                ensureIndexDefinitionContentPackageJcrRootPath: testEnsureDefinitionFolder,
-                ensureIndexDefinitionConfigPackageJcrRootPath: testEnsureDefinitionFolder,
+                ensureIndexDefinitionContentPackageJcrRootPath:
+                    testEnsureDefinitionFolder,
+                ensureIndexDefinitionConfigPackageJcrRootPath:
+                    testEnsureDefinitionFolder,
             };
             assert.isTrue(
                 ensureDefinitionConverter.performConversion(config, [])
@@ -91,8 +93,10 @@ describe("ensure-definition-converter-util", function () {
     describe("Wrong Ensure Definitions path in config", function () {
         it("should skip conversion to Oak Index Definitions", function () {
             let config = {
-                ensureIndexDefinitionContentPackageJcrRootPath: testEnsureDefinitionFolder,
-                ensureIndexDefinitionConfigPackageJcrRootPath: testEnsureDefinitionOakIndexFolder,
+                ensureIndexDefinitionContentPackageJcrRootPath:
+                    testEnsureDefinitionFolder,
+                ensureIndexDefinitionConfigPackageJcrRootPath:
+                    testEnsureDefinitionOakIndexFolder,
             };
             assert.isFalse(
                 ensureDefinitionConverter.performConversion(config, [])

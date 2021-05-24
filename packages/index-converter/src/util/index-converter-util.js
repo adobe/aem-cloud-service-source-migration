@@ -228,9 +228,8 @@ function correctValuesOfKey(jsonObject, updateValues) {
             );
         }
     } else {
-        jsonObject[constants.JSON_ATTRIBUTES_KEY][
-            constants.COMPAT_VERSION
-        ] = updateValues.get(constants.COMPAT_VERSION);
+        jsonObject[constants.JSON_ATTRIBUTES_KEY][constants.COMPAT_VERSION] =
+            updateValues.get(constants.COMPAT_VERSION);
         logger.info(fileName + ": Adding property " + constants.COMPAT_VERSION);
     }
     return jsonObject;

@@ -43,9 +43,8 @@ module.exports = {
         logger.info(fileName + ": Building JSON Object from baseLineXML ...");
         let baseLineJsonObject = null;
         try {
-            baseLineJsonObject = xmlUtil.buildJsonObjectFromXML(
-                baseLineXMLPath
-            );
+            baseLineJsonObject =
+                xmlUtil.buildJsonObjectFromXML(baseLineXMLPath);
         } catch (err) {
             let errorStringBaseLine =
                 "Not able to read baseline.xml for AEM Version " + aemVersion;
@@ -65,13 +64,14 @@ module.exports = {
         );
         let allCustomIndexJsonObjectFromEnsure = null;
         if (wasEnsureDefinitionConverted) {
-            allCustomIndexJsonObjectFromEnsure = xmlUtil.buildCustomIndexJsonObject(
-                path.join(
-                    commons_constants.TARGET_INDEX_FOLDER,
-                    constants.ENSURE_DEFINITIONS_FOLDER
-                ),
-                true
-            );
+            allCustomIndexJsonObjectFromEnsure =
+                xmlUtil.buildCustomIndexJsonObject(
+                    path.join(
+                        commons_constants.TARGET_INDEX_FOLDER,
+                        constants.ENSURE_DEFINITIONS_FOLDER
+                    ),
+                    true
+                );
         }
         let allCustomIndexJsonObject = null;
 
@@ -178,9 +178,8 @@ module.exports = {
             basePathResources,
             constants.CLOUD_SERVICE_INDEX_FILE_NAME
         );
-        let indexOnCloudServicesJsonObject = xmlUtil.buildJsonObjectFromXML(
-            indexOnCloudXMLPath
-        );
+        let indexOnCloudServicesJsonObject =
+            xmlUtil.buildJsonObjectFromXML(indexOnCloudXMLPath);
         let indexOnCloudServicesMap = new Map();
 
         mapUtil.buildMapFromJsonObject(

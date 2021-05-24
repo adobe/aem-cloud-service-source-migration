@@ -138,11 +138,13 @@ var RestructurePoms = {
                 sdkDependency,
                 conversionStep
             );
-            uiAppsDependencyList = pomManipulationUtil.removeDuplicatesDependencies(
-                uiAppsDependencyList
-            );
+            uiAppsDependencyList =
+                pomManipulationUtil.removeDuplicatesDependencies(
+                    uiAppsDependencyList
+                );
             pluginObj.pluginList = pomManipulationUtil.removeDuplicatesPlugins(
-                pluginObj.pluginList
+                pluginObj.pluginList,
+                new Set(constants.OOTB_UI_POM_PLUGIN_MANAGEMENT)
             );
             await pomManipulationUtil.addDependencies(
                 uiAppsPomFile,
@@ -311,9 +313,8 @@ async function refactorParentPom(
     await addParentAndModuleinfo(pomFile, config.parentPom.path);
     // add dependencies from source parent pom.xml
     let dependencyList = await getDependenciesFromPom(config.parentPom.path);
-    dependencyList = pomManipulationUtil.removeDuplicatesDependencies(
-        dependencyList
-    );
+    dependencyList =
+        pomManipulationUtil.removeDuplicatesDependencies(dependencyList);
     await pomManipulationUtil.addDependencies(
         pomFile,
         dependencyList,
@@ -326,10 +327,11 @@ async function refactorParentPom(
         filevaultPluginEmbeddedList: [],
     };
     await getPluginsFromPom(config.parentPom.path, pluginObj);
-    pluginObj.pluginManagementList = pomManipulationUtil.removeDuplicatesPlugins(
-        pluginObj.pluginManagementList,
-        new Set(constants.OOTB_PARENT_POM_PLUGIN_MANAGEMENT)
-    );
+    pluginObj.pluginManagementList =
+        pomManipulationUtil.removeDuplicatesPlugins(
+            pluginObj.pluginManagementList,
+            new Set(constants.OOTB_PARENT_POM_PLUGIN_MANAGEMENT)
+        );
     // as we are only interested in the pluginmanagement info,
     // remove the other info from the pluginObj
     pluginObj.pluginList = [];
@@ -481,6 +483,7 @@ async function getPluginsFromPom(pomFile, pluginObj) {
                         line++;
                         pomLine = fileContent[line].trim();
                     }
+                    line++;
                 }
             }
         }
