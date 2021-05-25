@@ -87,10 +87,8 @@ var IndexConverter = {
                 "'"
         );
         // Convert Ensure Definitions
-        let wasEnsureDefinitionConverted = ensureDefinitionConverter.performConversion(
-            config,
-            writer_buffer
-        );
+        let wasEnsureDefinitionConverted =
+            ensureDefinitionConverter.performConversion(config, writer_buffer);
         if (
             !wasEnsureDefinitionConverted &&
             config.customOakIndexDirectoryPath == null

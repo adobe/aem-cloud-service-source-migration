@@ -19,6 +19,9 @@ jobs:
         
       - name: Execute Tests & generate coverage
         run: yarn test
+
+      - name: Execute lint check
+        run: yarn lint
         
       - name: upload code coverage for all packages
         run: bash <(curl -s https://codecov.io/bash)

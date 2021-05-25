@@ -29,6 +29,7 @@
             <plugin>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>filevault-package-maven-plugin</artifactId>
+                <extensions>true</extensions>
                 <configuration>
                     <properties>
                         <cloudManagerTarget>none</cloudManagerTarget>
@@ -36,6 +37,15 @@
                     <allowIndexDefinitions>true</allowIndexDefinitions>
                     <filters>
                     </filters>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.day.jcr.vault</groupId>
+                <artifactId>content-package-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <verbose>true</verbose>
+                    <failOnError>true</failOnError>
                 </configuration>
             </plugin>
         </plugins>

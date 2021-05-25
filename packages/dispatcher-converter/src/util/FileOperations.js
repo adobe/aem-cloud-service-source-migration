@@ -273,10 +273,11 @@ class FileOperations {
                                             this.getReadablePath(line)
                                         )
                                     ) {
-                                        replaceContents = this.getContentFromFile(
-                                            this.getReadablePath(line),
-                                            true
-                                        );
+                                        replaceContents =
+                                            this.getContentFromFile(
+                                                this.getReadablePath(line),
+                                                true
+                                            );
                                     }
                                 } else {
                                     replaceContents =
@@ -922,15 +923,16 @@ class FileOperations {
                                         " in  file " +
                                         filePath
                                 );
-                                let conversion_operation = new ConversionOperation(
-                                    commons_constants.ACTION_REPLACED,
-                                    filePath,
-                                    "Replaced include statement '" +
-                                        trimmedLine +
-                                        " with content of file '" +
-                                        ruleFileToReplace +
-                                        "'"
-                                );
+                                let conversion_operation =
+                                    new ConversionOperation(
+                                        commons_constants.ACTION_REPLACED,
+                                        filePath,
+                                        "Replaced include statement '" +
+                                            trimmedLine +
+                                            " with content of file '" +
+                                            ruleFileToReplace +
+                                            "'"
+                                    );
                                 conversionStep.addOperation(
                                     conversion_operation
                                 );
@@ -1772,15 +1774,16 @@ class FileOperations {
                                         " section of file " +
                                         filePath
                                 );
-                                let conversionOperation = new ConversionOperation(
-                                    commons_constants.ACTION_REMOVED,
-                                    filePath,
-                                    "Removed include statement '" +
-                                        strippedLine +
-                                        "' in section '" +
-                                        header +
-                                        "'"
-                                );
+                                let conversionOperation =
+                                    new ConversionOperation(
+                                        commons_constants.ACTION_REMOVED,
+                                        filePath,
+                                        "Removed include statement '" +
+                                            strippedLine +
+                                            "' in section '" +
+                                            header +
+                                            "'"
+                                    );
                                 conversionStep.addOperation(
                                     conversionOperation
                                 );
@@ -1819,17 +1822,18 @@ class FileOperations {
                                     includePatternToReplaceWith,
                                     filePath
                                 );
-                                let conversionOperation = new ConversionOperation(
-                                    commons_constants.ACTION_REPLACED,
-                                    filePath,
-                                    "Replaced include statement '" +
-                                        strippedLine +
-                                        "' in section '" +
-                                        header +
-                                        "' with '" +
-                                        includePatternToReplaceWith +
-                                        "'"
-                                );
+                                let conversionOperation =
+                                    new ConversionOperation(
+                                        commons_constants.ACTION_REPLACED,
+                                        filePath,
+                                        "Replaced include statement '" +
+                                            strippedLine +
+                                            "' in section '" +
+                                            header +
+                                            "' with '" +
+                                            includePatternToReplaceWith +
+                                            "'"
+                                    );
                                 conversionStep.addOperation(
                                     conversionOperation
                                 );

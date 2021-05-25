@@ -26,15 +26,12 @@ describe("index-converter-util", function () {
             let indexOnCloudXMLPath = path.join(
                 "test/resources/.content_Cloud_Services.xml"
             );
-            let baseLineJsonObject = xmlUtil.buildJsonObjectFromXML(
-                baseLineXMLPath
-            );
-            let allCustomIndexJsonObject = xmlUtil.buildJsonObjectFromXML(
-                customIndexXMLPath
-            );
-            let indexOnCloudJsonObject = xmlUtil.buildJsonObjectFromXML(
-                indexOnCloudXMLPath
-            );
+            let baseLineJsonObject =
+                xmlUtil.buildJsonObjectFromXML(baseLineXMLPath);
+            let allCustomIndexJsonObject =
+                xmlUtil.buildJsonObjectFromXML(customIndexXMLPath);
+            let indexOnCloudJsonObject =
+                xmlUtil.buildJsonObjectFromXML(indexOnCloudXMLPath);
             let customOOTBIndexMap = new Map();
             customOOTBIndexMap.set("damAssetLucene", "damAssetLucene");
             let onPremToCloudMap = new Map();
@@ -79,9 +76,8 @@ describe("index-converter-util", function () {
             let customIndexXMLPath = path.join(
                 "test/resources/inputCustom1.xml"
             );
-            let allCustomIndexJsonObject = xmlUtil.buildJsonObjectFromXML(
-                customIndexXMLPath
-            );
+            let allCustomIndexJsonObject =
+                xmlUtil.buildJsonObjectFromXML(customIndexXMLPath);
             let customIndex = ["test-lead-form"];
             let transformationMap = new Map();
 

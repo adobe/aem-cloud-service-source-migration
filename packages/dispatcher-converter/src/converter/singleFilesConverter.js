@@ -651,9 +651,8 @@ class SingleFilesConverter {
                 );
 
                 // split the contents of the file by newline
-                let fileContentsArray = this.fileOpsUtil.getFileContentsArray(
-                    file
-                );
+                let fileContentsArray =
+                    this.fileOpsUtil.getFileContentsArray(file);
                 let returnContent = "";
 
                 // iterate over the contents of the file and check for variables to replace
@@ -684,7 +683,8 @@ class SingleFilesConverter {
     }
 
     removeNonWhitelistedDirectives() {
-        let conversionStep = this.removeNonWhitelistedDirectivesSummaryGenerator();
+        let conversionStep =
+            this.removeNonWhitelistedDirectivesSummaryGenerator();
         let available_vhosts_dir_path = path.join(
             this.dispatcherConfigPath,
             Constants.CONF_D,
@@ -873,10 +873,8 @@ class SingleFilesConverter {
             if (availableFarmFiles.length > 1) {
                 availableFarmFiles.forEach((file) => {
                     if (file.endsWith("_cache.any")) {
-                        let cacheFileContents = this.fileOpsUtil.getContentFromFile(
-                            file,
-                            true
-                        );
+                        let cacheFileContents =
+                            this.fileOpsUtil.getContentFromFile(file, true);
                         this.fileOpsUtil.replaceIncludeStatementWithContentOfRuleFile(
                             conf_dispatcher_d_dir_path,
                             Constants.FARM,
@@ -893,12 +891,13 @@ class SingleFilesConverter {
                 // consolidate all the included rule file into a single rule file and include it.
                 let ruleFiles = this.fileOpsUtil.getAllFileNames(files);
                 // find all the rule files that are actually included in single the farm file
-                let ruleFilesIncluded = this.fileOpsUtil.getNamesOfRuleFilesIncluded(
-                    availableFarmFiles[0],
-                    ruleFiles,
-                    Constants.INCLUDE_SYNTAX_IN_FARM,
-                    true
-                );
+                let ruleFilesIncluded =
+                    this.fileOpsUtil.getNamesOfRuleFilesIncluded(
+                        availableFarmFiles[0],
+                        ruleFiles,
+                        Constants.INCLUDE_SYNTAX_IN_FARM,
+                        true
+                    );
                 // delete the rule files not included in the single available farm file, and get the files actually used
                 files = this.filterAndRemoveUnusedFiles(
                     files,
@@ -1155,9 +1154,8 @@ class SingleFilesConverter {
             let replacedFlag = false;
             let sectionIndentation = 0;
 
-            let fileContentsArray = this.fileOpsUtil.getFileContentsArray(
-                filePath
-            );
+            let fileContentsArray =
+                this.fileOpsUtil.getFileContentsArray(filePath);
             let returnContent = "";
 
             logger.info(
@@ -1251,12 +1249,13 @@ class SingleFilesConverter {
                 "Single File Converter: Checking filter for available farm file : " +
                     farm
             );
-            let ruleFilesIncluded = this.fileOpsUtil.getNamesOfRuleFilesIncluded(
-                farm,
-                ruleFiles,
-                Constants.INCLUDE_SYNTAX_IN_FARM,
-                true
-            );
+            let ruleFilesIncluded =
+                this.fileOpsUtil.getNamesOfRuleFilesIncluded(
+                    farm,
+                    ruleFiles,
+                    Constants.INCLUDE_SYNTAX_IN_FARM,
+                    true
+                );
             // delete the rule files not included in the single available farm file, and get the files actually used
             let files = this.filterAndRemoveUnusedFiles(
                 filterFiles,

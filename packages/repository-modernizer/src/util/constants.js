@@ -212,6 +212,11 @@ module.exports = {
         "lifecycle-mapping",
     ],
 
+    OOTB_UI_POM_PLUGIN_MANAGEMENT: [
+        "content-package-maven-plugin",
+        "htl-maven-plugin",
+    ],
+
     // Default Templates
     DEFAULT_ALL_FILTER_PATH_TEMPLATE: `    <filter root="/apps/\${appId}-packages"/>`,
 

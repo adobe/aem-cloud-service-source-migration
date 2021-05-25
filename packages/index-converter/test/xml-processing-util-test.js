@@ -75,9 +75,8 @@ describe("XML-Processing-Util", function () {
         it("should build jsonObject from xml", function () {
             try {
                 let baseLineXMLPath = path.join("./resources/.content_65.xml");
-                let baseLineJsonObject = xmlUtil.buildJsonObjectFromXML(
-                    baseLineXMLPath
-                );
+                let baseLineJsonObject =
+                    xmlUtil.buildJsonObjectFromXML(baseLineXMLPath);
                 assert.isTrue(
                     Object.keys(baseLineJsonObject[constants.JCR_ROOT])
                         .length == 32,

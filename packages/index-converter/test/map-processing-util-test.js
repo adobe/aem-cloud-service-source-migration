@@ -18,9 +18,8 @@ describe("Map-Processing-Util", function () {
     describe("Construct Map from Json Object", function () {
         it("should construct a map from json object", function () {
             let baseLineXMLPath = path.join("./resources/.content_65.xml");
-            let baseLineJsonObject = xmlUtil.buildJsonObjectFromXML(
-                baseLineXMLPath
-            );
+            let baseLineJsonObject =
+                xmlUtil.buildJsonObjectFromXML(baseLineXMLPath);
             let baseLineMap = new Map();
             mapUtil.buildMapFromJsonObject(
                 baseLineJsonObject[constants.JCR_ROOT],
@@ -44,12 +43,10 @@ describe("Map-Processing-Util", function () {
                 let customIndexXMLPath = path.join(
                     "./test/resources/inputCustom1.xml"
                 );
-                let baseLineJsonObject = xmlUtil.buildJsonObjectFromXML(
-                    baseLineXMLPath
-                );
-                let allCustomIndexJsonObject = xmlUtil.buildJsonObjectFromXML(
-                    customIndexXMLPath
-                );
+                let baseLineJsonObject =
+                    xmlUtil.buildJsonObjectFromXML(baseLineXMLPath);
+                let allCustomIndexJsonObject =
+                    xmlUtil.buildJsonObjectFromXML(customIndexXMLPath);
                 let allCustomIndexMap = new Map();
                 mapUtil.buildMapFromJsonObject(
                     allCustomIndexJsonObject[constants.JCR_ROOT],
