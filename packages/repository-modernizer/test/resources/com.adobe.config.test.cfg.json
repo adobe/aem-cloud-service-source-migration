@@ -1,5 +1,6 @@
 {
-"enabled:Boolean":"true",
+"enabled:Boolean":true,
 "error-page.system-path":"/content/404",
-"serve-authenticated-from-cache:Boolean":"true"
+"serve-authenticated-from-cache:Boolean":true,
+"test-array":["test1","test2"]
 }
