@@ -496,7 +496,25 @@ function removeUnwantedChars(key, val, filePath) {
             val = val.substring(val.indexOf("}") + 1);
             // to remove extra space and new line
             val = val.replace(/[^\x20-\x7E]/gim, "");
-            str = '"' + key + ":" + type + '"' + ":" + '"' + val + '"';
+            if (type === "Character" || type === "String") {
+                str = '"' + key + '"' + ":" + '"' + val + '"';
+            } else {
+                str = '"' + key + ":" + type + '"' + ":" + val;
+            }
+        } else if (val.charAt(0) == "[") {
+            str = '"' + key + '"' + ":" + "[";
+            let tokens = val.substring(1, val.indexOf("]"));
+            if (tokens.length > 0) {
+                tokens = tokens.split(",");
+                for (let i = 0; i < tokens.length; i++) {
+                    if (i == tokens.length - 1) {
+                        str = str + '"' + tokens[i] + '"';
+                    } else {
+                        str = str + '"' + tokens[i] + '"' + ",";
+                    }
+                }
+            }
+            str = str + "]";
         } else {
             val = val.replace(/[^\x20-\x7E]/gim, "");
             str = '"' + key + '"' + ":" + '"' + val + '"';
