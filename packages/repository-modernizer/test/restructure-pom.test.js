@@ -29,10 +29,15 @@ const path = require("path");
 const yaml = require("js-yaml");
 const constants = require("../src/util/constants");
 const configFileName = "config.yaml";
+const multiProjectConfigFileName = "multiProjectConfig.yaml";
+
 const testDir = path.join(process.cwd(), "test");
 const { readFileSync } = jest.requireActual("fs");
 const config = yaml.safeLoad(
     readFileSync(path.join(testDir, configFileName), "utf8")
+);
+const multiProjectConfig = yaml.safeLoad(
+    readFileSync(path.join(testDir, multiProjectConfigFileName), "utf8")
 );
 const xmlContent = describe("restructure pom", function () {
     var conversionSteps = [];
@@ -217,5 +222,83 @@ const xmlContent = describe("restructure pom", function () {
     test("fetch sdk version", async () => {
         let version = await pomsRewire.__get__("fetchSDKMetadata")(srcpath);
         expect(version).not.toBeNull();
+    });
+
+    test("restructure pom multi project", () => {
+        let projects = multiProjectConfig.projects;
+        let projectPath = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(multiProjectConfig.projects[0].projectPath)
+        );
+        let uiAppsPomFile = path.join(
+            projectPath,
+            constants.UI_APPS,
+            constants.POM_XML
+        );
+        let uiContentPomFile = path.join(
+            projectPath,
+            constants.UI_CONTENT,
+            constants.POM_XML
+        );
+        let pluginObj = {
+            pluginList: [],
+            pluginManagementList: [],
+            filevaultPluginEmbeddedList: [],
+        };
+        let ui_apps_artifactId = multiProjectConfig.projects[0].artifactId.concat(
+            ".",
+            constants.UI_APPS
+        );
+        let uiContentDependencyList = [
+            constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
+                constants.DEFAULT_ARTIFACT_ID,
+                ui_apps_artifactId
+            )
+                .replace(constants.DEFAULT_GROUP_ID, multiProjectConfig.groupId)
+                .replace(constants.DEFAULT_VERSION, projects[0].version),
+        ];
+        const xmlContent = fs.readFileSync(srcpath, "utf8").split(/\r?\n/);
+        //mock methods
+        pomManipulationUtil.addDependencies.mockReturnValue(true);
+        pomManipulationUtil.addPlugins.mockResolvedValue(true);
+        pomManipulationUtil.embeddArtifactsUsingTemplate.mockResolvedValue(
+            true
+        );
+
+        pomManipulationUtil.removeDuplicatesDependencies.mockReturnValue(true);
+        pomManipulationUtil.embeddedArtifactsToFileVaultPlugin.mockResolvedValue(
+            true
+        );
+        pomManipulationUtil.replaceVariables.mockResolvedValue(true);
+        pomManipulationUtil.removeDuplicatesPlugins.mockReturnValue(true);
+        util.globGetFilesByName.mockReturnValue(["xyz/pom.xml", "abc/pom.xml"]);
+        util.writeDataToFileSync.mockResolvedValue(true);
+        util.getXMLContent.mockReturnValue(xmlContent);
+        return poms.restructure(multiProjectConfig, conversionSteps).then(() => {
+            expect(pomManipulationUtil.addDependencies).toHaveBeenCalledWith(
+                uiContentPomFile,
+                uiContentDependencyList,
+                expect.anything()
+            );
+            expect(pomManipulationUtil.addDependencies).toHaveBeenCalledTimes(
+                8
+            );
+            expect(
+                pomManipulationUtil.removeDuplicatesDependencies
+            ).toHaveBeenCalledTimes(5);
+            expect(
+                pomManipulationUtil.embeddedArtifactsToFileVaultPlugin
+            ).toHaveBeenCalledWith(
+                uiAppsPomFile,
+                pluginObj.filevaultPluginEmbeddedList,
+                expect.anything()
+            );
+            expect(
+                pomManipulationUtil.removeDuplicatesPlugins
+            ).toHaveBeenCalledTimes(5);
+            expect(
+                pomManipulationUtil.embeddArtifactsUsingTemplate
+            ).toHaveBeenCalledTimes(1);
+        });
     });
 });
