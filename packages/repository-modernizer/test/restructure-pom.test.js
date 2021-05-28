@@ -113,11 +113,11 @@ const xmlContent = describe("restructure pom", function () {
                 expect.anything()
             );
             expect(pomManipulationUtil.addDependencies).toHaveBeenCalledTimes(
-                4
+                5
             );
             expect(
                 pomManipulationUtil.removeDuplicatesDependencies
-            ).toHaveBeenCalledTimes(2);
+            ).toHaveBeenCalledTimes(3);
             expect(
                 pomManipulationUtil.embeddedArtifactsToFileVaultPlugin
             ).toHaveBeenCalledWith(
@@ -127,7 +127,7 @@ const xmlContent = describe("restructure pom", function () {
             );
             expect(
                 pomManipulationUtil.removeDuplicatesPlugins
-            ).toHaveBeenCalledTimes(2);
+            ).toHaveBeenCalledTimes(3);
             expect(
                 pomManipulationUtil.embeddArtifactsUsingTemplate
             ).toHaveBeenCalledTimes(1);
