@@ -164,15 +164,17 @@ var RestructurePoms = {
                 pluginObj,
                 conversionStep
             );
-            // refactor the parent pom.xml
-            await refactorParentPom(
-                path.join(projectPath, constants.POM_XML),
-                sdkVersion,
-                config,
-                nonAdobeDependencyList,
-                conversionStep,
-                project
-            );
+            if (projects.length > 1) {
+                // refactor the reactor pom.xml for project
+                await refactorParentPom(
+                    path.join(projectPath, constants.POM_XML),
+                    sdkVersion,
+                    config,
+                    nonAdobeDependencyList,
+                    conversionStep,
+                    project
+                );
+            }
         }
         // all package pom file manipulation
         let allPackageDependencyList = [];
