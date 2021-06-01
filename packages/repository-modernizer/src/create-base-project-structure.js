@@ -182,6 +182,22 @@ var CreateBaseProjectStructure = {
                     `CreateBaseProjectStructure: Base parent pom.xml created at ${projectPath}`
                 );
             }
+            if (projects.length > 1) {
+                fs.copyFileSync(
+                    path.join(basePath, constants.BASE_PARENT_POM),
+                    path.join(projectPath, constants.POM_XML)
+                );
+                conversionStep.addOperation(
+                    new ConversionOperation(
+                        commons_constants.ACTION_ADDED,
+                        path.join(projectPath, constants.POM_XML),
+                        "Created project's base reactor pom.xml"
+                    )
+                );
+                logger.info(
+                    `CreateBaseProjectStructure: Base reactor pom.xml created at ${projectPath}`
+                );
+            }
             fsExtra.copySync(
                 path.join(basePath, constants.BASE_UI_APPS_PACKAGE),
                 path.join(projectPath, constants.UI_APPS)
@@ -274,6 +290,34 @@ var CreateBaseProjectStructure = {
                 allPackageDependencyList,
                 conversionStep
             );
+            if (projects.length > 1) {
+                // if there are multiple project, populate reactor pom for each project.
+                await pomManipulationUtil.replaceVariables(
+                    path.join(projectPath, constants.POM_XML),
+                    {
+                        [constants.DEFAULT_GROUP_ID]: config.groupId,
+                        [constants.DEFAULT_ROOT_VERSION]:
+                            config.parentPom.version,
+                        [constants.DEFAULT_VERSION]:
+                            project.version != null
+                                ? project.version
+                                : config.all.version,
+                        [constants.DEFAULT_ARTIFACT_ID]:
+                            project.artifactId != null
+                                ? project.artifactId
+                                : config.all.artifactId,
+                        [constants.DEFAULT_APP_TITLE]:
+                            project.appTitle != null
+                                ? project.appTitle
+                                : config.all.appTitle,
+                        [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                            config.parentPom.artifactId,
+                        [constants.DEFAULT_RELATIVE_PATH]:
+                            constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    },
+                    conversionStep
+                );
+            }
         }
         await pomManipulationUtil.replaceVariables(
             allPackagePomFile,

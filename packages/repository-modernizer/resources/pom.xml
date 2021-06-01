@@ -24,6 +24,10 @@
     <version>${version}</version>
     <description>${appTitle}</description>
     <parent>
+        <groupId>${groupId}</groupId>
+        <artifactId>${rootArtifactId}</artifactId>
+        <version>${rootVersion}</version>
+        <relativePath>${relativePath}</relativePath>
     </parent>
     <properties>
         <aem.host>localhost</aem.host>

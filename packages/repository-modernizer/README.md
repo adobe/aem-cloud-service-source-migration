@@ -52,6 +52,7 @@ The objective of this tool is to modernize any given project(s) into AEM Cloud S
  `ui.content` and `ui.config` packages at the same level.
 * If multiple projects are configured, create project folders (with the same name as source project) inside
  which we create the base template for `ui.apps`,`ui.apps.structure`, `ui.content` and `ui.config` packages.
+* If multiple projects are configured, create a base reactor pom for each project.
 * Apply the specified `groupId`, `artifactId` and `version` in the newly created artifact `pom.xml` files.
 * For each project specified in the configuration, copy all packages with the packaging type `content-package`
  (other than the packages specified under `existingContentPackageFolder`) from the source.
@@ -320,10 +321,7 @@ repositoryModernizer:
 
 # Known Limitations
 The tool has some known limitations (we are working on fixing them) such as :
-1. It does not create Reactor `pom.xml` files for individual projects.
- A parent `pom.xml` file is created at the root level, but for multi-project structures,
- we do not create reactor pom files for individual projects.
-2. It does not make any modifications to existing core bundles, apart from replacing `uber-jar`
+1. It does not make any modifications to existing core bundles, apart from replacing `uber-jar`
  dependencies with `aem-sdk-api` dependencies.
 
 #### Things that would need to be handled manually :

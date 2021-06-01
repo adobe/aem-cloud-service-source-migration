@@ -163,6 +163,17 @@ var RestructurePoms = {
                 pluginObj,
                 conversionStep
             );
+            if (projects.length > 1) {
+                // refactor the reactor pom.xml for project
+                await refactorParentPom(
+                    path.join(projectPath, constants.POM_XML),
+                    sdkVersion,
+                    config,
+                    nonAdobeDependencyList,
+                    conversionStep,
+                    project
+                );
+            }
         }
         // all package pom file manipulation
         let allPackageDependencyList = [];
@@ -289,30 +300,53 @@ async function refactorParentPom(
     sdkVersion,
     config,
     nonAdobeDependencyList,
-    conversionStep
+    conversionStep,
+    project = config.parentPom
 ) {
     // replace the OOTB variables
     await pomManipulationUtil.replaceVariables(
         pomFile,
         {
             [constants.DEFAULT_GROUP_ID]: config.groupId,
-            [constants.DEFAULT_ARTIFACT_ID]: config.parentPom.artifactId,
-            [constants.DEFAULT_APP_TITLE]: config.parentPom.appTitle,
-            [constants.DEFAULT_VERSION]: config.parentPom.version,
+            [constants.DEFAULT_ARTIFACT_ID]: project.artifactId,
+            [constants.DEFAULT_APP_TITLE]: project.appTitle,
+            [constants.DEFAULT_VERSION]: project.version,
             [constants.DEFAULT_SDK_API]: sdkVersion,
             [constants.PARENT_POM_SDK_VERSION]: constants.DEFAULT_SDK_API,
         },
         conversionStep
     );
+    let dependencyList = [];
+    let pluginObj = {
+        pluginList: [],
+        pluginManagementList: [],
+        filevaultPluginEmbeddedList: [],
+    };
     // add local-repo section for including non-adobe dependencies
-    await add3rdPartyRepoSection(
-        pomFile,
-        nonAdobeDependencyList,
-        conversionStep
-    );
-    await addParentAndModuleinfo(pomFile, config.parentPom.path);
+    if (project == config.parentPom) {
+        await add3rdPartyRepoSection(
+            pomFile,
+            nonAdobeDependencyList,
+            conversionStep
+        );
+        await addParentAndModuleinfo(pomFile, config.parentPom.path);
+        dependencyList = await getDependenciesFromPom(config.parentPom.path);
+        await getPluginsFromPom(config.parentPom.path, pluginObj);
+    } else {
+        await addParentAndModuleinfo(
+            pomFile,
+            path.join(project.projectPath, constants.POM_XML),
+            false
+        );
+        dependencyList = await getDependenciesFromPom(
+            path.join(project.projectPath, constants.POM_XML)
+        );
+        await getPluginsFromPom(
+            path.join(project.projectPath, constants.POM_XML),
+            pluginObj
+        );
+    }
     // add dependencies from source parent pom.xml
-    let dependencyList = await getDependenciesFromPom(config.parentPom.path);
     dependencyList =
         pomManipulationUtil.removeDuplicatesDependencies(dependencyList);
     await pomManipulationUtil.addDependencies(
@@ -321,12 +355,6 @@ async function refactorParentPom(
         conversionStep,
         true
     );
-    let pluginObj = {
-        pluginList: [],
-        pluginManagementList: [],
-        filevaultPluginEmbeddedList: [],
-    };
-    await getPluginsFromPom(config.parentPom.path, pluginObj);
     pluginObj.pluginManagementList =
         pomManipulationUtil.removeDuplicatesPlugins(
             pluginObj.pluginManagementList,
@@ -611,22 +639,28 @@ async function fetchSDKMetadata() {
  *
  * Function to add parent and module info
  */
-async function addParentAndModuleinfo(pomFile, originalParent) {
+async function addParentAndModuleinfo(
+    pomFile,
+    originalParent,
+    doAddParent = true
+) {
     let parentModule = [];
     let fileContent = await util.getXMLContent(originalParent);
 
-    for (let line = 0; line < fileContent.length; line++) {
-        let pomLine = fileContent[line];
-        if (pomLine.trim() == constants.PARENT_START_TAG) {
-            while (
-                line < fileContent.length &&
-                pomLine.trim() != constants.PARENT_END_TAG
-            ) {
+    if (doAddParent) {
+        for (let line = 0; line < fileContent.length; line++) {
+            let pomLine = fileContent[line];
+            if (pomLine.trim() == constants.PARENT_START_TAG) {
+                while (
+                    line < fileContent.length &&
+                    pomLine.trim() != constants.PARENT_END_TAG
+                ) {
+                    parentModule.push(pomLine);
+                    line++;
+                    pomLine = fileContent[line];
+                }
                 parentModule.push(pomLine);
-                line++;
-                pomLine = fileContent[line];
             }
-            parentModule.push(pomLine);
         }
     }
     parentModule.push(constants.MODULE_START_TAG);
@@ -646,7 +680,10 @@ async function addParentAndModuleinfo(pomFile, originalParent) {
                 parentModule.forEach((module) => {
                     contentToBeWritten.push(module);
                 });
-                line = line + 2;
+                if (doAddParent) {
+                    //skip <parent></parent> tag, if it is added from source.
+                    line = line + 6;
+                }
             }
             pomLine = fileContent[line];
             contentToBeWritten.push(pomLine);
