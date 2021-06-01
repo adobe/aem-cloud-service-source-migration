@@ -191,7 +191,7 @@ var CreateBaseProjectStructure = {
                     new ConversionOperation(
                         commons_constants.ACTION_ADDED,
                         path.join(projectPath, constants.POM_XML),
-                        "Created project's base parent pom.xml"
+                        "Created project's base reactor pom.xml"
                     )
                 );
                 logger.info(

@@ -23,7 +23,6 @@ const {
 const path = require("path");
 const fs = require("fs");
 const fetch = require("node-fetch");
-const { POM_XML } = require("./util/constants");
 
 var RestructurePoms = {
     /**
@@ -336,14 +335,14 @@ async function refactorParentPom(
     } else {
         await addParentAndModuleinfo(
             pomFile,
-            path.join(project.projectPath, POM_XML),
+            path.join(project.projectPath, constants.POM_XML),
             false
         );
         dependencyList = await getDependenciesFromPom(
-            path.join(project.projectPath, POM_XML)
+            path.join(project.projectPath, constants.POM_XML)
         );
         await getPluginsFromPom(
-            path.join(project.projectPath, POM_XML),
+            path.join(project.projectPath, constants.POM_XML),
             pluginObj
         );
     }
