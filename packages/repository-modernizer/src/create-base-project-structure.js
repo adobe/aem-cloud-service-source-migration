@@ -195,7 +195,7 @@ var CreateBaseProjectStructure = {
                     )
                 );
                 logger.info(
-                    `CreateBaseProjectStructure: Base parent pom.xml created at ${projectPath}`
+                    `CreateBaseProjectStructure: Base reactor pom.xml created at ${projectPath}`
                 );
             }
             fsExtra.copySync(
