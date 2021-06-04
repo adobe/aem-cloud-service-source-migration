@@ -308,4 +308,27 @@ module.exports = {
     JCR_ROOT: "jcr:root",
 
     JSON_ATTRIBUTES_KEY: "_attributes",
+
+    ALL_CONFIGS_TYPES: [
+        "String",
+        "Integer",
+        "Long",
+        "Float",
+        "Double",
+        "Byte",
+        "Short",
+        "Character",
+        "Boolean",
+    ],
+
+    ALL_CONFIGS_PRIMITIVE_TYPES: [
+        "int",
+        "long",
+        "float",
+        "double",
+        "byte",
+        "short",
+        "char",
+        "boolean",
+    ],
 };

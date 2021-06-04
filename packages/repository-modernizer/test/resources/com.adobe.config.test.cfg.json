@@ -2,5 +2,6 @@
 "enabled:Boolean":true,
 "error-page.system-path":"/content/404",
 "serve-authenticated-from-cache:Boolean":true,
-"test-array":["test1","test2"]
+"test-array":["test1","test2"],
+"test-complex":"{0,date,yyyy-MM-dd HH:mm:ss.SSS} {4} [{3}] {5}"
 }

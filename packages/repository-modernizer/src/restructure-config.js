@@ -492,11 +492,22 @@ function removeUnwantedChars(key, val, filePath) {
     let str = "";
     if (filePath.endsWith(constants.XML_EXTENSION)) {
         if (val.charAt(0) == "{") {
-            let type = val.substring(1, val.indexOf("}"));
-            val = val.substring(val.indexOf("}") + 1);
+            let type;
+            if (
+                constants.ALL_CONFIGS_TYPES.includes(
+                    val.substring(1, val.indexOf("}"))
+                ) ||
+                constants.ALL_CONFIGS_PRIMITIVE_TYPES.includes(
+                    val.substring(1, val.indexOf("}"))
+                )
+            ) {
+                type = val.substring(1, val.indexOf("}"));
+                // negate the type from value if type is valid
+                val = val.substring(val.indexOf("}") + 1);
+            }
             // to remove extra space and new line
             val = val.replace(/[^\x20-\x7E]/gim, "");
-            if (type === "Character" || type === "String") {
+            if (type == null || type === "Character" || type === "String") {
                 str = '"' + key + '"' + ":" + '"' + val + '"';
             } else {
                 str = '"' + key + ":" + type + '"' + ":" + val;
