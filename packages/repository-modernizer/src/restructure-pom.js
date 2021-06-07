@@ -128,14 +128,10 @@ var RestructurePoms = {
                 );
             }
             sdkVersion = await fetchSDKMetadata();
-            let sdkDependency = constants.SDK_DEPENDENCY_TEMPLATE.replace(
-                "${version}",
-                sdkVersion
-            );
-            uiAppsDependencyList.push(sdkDependency);
+            uiAppsDependencyList.push(constants.SDK_DEPENDENCY_TEMPLATE);
             addSdkDependencytoCoreBundles(
                 project,
-                sdkDependency,
+                constants.SDK_DEPENDENCY_TEMPLATE,
                 conversionStep
             );
             uiAppsDependencyList =
