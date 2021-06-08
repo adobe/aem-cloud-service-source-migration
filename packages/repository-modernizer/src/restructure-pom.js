@@ -129,11 +129,7 @@ var RestructurePoms = {
             }
             sdkVersion = await fetchSDKMetadata();
             uiAppsDependencyList.push(constants.SDK_DEPENDENCY_TEMPLATE);
-            addSdkDependencytoCoreBundles(
-                project,
-                constants.SDK_DEPENDENCY_TEMPLATE,
-                conversionStep
-            );
+            addSdkDependencytoCoreBundles(project, conversionStep);
             uiAppsDependencyList =
                 pomManipulationUtil.removeDuplicatesDependencies(
                     uiAppsDependencyList
@@ -583,16 +579,11 @@ async function getPluginsFromPom(pomFile, pluginObj) {
  *
  * @param String source path of package to be to be restructured
  * @param String destination path of target project
- * @param String sdkDependency  sdk dependency to be added
  * @param object conversionStep  object containing info about rule and  details of the rule that is being followed
  *
  * Function to add sdk dependency to core Bundles
  */
-async function addSdkDependencytoCoreBundles(
-    project,
-    sdkDependency,
-    conversionStep
-) {
+async function addSdkDependencytoCoreBundles(project, conversionStep) {
     // the path.join() is to standardize the paths to use '\' irrespective of OS
     let source = path.join(project.projectPath);
     let destination = path.join(
@@ -608,7 +599,6 @@ async function addSdkDependencytoCoreBundles(
         );
         await pomManipulationUtil.addSdkDependencies(
             bundlePomFile,
-            sdkDependency,
             conversionStep
         );
     }

@@ -193,7 +193,7 @@ describe("pom manipulation", function () {
         const conversionStep = new ConversionStep();
         util.getXMLContent.mockReturnValue(xmlContent);
         util.writeDataToFileAsync.mockReturnValue(true);
-        await pomManipulationUtil.addSdkDependencies(path, constants.SDK_DEPENDENCY_TEMPLATE, conversionStep);
+        await pomManipulationUtil.addSdkDependencies(path, conversionStep);
         expect(conversionStep.addOperation).toHaveBeenCalledTimes(1);
         expect(util.writeDataToFileAsync).toHaveBeenCalledWith(path, expectedContent);
     });
