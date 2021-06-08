@@ -185,19 +185,15 @@ describe("pom manipulation", function () {
             "        <dependency>\n" +
             "          <groupId>com.adobe.aem</groupId>\n" + 
             "          <artifactId>aem-sdk-api</artifactId>\n" +
-            "          <version>2021.5.5257.20210505T101930Z-210429</version>\n" +
+            "          <version>${aem.sdk.api}</version>\n" +
             "          <scope>provided</scope>\n" +
             "        </dependency>",
             "      </dependencies>",
         ];
-        const sdkDependency = constants.SDK_DEPENDENCY_TEMPLATE.replace(
-            "${version}",
-            '2021.5.5257.20210505T101930Z-210429'
-        );
         const conversionStep = new ConversionStep();
         util.getXMLContent.mockReturnValue(xmlContent);
         util.writeDataToFileAsync.mockReturnValue(true);
-        await pomManipulationUtil.addSdkDependencies(path, sdkDependency, conversionStep);
+        await pomManipulationUtil.addSdkDependencies(path, conversionStep);
         expect(conversionStep.addOperation).toHaveBeenCalledTimes(1);
         expect(util.writeDataToFileAsync).toHaveBeenCalledWith(path, expectedContent);
     });
@@ -208,7 +204,7 @@ describe("pom manipulation", function () {
             "        <dependency>\n" +
             "          <groupId>com.adobe.aem</groupId>\n" + 
             "          <artifactId>aem-sdk-api</artifactId>\n" +
-            "          <version>2021.5.5257.20210505T101930Z-210429</version>\n" +
+            "          <version>${aem.sdk.api}</version>\n" +
             "          <scope>provided</scope>\n" +
             "        </dependency>",
             "        <dependency>",
@@ -218,14 +214,10 @@ describe("pom manipulation", function () {
             "        </dependency>",
             "      </dependencies>",
         ];
-        const dependencyToAdd = [ constants.SDK_DEPENDENCY_TEMPLATE.replace(
-            "${version}",
-            '2021.5.5257.20210505T101930Z-210429'
-        )];
         const conversionStep = new ConversionStep();
         util.getXMLContent.mockReturnValue(xmlContent);
         util.writeDataToFileAsync.mockReturnValue(true);
-        await pomManipulationUtil.addDependencies(path, dependencyToAdd, conversionStep);
+        await pomManipulationUtil.addDependencies(path, [constants.SDK_DEPENDENCY_TEMPLATE], conversionStep);
         expect(conversionStep.addOperation).toHaveBeenCalledTimes(1);
         expect(util.writeDataToFileAsync).toHaveBeenCalledWith(path, expectedContent);
     });

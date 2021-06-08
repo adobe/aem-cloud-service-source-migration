@@ -352,12 +352,11 @@ var PomManipulationUtil = {
     /**
      *
      * @param String pomFilePath  path of pom file in which sdk Dependency need to be added
-     * @param String sdkDependency  sdk Dependency to be add
      * @param object conversionStep  object containing info about rule and  details of the rule that is being followed
      *
      * Add  Sdk dependency in the package's pom
      */
-    async addSdkDependencies(pomFilePath, sdkDependency, conversionStep) {
+    async addSdkDependencies(pomFilePath, conversionStep) {
         if (!fs.existsSync(pomFilePath)) {
             logger.error(
                 `PomManipulationUtil: Cannot find file  ${pomFilePath}`
@@ -378,7 +377,7 @@ var PomManipulationUtil = {
                         line = content[index];
                     }
 
-                    contentToBeWritten.push(sdkDependency);
+                    contentToBeWritten.push(constants.SDK_DEPENDENCY_TEMPLATE);
                     continue;
                 }
                 contentToBeWritten.push(line);

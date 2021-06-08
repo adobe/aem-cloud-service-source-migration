@@ -256,7 +256,7 @@ module.exports = {
     SDK_DEPENDENCY_TEMPLATE: `        <dependency>
           <groupId>com.adobe.aem</groupId>
           <artifactId>aem-sdk-api</artifactId>
-          <version>\${version}</version>
+          <version>\${aem.sdk.api}</version>
           <scope>provided</scope>
         </dependency>`,
 
