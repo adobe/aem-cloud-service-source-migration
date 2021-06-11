@@ -606,29 +606,31 @@ class SingleFilesConverter {
             "Single File Converter: Replace DocumentRoot fields with `${DOCROOT}` variable."
         );
         this.replaceDocumentRoots(confDPath, Constants.VHOST, "${DOCROOT}");
-        let files =
-            this.fileOpsUtil.globGetFilesByExtension(
-                confDPath,
-                Constants.VHOST
-            ) || [];
-        files.forEach((file) => {
+        if (this.config.variablesToReplace) {
+            let files =
+                this.fileOpsUtil.globGetFilesByExtension(
+                    confDPath,
+                    Constants.VHOST
+                ) || [];
+            files.forEach((file) => {
             // we probably need to use some type of variable mapper here to figure out what all we need to replace
             // at least for environment variables
-            logger.info(
-                "Single File Converter: Replacing variable from config file in file : " +
-                    file
-            );
-            let obj = this.config.variablesToReplace;
-            let thisParameter = this;
-            Object.keys(obj).forEach(function (key) {
-                let value = obj[key];
-                thisParameter.fileOpsUtil.replaceVariableUsage(
-                    file,
-                    key,
-                    value
+                logger.info(
+                    "Single File Converter: Replacing variable from config file in file : " +
+                        file
                 );
+                let obj = this.config.variablesToReplace;
+                let thisParameter = this;
+                Object.keys(obj).forEach(function (key) {
+                    let value = obj[key];
+                    thisParameter.fileOpsUtil.replaceVariableUsage(
+                        file,
+                        key,
+                        value
+                    );
+                });
             });
-        });
+        }
     }
 
     replaceDocumentRoots(directoryPath, fileExtension, newVariable) {
