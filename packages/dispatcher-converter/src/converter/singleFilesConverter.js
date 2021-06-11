@@ -613,8 +613,8 @@ class SingleFilesConverter {
                     Constants.VHOST
                 ) || [];
             files.forEach((file) => {
-            // we probably need to use some type of variable mapper here to figure out what all we need to replace
-            // at least for environment variables
+                // we probably need to use some type of variable mapper here to figure out what all we need to replace
+                // at least for environment variables
                 logger.info(
                     "Single File Converter: Replacing variable from config file in file : " +
                         file
