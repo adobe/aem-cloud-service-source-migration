@@ -36,47 +36,63 @@ var RestructureContent = {
                 "whereas `ui.content` package should contains all content and configuration not in `/apps` or `/oak:index`."
         );
         projects.forEach((project) => {
-            let targetProjectPath = path.join(
-                commons_constants.TARGET_PROJECT_SRC_FOLDER,
-                path.basename(project.projectPath)
-            );
-            let uiAppsJcrRootPath = path.join(
-                targetProjectPath,
-                constants.UI_APPS,
-                constants.JCR_ROOT_PATH
-            );
-            let uiContentJcrRootPath = path.join(
-                targetProjectPath,
-                constants.UI_CONTENT,
-                constants.JCR_ROOT_PATH
-            );
-            let srcContentPackages = project.existingContentPackageFolder;
-            srcContentPackages.forEach((contentPackage) => {
-                let srcContentPackageJcrRootPath = path.join(
-                    project.projectPath,
-                    contentPackage,
-                    project.relativePathToExistingJcrRoot != null
-                        ? project.relativePathToExistingJcrRoot
-                        : constants.JCR_ROOT_PATH
-                );
-                if (fs.existsSync(srcContentPackageJcrRootPath)) {
-                    migrateContent(
-                        srcContentPackageJcrRootPath,
-                        uiAppsJcrRootPath,
-                        uiContentJcrRootPath,
-                        conversionStep
-                    );
-                } else {
-                    logger.error(
-                        `RestructureContent: ${srcContentPackageJcrRootPath} does not exist.
-                     Unable to split content from ${contentPackage}.`
-                    );
+            restructureProject(null, project, conversionStep);
+            if (project.subProjects != null) {
+                for (const subProject of project.subProjects) {
+                    restructureProject(project, subProject, conversionStep);
                 }
-            });
+            }
         });
         conversionSteps.push(conversionStep);
     },
 };
+
+function restructureProject(parentProject, project, conversionStep) {
+    let targetProjectPath = path.join(
+        commons_constants.TARGET_PROJECT_SRC_FOLDER,
+        path.basename(project.projectPath)
+    );
+    if (parentProject != null) {
+        targetProjectPath = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(parentProject.projectPath),
+            project.projectPath.replace(parentProject.projectPath, "")
+        );
+    }
+    let uiAppsJcrRootPath = path.join(
+        targetProjectPath,
+        constants.UI_APPS,
+        constants.JCR_ROOT_PATH
+    );
+    let uiContentJcrRootPath = path.join(
+        targetProjectPath,
+        constants.UI_CONTENT,
+        constants.JCR_ROOT_PATH
+    );
+    let srcContentPackages = project.existingContentPackageFolder;
+    srcContentPackages.forEach((contentPackage) => {
+        let srcContentPackageJcrRootPath = path.join(
+            project.projectPath,
+            contentPackage,
+            project.relativePathToExistingJcrRoot != null
+                ? project.relativePathToExistingJcrRoot
+                : constants.JCR_ROOT_PATH
+        );
+        if (fs.existsSync(srcContentPackageJcrRootPath)) {
+            migrateContent(
+                srcContentPackageJcrRootPath,
+                uiAppsJcrRootPath,
+                uiContentJcrRootPath,
+                conversionStep
+            );
+        } else {
+            logger.error(
+                `RestructureContent: ${srcContentPackageJcrRootPath} does not exist.
+             Unable to split content from ${contentPackage}.`
+            );
+        }
+    });
+}
 
 /**
  *

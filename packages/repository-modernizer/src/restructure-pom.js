@@ -23,7 +23,7 @@ const {
 const path = require("path");
 const fs = require("fs");
 const fetch = require("node-fetch");
-
+let sdkVersion = "";
 var RestructurePoms = {
     /**
      *
@@ -33,7 +33,7 @@ var RestructurePoms = {
      * Restructure pom file  of packages
      */
     async restructure(config, conversionSteps) {
-        let sdkVersion = "";
+        sdkVersion = await fetchSDKMetadata();
         let projects = config.projects;
         let packageArtifactIdInfoList = [];
         let nonAdobeDependencyList = new Set();
@@ -41,131 +41,34 @@ var RestructurePoms = {
             "Restructure pom files",
             "Add required plugins, dependencies to appropriate `pom.xml` files."
         );
-        let projectRootPath = commons_constants.TARGET_PROJECT_SRC_FOLDER;
         for (const project of projects) {
-            let projectPath = path.join(
+            await restructureProject(
+                config,
+                null,
+                project,
+                packageArtifactIdInfoList,
+                nonAdobeDependencyList,
+                conversionStep
+            );
+            if (project.subProjects != null) {
+                for (const subProject of project.subProjects) {
+                    await restructureProject(
+                        config,
+                        project,
+                        subProject,
+                        packageArtifactIdInfoList,
+                        nonAdobeDependencyList,
+                        conversionStep
+                    );
+                }
+            }
+        }
+        let projectRootPath = commons_constants.TARGET_PROJECT_SRC_FOLDER;
+        if (projects.length === 1) {
+            projectRootPath = path.join(
                 commons_constants.TARGET_PROJECT_SRC_FOLDER,
-                path.basename(project.projectPath)
+                path.basename(projects[0].projectPath)
             );
-            if (projects.length === 1) {
-                projectRootPath = projectPath;
-            }
-            let uiAppsPomFile = path.join(
-                projectPath,
-                constants.UI_APPS,
-                constants.POM_XML
-            );
-            let uiContentPomFile = path.join(
-                projectPath,
-                constants.UI_CONTENT,
-                constants.POM_XML
-            );
-            let ui_apps_artifactId = project.artifactId.concat(
-                ".",
-                constants.UI_APPS
-            );
-            let ui_content_artifactId = project.artifactId.concat(
-                ".",
-                constants.UI_CONTENT
-            );
-            let ui_config_artifactId = project.artifactId.concat(
-                ".",
-                constants.UI_CONFIG
-            );
-            packageArtifactIdInfoList.push({
-                artifactId: ui_apps_artifactId,
-                appId: project.appId,
-                version: project.version,
-            });
-            packageArtifactIdInfoList.push({
-                artifactId: ui_content_artifactId,
-                appId: project.appId,
-                version: project.version,
-            });
-            packageArtifactIdInfoList.push({
-                artifactId: ui_config_artifactId,
-                appId: project.appId,
-                version: project.version,
-            });
-            // add dependencies in ui.content
-            let uiContentDependencyList = [
-                constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
-                    constants.DEFAULT_ARTIFACT_ID,
-                    ui_apps_artifactId
-                )
-                    .replace(constants.DEFAULT_GROUP_ID, config.groupId)
-                    .replace(constants.DEFAULT_VERSION, project.version),
-            ];
-            pomManipulationUtil.addDependencies(
-                uiContentPomFile,
-                uiContentDependencyList,
-                conversionStep
-            );
-
-            // add dependencies in ui.apps
-            let uiAppsDependencyList = [];
-            let srcContentPackages = project.existingContentPackageFolder;
-            let pluginObj = {
-                pluginList: [],
-                pluginManagementList: [],
-                filevaultPluginEmbeddedList: [],
-            };
-            for (const contentPackage of srcContentPackages) {
-                let srcPomFile = path.join(
-                    project.projectPath,
-                    contentPackage,
-                    constants.POM_XML
-                );
-                let dependencies = await getDependenciesFromPom(srcPomFile);
-                uiAppsDependencyList.push(...dependencies);
-                await getPluginsFromPom(srcPomFile, pluginObj);
-                let thirdPartyDependencies = await get3rdPartyDependency(
-                    srcPomFile
-                );
-                // add the 3rd party dependencies retieved to the list
-                thirdPartyDependencies.forEach((item) =>
-                    nonAdobeDependencyList.add(item)
-                );
-            }
-            sdkVersion = await fetchSDKMetadata();
-            uiAppsDependencyList.push(constants.SDK_DEPENDENCY_TEMPLATE);
-            addSdkDependencytoCoreBundles(project, conversionStep);
-            uiAppsDependencyList =
-                pomManipulationUtil.removeDuplicatesDependencies(
-                    uiAppsDependencyList
-                );
-            pluginObj.pluginList = pomManipulationUtil.removeDuplicatesPlugins(
-                pluginObj.pluginList,
-                new Set(constants.OOTB_UI_POM_PLUGIN_MANAGEMENT)
-            );
-            await pomManipulationUtil.addDependencies(
-                uiAppsPomFile,
-                uiAppsDependencyList,
-                conversionStep
-            );
-            // add the artifacts embedded in the source pom file's
-            // filevault plugin to the new pom's filevault plugin
-            await pomManipulationUtil.embeddedArtifactsToFileVaultPlugin(
-                uiAppsPomFile,
-                pluginObj.filevaultPluginEmbeddedList,
-                conversionStep
-            );
-            await pomManipulationUtil.addPlugins(
-                uiAppsPomFile,
-                pluginObj,
-                conversionStep
-            );
-            if (projects.length > 1) {
-                // refactor the reactor pom.xml for project
-                await refactorParentPom(
-                    path.join(projectPath, constants.POM_XML),
-                    sdkVersion,
-                    config,
-                    nonAdobeDependencyList,
-                    conversionStep,
-                    project
-                );
-            }
         }
         // all package pom file manipulation
         let allPackageDependencyList = [];
@@ -208,6 +111,136 @@ var RestructurePoms = {
         conversionSteps.push(conversionStep);
     },
 };
+
+async function restructureProject(
+    config,
+    parentProject,
+    project,
+    packageArtifactIdInfoList,
+    nonAdobeDependencyList,
+    conversionStep
+) {
+    let projectPath = path.join(
+        commons_constants.TARGET_PROJECT_SRC_FOLDER,
+        path.basename(project.projectPath)
+    );
+    if (parentProject != null) {
+        projectPath = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(parentProject.projectPath),
+            project.projectPath.replace(parentProject.projectPath, "")
+        );
+    }
+    let uiAppsPomFile = path.join(
+        projectPath,
+        constants.UI_APPS,
+        constants.POM_XML
+    );
+    let uiContentPomFile = path.join(
+        projectPath,
+        constants.UI_CONTENT,
+        constants.POM_XML
+    );
+    let ui_apps_artifactId = project.artifactId.concat(".", constants.UI_APPS);
+    let ui_content_artifactId = project.artifactId.concat(
+        ".",
+        constants.UI_CONTENT
+    );
+    let ui_config_artifactId = project.artifactId.concat(
+        ".",
+        constants.UI_CONFIG
+    );
+    packageArtifactIdInfoList.push({
+        artifactId: ui_apps_artifactId,
+        appId: project.appId,
+        version: project.version,
+    });
+    packageArtifactIdInfoList.push({
+        artifactId: ui_content_artifactId,
+        appId: project.appId,
+        version: project.version,
+    });
+    packageArtifactIdInfoList.push({
+        artifactId: ui_config_artifactId,
+        appId: project.appId,
+        version: project.version,
+    });
+    // add dependencies in ui.content
+    let uiContentDependencyList = [
+        constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
+            constants.DEFAULT_ARTIFACT_ID,
+            ui_apps_artifactId
+        )
+            .replace(constants.DEFAULT_GROUP_ID, config.groupId)
+            .replace(constants.DEFAULT_VERSION, project.version),
+    ];
+    pomManipulationUtil.addDependencies(
+        uiContentPomFile,
+        uiContentDependencyList,
+        conversionStep
+    );
+
+    // add dependencies in ui.apps
+    let uiAppsDependencyList = [];
+    let srcContentPackages = project.existingContentPackageFolder;
+    let pluginObj = {
+        pluginList: [],
+        pluginManagementList: [],
+        filevaultPluginEmbeddedList: [],
+    };
+    for (const contentPackage of srcContentPackages) {
+        let srcPomFile = path.join(
+            project.projectPath,
+            contentPackage,
+            constants.POM_XML
+        );
+        let dependencies = await getDependenciesFromPom(srcPomFile);
+        uiAppsDependencyList.push(...dependencies);
+        await getPluginsFromPom(srcPomFile, pluginObj);
+        let thirdPartyDependencies = await get3rdPartyDependency(srcPomFile);
+        // add the 3rd party dependencies retieved to the list
+        thirdPartyDependencies.forEach((item) =>
+            nonAdobeDependencyList.add(item)
+        );
+    }
+    uiAppsDependencyList.push(constants.SDK_DEPENDENCY_TEMPLATE);
+    addSdkDependencytoCoreBundles(parentProject, project, conversionStep);
+    uiAppsDependencyList =
+        pomManipulationUtil.removeDuplicatesDependencies(uiAppsDependencyList);
+    pluginObj.pluginList = pomManipulationUtil.removeDuplicatesPlugins(
+        pluginObj.pluginList,
+        new Set(constants.OOTB_UI_POM_PLUGIN_MANAGEMENT)
+    );
+    await pomManipulationUtil.addDependencies(
+        uiAppsPomFile,
+        uiAppsDependencyList,
+        conversionStep
+    );
+    // add the artifacts embedded in the source pom file's
+    // filevault plugin to the new pom's filevault plugin
+    await pomManipulationUtil.embeddedArtifactsToFileVaultPlugin(
+        uiAppsPomFile,
+        pluginObj.filevaultPluginEmbeddedList,
+        conversionStep
+    );
+    await pomManipulationUtil.addPlugins(
+        uiAppsPomFile,
+        pluginObj,
+        conversionStep
+    );
+    if (config.projects.length > 1 || parentProject != null) {
+        // refactor the reactor pom.xml for project
+        await refactorParentPom(
+            path.join(projectPath, constants.POM_XML),
+            sdkVersion,
+            config,
+            nonAdobeDependencyList,
+            conversionStep,
+            project
+        );
+    }
+}
+
 /**
  *
  * @param String pomFile path of pom file in which dependency need to be added
@@ -583,13 +616,24 @@ async function getPluginsFromPom(pomFile, pluginObj) {
  *
  * Function to add sdk dependency to core Bundles
  */
-async function addSdkDependencytoCoreBundles(project, conversionStep) {
+async function addSdkDependencytoCoreBundles(
+    parentProject,
+    project,
+    conversionStep
+) {
     // the path.join() is to standardize the paths to use '\' irrespective of OS
     let source = path.join(project.projectPath);
     let destination = path.join(
         commons_constants.TARGET_PROJECT_SRC_FOLDER,
         path.basename(project.projectPath)
     );
+    if (parentProject != null) {
+        destination = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(parentProject.projectPath),
+            project.projectPath.replace(parentProject.projectPath, "")
+        );
+    }
     for (const bundle of project.coreBundles) {
         let bundleFolderPath = path.join(project.projectPath, bundle);
         let bundlePomFile = path.join(

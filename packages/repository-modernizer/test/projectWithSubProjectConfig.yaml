@@ -1,0 +1,72 @@
+# groupId to be used for newly created packages
+groupId: test.aem
+# information about parent pom
+parentPom:
+    # absolute path to the parent pom file
+    path: /test/resources/pom.xml
+    # the artifactId to be set for the parent pom
+    artifactId: test-aem-parent
+    # the application title to be set for the parent pom
+    appTitle: test-AEM Parent
+    # version to be to be set for the parent pom
+    version: 1.0.0-SNAPSHOT
+# information required for all package
+all:
+    # prefix that is to be used to set the artifactId for all package
+    artifactId: test-aem
+    # application title
+    appTitle: Test-AEM Code Repository
+    # version to be set for all pom
+    version: 1.0.0-SNAPSHOT
+# information about projects
+projects:
+    - # absolute path to the project folder
+      projectPath: /test/resources
+      # relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured
+      # (expects one or more relative paths to be provided in array format)
+      existingContentPackageFolder:
+          - /empty_content
+      # relative path (w.r.t. the existing content package folder) to the filter.xml file
+      # (If not specified, default path `/src/main/content/META-INF/vault/filter.xml` will be used.)
+      relativePathToExistingFilterXml: /src/main/content/META-INF/vault/filter.xml
+      # relative path (w.r.t. the existing content package folder) to the jcr_root directory
+      # (If not specified, default path `/src/main/content/jcr_root` will be used)
+      relativePathToExistingJcrRoot: /jcr_root
+      # prefix that is to be used to set the artifactId for newly created ui.apps and ui.content packages
+      artifactId: test-content-aem
+      # application title
+      appTitle: test-content
+      # project specific version to be used for content packages
+      version: 2.0.0-SNAPSHOT
+      # application ID (will be used for config and package folder names)
+      appId: test
+      # Array of relative path(s) (w.r.t. the project folder) to the existing code bundles (will be embedded in the all package).
+      coreBundles:
+          - /core
+      subProjects:
+          - # absolute path to the project folder
+            projectPath: /test/resources/sub-project
+            # relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured
+            # (expects one or more relative paths to be provided in array format)
+            existingContentPackageFolder:
+                - /empty_content
+            # relative path (w.r.t. the existing content package folder) to the filter.xml file
+            # (If not specified, default path `/src/main/content/META-INF/vault/filter.xml` will be used.)
+            relativePathToExistingFilterXml: /src/main/content/META-INF/vault/filter.xml
+            # relative path (w.r.t. the existing content package folder) to the jcr_root directory
+            # (If not specified, default path `/src/main/content/jcr_root` will be used)
+            relativePathToExistingJcrRoot: /jcr_root
+            # prefix that is to be used to set the artifactId for newly created ui.apps and ui.content packages
+            artifactId: test-content-sub-project
+            # application title
+            appTitle: test-content-sub-project
+            # project specific version to be used for content packages
+            version: 2.0.0-SNAPSHOT
+            # application ID (will be used for config and package folder names)
+            appId: test-sub-project
+            # Array of relative path(s) (w.r.t. the project folder) to the existing code bundles (will be embedded in the all package).
+            coreBundles:
+                - /core
+    
+          
+    

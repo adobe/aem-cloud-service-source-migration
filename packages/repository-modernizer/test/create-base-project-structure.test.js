@@ -44,6 +44,7 @@ const path = require("path");
 const yaml = require("js-yaml");
 const configFileName = "config.yaml";
 const multiProjectConfigFileName = "multiProjectConfig.yaml";
+const subProjectConfigFileName = "projectWithSubProjectConfig.yaml";
 const testDir = path.join(process.cwd(), "test");
 const { readFileSync } = jest.requireActual("fs");
 const config = yaml.safeLoad(
@@ -51,6 +52,9 @@ const config = yaml.safeLoad(
 );
 const multiProjectConfig = yaml.safeLoad(
     readFileSync(path.join(testDir, multiProjectConfigFileName), "utf8")
+);
+const subProjectConfig = yaml.safeLoad(
+    readFileSync(path.join(testDir, subProjectConfigFileName), "utf8")
 );
 describe("create-base-project-structure", function () {
     test("check type", async () => {
@@ -360,6 +364,174 @@ describe("create-base-project-structure", function () {
                 path.join(multiProjectConfig.projects[0].projectPath),
                 constants.POM_XML
             );
+        });
+    });
+
+    test("create project with sub project", () => {
+        let conversionSteps = [];
+        let projectPath = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(subProjectConfig.projects[0].projectPath)
+        );
+        // mock the methods
+        pomManipulationUtil.replaceVariables.mockResolvedValue(true);
+        pomManipulationUtil.verifyArtifactPackagingType.mockReturnValue(false);
+        util.globGetFilesByName.mockReturnValue(["xyz/pom.xml", "abc/pom.xml"]);
+        fs.existsSync.mockResolvedValue(true);
+        fs.mkdirSync.mockResolvedValue(true);
+        fs.copyFileSync.mockResolvedValue(true);
+        fsExtra.copySync.mockResolvedValue(true);
+        // call the method
+        return base.create(subProjectConfig, "", conversionSteps).then(() => {
+            // test whether the appropriate methods were called with correct params
+            expect(fs.mkdirSync).toHaveBeenCalledWith(projectPath, {
+                recursive: true,
+            });
+            expect(fsExtra.copySync).toHaveBeenCalledWith(
+                path.join(constants.BASE_ALL_PACKAGE),
+                path.join(projectPath, constants.ALL)
+            );
+            expect(fsExtra.copySync).toHaveBeenCalledWith(
+                path.join(constants.BASE_ANALYSE_PACKAGE),
+                path.join(projectPath, constants.ANALYSE)
+            );
+            expect(fsExtra.copySync).toHaveBeenCalledWith(
+                path.join(constants.BASE_UI_APPS_PACKAGE),
+                path.join(projectPath, constants.UI_APPS)
+            );
+            expect(fsExtra.copySync).toHaveBeenCalledWith(
+                path.join(constants.BASE_UI_APPS_STRUCTURE_PACKAGE),
+                path.join(projectPath, constants.UI_APPS_STRUCTURE)
+            );
+            expect(fsExtra.copySync).toHaveBeenCalledWith(
+                path.join(constants.BASE_UI_CONTENT_PACKAGE),
+                path.join(projectPath, constants.UI_CONTENT)
+            );
+            expect(fsExtra.copySync).toHaveBeenCalledWith(
+                path.join(constants.BASE_UI_CONFIG_PACKAGE),
+                path.join(projectPath, constants.UI_CONFIG)
+            );
+            expect(fs.copyFileSync).toHaveBeenCalledWith(
+                path.join(constants.BASE_PARENT_POM),
+                path.join(projectPath, constants.POM_XML)
+            );
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(projectPath, constants.UI_APPS, constants.POM_XML),
+                {
+                    [constants.DEFAULT_GROUP_ID]: subProjectConfig.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]:
+                    subProjectConfig.projects[0].artifactId,
+                    [constants.DEFAULT_APP_TITLE]: subProjectConfig.projects[0].appTitle,
+                    [constants.DEFAULT_VERSION]: subProjectConfig.projects[0].version,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    subProjectConfig.parentPom.artifactId,
+                    [constants.DEFAULT_RELATIVE_PATH]:
+                        constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_VERSION]: subProjectConfig.parentPom.version,
+                },
+                expect.anything()
+            );
+            //sub project ui_apps
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(projectPath, "sub-project", constants.UI_APPS, constants.POM_XML),
+                {
+                    [constants.DEFAULT_GROUP_ID]: subProjectConfig.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]:
+                    subProjectConfig.projects[0].subProjects[0].artifactId,
+                    [constants.DEFAULT_APP_TITLE]: subProjectConfig.projects[0].subProjects[0].appTitle,
+                    [constants.DEFAULT_VERSION]: subProjectConfig.projects[0].subProjects[0].version,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    subProjectConfig.projects[0].subProjects[0].artifactId,
+                    [constants.DEFAULT_RELATIVE_PATH]:
+                        constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_VERSION]: subProjectConfig.projects[0].subProjects[0].version,
+                },
+                expect.anything()
+            );
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(
+                    projectPath,
+                    constants.UI_APPS_STRUCTURE,
+                    constants.POM_XML
+                ),
+                {
+                    [constants.DEFAULT_GROUP_ID]: subProjectConfig.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]:
+                    subProjectConfig.projects[0].artifactId,
+                    [constants.DEFAULT_APP_TITLE]: subProjectConfig.projects[0].appTitle,
+                    [constants.DEFAULT_VERSION]: subProjectConfig.projects[0].version,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    subProjectConfig.parentPom.artifactId,
+                    [constants.DEFAULT_RELATIVE_PATH]:
+                        constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_VERSION]: subProjectConfig.parentPom.version,
+                },
+                expect.anything()
+            );
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(projectPath, constants.UI_CONTENT, constants.POM_XML),
+                {
+                    [constants.DEFAULT_GROUP_ID]: subProjectConfig.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]:
+                    subProjectConfig.projects[0].artifactId,
+                    [constants.DEFAULT_APP_TITLE]: subProjectConfig.projects[0].appTitle,
+                    [constants.DEFAULT_VERSION]: subProjectConfig.projects[0].version,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    subProjectConfig.parentPom.artifactId,
+                    [constants.DEFAULT_RELATIVE_PATH]:
+                        constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_VERSION]: subProjectConfig.parentPom.version,
+                },
+                expect.anything()
+            );
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(projectPath, constants.UI_CONFIG, constants.POM_XML),
+                {
+                    [constants.DEFAULT_GROUP_ID]: subProjectConfig.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]:
+                    subProjectConfig.projects[0].artifactId,
+                    [constants.DEFAULT_APP_TITLE]: subProjectConfig.projects[0].appTitle,
+                    [constants.DEFAULT_VERSION]: subProjectConfig.projects[0].version,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    subProjectConfig.parentPom.artifactId,
+                    [constants.DEFAULT_RELATIVE_PATH]:
+                        constants.RELATIVE_PATH_ONE_LEVEL_UP,
+                    [constants.DEFAULT_ROOT_VERSION]: subProjectConfig.parentPom.version,
+                },
+                expect.anything()
+            );
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(projectPath, constants.ALL, constants.POM_XML),
+                {
+                    [constants.DEFAULT_GROUP_ID]: subProjectConfig.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]: subProjectConfig.all.artifactId,
+                    [constants.DEFAULT_VERSION]: subProjectConfig.all.version,
+                    [constants.DEFAULT_APP_TITLE]: subProjectConfig.all.appTitle,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    subProjectConfig.parentPom.artifactId,
+                    [constants.DEFAULT_ROOT_VERSION]: subProjectConfig.parentPom.version,
+                },
+                expect.anything()
+            );
+            expect(pomManipulationUtil.replaceVariables).toHaveBeenCalledWith(
+                path.join(projectPath, constants.ANALYSE, constants.POM_XML),
+                {
+                    [constants.DEFAULT_GROUP_ID]: subProjectConfig.groupId,
+                    [constants.DEFAULT_ARTIFACT_ID]: subProjectConfig.all.artifactId,
+                    [constants.DEFAULT_APP_TITLE]: subProjectConfig.all.appTitle,
+                    [constants.DEFAULT_VERSION]: subProjectConfig.all.version,
+                    [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    subProjectConfig.parentPom.artifactId,
+                    [constants.DEFAULT_ROOT_VERSION]: subProjectConfig.parentPom.version,
+                },
+                expect.anything()
+            );
+            expect(util.globGetFilesByName).toHaveBeenCalledWith(
+                path.join(subProjectConfig.projects[0].projectPath),
+                constants.POM_XML
+            );
+            //only for all pom
+            expect(pomManipulationUtil.addDependencies).toHaveBeenCalledTimes(1);
         });
     });
 });

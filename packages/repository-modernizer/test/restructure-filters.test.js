@@ -28,9 +28,13 @@ const fs = require("fs");
 const { readFileSync } = jest.requireActual("fs");
 
 const configFileName = "config.yaml";
+const subProjectConfigFileName = "projectWithSubProjectConfig.yaml";
 const testDir = path.join(process.cwd(), "test");
 const config = yaml.safeLoad(
     readFileSync(path.join(testDir, configFileName), "utf8")
+);
+const subProjectConfig = yaml.safeLoad(
+    readFileSync(path.join(testDir, subProjectConfigFileName), "utf8")
 );
 const xmlContent = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -192,6 +196,92 @@ describe(" restructure filter", function () {
             ),
             `RestructureFilterPaths: Error while trying to add filters to ${allFilterPath}.`
         );
+    });
+
+    test("restructure project & sub project", () => {
+        let conversionSteps = [];
+        let targetProjectPath = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(subProjectConfig.projects[0].projectPath)
+        );
+        let allFilterPath = path.join(
+            targetProjectPath,
+            constants.ALL,
+            constants.FILTER_PATH
+        );
+        let uiAppsFilterPath = path.join(
+            targetProjectPath,
+            constants.UI_APPS,
+            constants.FILTER_PATH
+        );
+        let uiAppsStructurePomFilePath = path.join(
+            targetProjectPath,
+            constants.UI_APPS_STRUCTURE,
+            constants.POM_XML
+        );
+        let uiContentFilterPath = path.join(
+            targetProjectPath,
+            constants.UI_CONTENT,
+            constants.FILTER_PATH
+        );
+        let uiConfigFilterPath = path.join(
+            targetProjectPath,
+            constants.UI_CONFIG,
+            constants.FILTER_PATH
+        );
+        let contentPackageFilterPath = path.join(
+            subProjectConfig.projects[0].projectPath,
+            subProjectConfig.projects[0].existingContentPackageFolder[0],
+            constants.FILTER_PATH
+        );
+        // mock the methods return values
+        fs.existsSync.mockReturnValue(true);
+        util.getXMLContentSync
+            .mockReturnValueOnce(xmlContent)
+            .mockReturnValueOnce(uiAppsStructurePomFileContent.split(/\r?\n/))
+            .mockReturnValueOnce(configFilterContent)
+            .mockReturnValueOnce(xmlContent)
+            .mockReturnValueOnce(uiAppsStructurePomFileContent.split(/\r?\n/))
+            .mockReturnValueOnce(configFilterContent)
+            .mockReturnValueOnce(allFilterContent);
+        util.writeDataToFileSync.mockResolvedValue(true);
+        // execute the method
+        filter.restructure(subProjectConfig.projects, conversionSteps);
+        // test whether the appropriate methods were called with correct params
+        expect(fs.existsSync).toHaveBeenCalledWith(contentPackageFilterPath);
+        expect(util.getXMLContentSync).toHaveBeenCalledWith(
+            contentPackageFilterPath
+        );
+        expect(util.writeDataToFileSync).toHaveBeenCalledWith(
+            uiAppsFilterPath,
+            constants.FILTER_XML_START.concat(
+                expectedUIAppsFilterPaths,
+                constants.FILTER_XML_END
+            ),
+            `RestructureFilterPaths: Error while trying to add filters to ${uiAppsFilterPath}.`
+        );
+        expect(util.writeDataToFileSync).toHaveBeenCalledWith(
+            uiContentFilterPath,
+            constants.FILTER_XML_START.concat(
+                expectedUIContentFilterPaths,
+                constants.FILTER_XML_END
+            ),
+            `RestructureFilterPaths: Error while trying to add filters to ${uiContentFilterPath}.`
+        );
+        expect(util.getXMLContentSync).toHaveBeenCalledWith(
+            uiAppsStructurePomFilePath
+        );
+        expect(util.writeDataToFileSync).toHaveBeenCalledWith(
+            uiAppsStructurePomFilePath,
+            uiAppsStructurePomFileWriteContent.split(/\r?\n/),
+            `RestructureFilterPaths: Error while trying to add  JCR repository roots to ${uiAppsStructurePomFilePath}.`
+        );
+        expect(fs.existsSync).toHaveBeenCalledWith(uiConfigFilterPath);
+        expect(util.getXMLContentSync).toHaveBeenCalledWith(uiConfigFilterPath);
+        
+        expect(fs.existsSync).toHaveBeenCalledWith(allFilterPath);
+        expect(util.getXMLContentSync).toHaveBeenCalledWith(allFilterPath);
+        
     });
 
     test("segregateFilterPaths", () => {
