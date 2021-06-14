@@ -276,49 +276,6 @@ repositoryModernizer:
           /apps/system/config.author.dev1: config.author.dev
           /apps/system/config.prod: config.publish.prod
           /apps/system/config.publish: config.publish.prod
-    - # absolute path to the ABC project folder
-      projectPath: /Users/{username}/some/path/to/abc-aem
-      # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
-      # NOTE : only content packages are expected here, NOT bundle/jar artifacts
-      existingContentPackageFolder:
-        - /content
-        - /oak-index-definitions
-      # relative path (w.r.t. the existing content package folder) to the filter.xml file
-      # (If not specified, default path `/src/main/content/META-INF/vault/filter.xml` will be used.)
-      relativePathToExistingFilterXml:
-      # relative path (w.r.t. the existing content package folder) to the jcr_root directory
-      # (If not specified, default path `/src/main/content/jcr_root` will be used)
-      relativePathToExistingJcrRoot:
-      # prefix that is to be used to set the artifactId for newly created ui.apps and ui.content packages
-      artifactId: abc-content-aem
-      # application title
-      appTitle: ABC
-      # application ID (will be used for config and package folder names)
-      appId: abc-app
-      # project specific version to be used for content packages
-      version: 2.0.0-SNAPSHOT
-      # Array of relative path(s) (w.r.t. the project folder) to the existing code bundles (will be embedded in the all package).
-      coreBundles:
-         - /core
-      # OSGi config folders that need to be renamed.
-      # The existing/source OSGi config folder PATH (JCR path starting from '/apps') is expected as key
-      # and the replacement OSGi folder NAME is expected as value. See examples below :
-      #    /apps/my-appId/config.prod : config.publish.prod
-      #    /apps/system/config.author.dev1 : config.author.dev
-      #    /apps/system/config.author.dev2 : config.author.dev
-      # NOTE :
-      #    1. All OSGi config folders under the same path and with same replacement name will be MERGED
-      #       (as configured in above example).
-      #    2. If there exists OSGi config files with the same pid/filename in more than one config folders
-      #       which are to be merged, they will not be overwritten. A warning regrading the same will be
-      #       generated in the summary report and result log file. User would need to manually evaluate
-      #       which config to persist
-      osgiFoldersToRename:
-          /apps/abc/config.author.dev1: config.author.dev
-          /apps/abc/config.author.dev2: config.author.dev
-          /apps/abc/config.author.localdev: config.author.dev
-          /apps/abc/config.prod: config.publish.prod
-          /apps/abc/config.publish: config.publish.prod
       subProjects:
         - # absolute path to the XYZ sub-project folder
           projectPath: /Users/{username}/some/path/to/xyz-aem/sub-project
@@ -366,7 +323,49 @@ repositoryModernizer:
               /apps/system/config.author.dev1: config.author.dev
               /apps/system/config.prod: config.publish.prod
               /apps/system/config.publish: config.publish.prod
-             
+    - # absolute path to the ABC project folder
+      projectPath: /Users/{username}/some/path/to/abc-aem
+      # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
+      # NOTE : only content packages are expected here, NOT bundle/jar artifacts
+      existingContentPackageFolder:
+        - /content
+        - /oak-index-definitions
+      # relative path (w.r.t. the existing content package folder) to the filter.xml file
+      # (If not specified, default path `/src/main/content/META-INF/vault/filter.xml` will be used.)
+      relativePathToExistingFilterXml:
+      # relative path (w.r.t. the existing content package folder) to the jcr_root directory
+      # (If not specified, default path `/src/main/content/jcr_root` will be used)
+      relativePathToExistingJcrRoot:
+      # prefix that is to be used to set the artifactId for newly created ui.apps and ui.content packages
+      artifactId: abc-content-aem
+      # application title
+      appTitle: ABC
+      # application ID (will be used for config and package folder names)
+      appId: abc-app
+      # project specific version to be used for content packages
+      version: 2.0.0-SNAPSHOT
+      # Array of relative path(s) (w.r.t. the project folder) to the existing code bundles (will be embedded in the all package).
+      coreBundles:
+         - /core
+      # OSGi config folders that need to be renamed.
+      # The existing/source OSGi config folder PATH (JCR path starting from '/apps') is expected as key
+      # and the replacement OSGi folder NAME is expected as value. See examples below :
+      #    /apps/my-appId/config.prod : config.publish.prod
+      #    /apps/system/config.author.dev1 : config.author.dev
+      #    /apps/system/config.author.dev2 : config.author.dev
+      # NOTE :
+      #    1. All OSGi config folders under the same path and with same replacement name will be MERGED
+      #       (as configured in above example).
+      #    2. If there exists OSGi config files with the same pid/filename in more than one config folders
+      #       which are to be merged, they will not be overwritten. A warning regrading the same will be
+      #       generated in the summary report and result log file. User would need to manually evaluate
+      #       which config to persist
+      osgiFoldersToRename:
+          /apps/abc/config.author.dev1: config.author.dev
+          /apps/abc/config.author.dev2: config.author.dev
+          /apps/abc/config.author.localdev: config.author.dev
+          /apps/abc/config.prod: config.publish.prod
+          /apps/abc/config.publish: config.publish.prod           
 ```
 
 # Known Limitations
