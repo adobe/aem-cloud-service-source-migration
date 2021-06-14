@@ -361,7 +361,9 @@ const xmlContent = describe("restructure pom", function () {
         pomManipulationUtil.embeddArtifactsUsingTemplate.mockResolvedValue(
             true
         );
-
+        if (!fs.existsSync(path.join(commons_constants.TARGET_PROJECT_SRC_FOLDER, "resources", "sub-project"))) {
+            fs.mkdirSync(path.join(commons_constants.TARGET_PROJECT_SRC_FOLDER, "resources", "sub-project"));
+        }
         let sdkDependency = constants.SDK_DEPENDENCY_TEMPLATE.replace(
             "${version}",
             constants.DEFAULT_SDK_VERSION
