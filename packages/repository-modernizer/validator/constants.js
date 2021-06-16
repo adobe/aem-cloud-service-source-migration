@@ -30,7 +30,7 @@ module.exports = {
 
     FILEVAULT_PLUGIN: "<artifactId>filevault-package-maven-plugin</artifactId>",
 
-    FILEVAULT_PLUGIN_EXPECTED_VERSION: "1.0.3",
+    FILEVAULT_PLUGIN_EXPECTED_VERSION: "1.1.4",
 
     PACKAGE_TYPE: "<packageType>",
 
