@@ -25,7 +25,7 @@ repositoryModernizer:
         - # absolute path to the project folder
           projectPath:
           # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
-          # NOTE : only content packages are expected here, NOT bundle/jar artifacts
+          # NOTE : only content packages are expected here, NOT bundle/jar artifacts/sub-projects
           existingContentPackageFolder:
               -
           # relative path (w.r.t. the existing content package folder) to the filter.xml file
@@ -63,7 +63,7 @@ repositoryModernizer:
             - # absolute path to the project folder
                 projectPath:
                 # Array of relative path(s) (w.r.t. the project folder) to the existing content package(s) that needs to be restructured.
-                # NOTE : only content packages are expected here, NOT bundle/jar artifacts
+                # NOTE : only content packages are expected here, NOT bundle/jar artifacts/sub-projects
                 existingContentPackageFolder:
                     -
                 # relative path (w.r.t. the existing content package folder) to the filter.xml file
