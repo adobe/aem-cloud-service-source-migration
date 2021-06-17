@@ -30,7 +30,7 @@ const yaml = require("js-yaml");
 const constants = require("../src/util/constants");
 const configFileName = "config.yaml";
 const multiProjectConfigFileName = "multiProjectConfig.yaml";
-
+const subProjectConfigFileName = "projectWithSubProjectConfig.yaml";
 const testDir = path.join(process.cwd(), "test");
 const { readFileSync } = jest.requireActual("fs");
 const config = yaml.safeLoad(
@@ -38,6 +38,9 @@ const config = yaml.safeLoad(
 );
 const multiProjectConfig = yaml.safeLoad(
     readFileSync(path.join(testDir, multiProjectConfigFileName), "utf8")
+);
+const subProjectConfig = yaml.safeLoad(
+    readFileSync(path.join(testDir, subProjectConfigFileName), "utf8")
 );
 const xmlContent = describe("restructure pom", function () {
     var conversionSteps = [];
@@ -296,6 +299,106 @@ const xmlContent = describe("restructure pom", function () {
             expect(
                 pomManipulationUtil.removeDuplicatesPlugins
             ).toHaveBeenCalledTimes(5);
+            expect(
+                pomManipulationUtil.embeddArtifactsUsingTemplate
+            ).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    test("restructure project & sub project pom", () => {
+        let projects = subProjectConfig.projects;
+        let srcContentPackages = projects[0].existingContentPackageFolder;
+        let srcPomFile = path.join(
+            projects[0].projectPath,
+            srcContentPackages[0],
+            constants.POM_XML
+        );
+        let package_artifactId_list = [];
+        let projectPath = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(subProjectConfig.projects[0].projectPath)
+        );
+        let uiAppsPomFile = path.join(
+            projectPath,
+            constants.UI_APPS,
+            constants.POM_XML
+        );
+        let uiContentPomFile = path.join(
+            projectPath,
+            constants.UI_CONTENT,
+            constants.POM_XML
+        );
+        let allPackagePomFile = path.join(
+            projectPath,
+            constants.ALL,
+            constants.POM_XML
+        );
+        let pluginObj = {
+            pluginList: [],
+            pluginManagementList: [],
+            filevaultPluginEmbeddedList: [],
+        };
+        let ui_content_artifactId = subProjectConfig.projects[0].artifactId.concat(
+            ".",
+            constants.UI_CONTENT
+        );
+        let ui_apps_artifactId = subProjectConfig.projects[0].artifactId.concat(
+            ".",
+            constants.UI_APPS
+        );
+        let uiContentDependencyList = [
+            constants.DEFAULT_DEPENDENCY_TEMPLATE.replace(
+                constants.DEFAULT_ARTIFACT_ID,
+                ui_apps_artifactId
+            )
+                .replace(constants.DEFAULT_GROUP_ID, subProjectConfig.groupId)
+                .replace(constants.DEFAULT_VERSION, projects[0].version),
+        ];
+        const xmlContent = fs.readFileSync(srcpath, "utf8").split(/\r?\n/);
+        //mock methods
+        pomManipulationUtil.addDependencies.mockReturnValue(true);
+        pomManipulationUtil.addPlugins.mockResolvedValue(true);
+        pomManipulationUtil.embeddArtifactsUsingTemplate.mockResolvedValue(
+            true
+        );
+        if (!fs.existsSync(path.join(commons_constants.TARGET_PROJECT_SRC_FOLDER, "resources", "sub-project"))) {
+            fs.mkdirSync(path.join(commons_constants.TARGET_PROJECT_SRC_FOLDER, "resources", "sub-project"));
+        }
+        let sdkDependency = constants.SDK_DEPENDENCY_TEMPLATE.replace(
+            "${version}",
+            constants.DEFAULT_SDK_VERSION
+        );
+        pomManipulationUtil.removeDuplicatesDependencies.mockReturnValue(true);
+        pomManipulationUtil.embeddedArtifactsToFileVaultPlugin.mockResolvedValue(
+            true
+        );
+        pomManipulationUtil.replaceVariables.mockResolvedValue(true);
+        pomManipulationUtil.removeDuplicatesPlugins.mockReturnValue(true);
+        util.globGetFilesByName.mockReturnValue(["xyz/pom.xml", "abc/pom.xml"]);
+        util.writeDataToFileSync.mockResolvedValue(true);
+        util.getXMLContent.mockReturnValue(xmlContent);
+        return poms.restructure(subProjectConfig, conversionSteps).then(() => {
+            expect(pomManipulationUtil.addDependencies).toHaveBeenCalledWith(
+                uiContentPomFile,
+                uiContentDependencyList,
+                expect.anything()
+            );
+            expect(pomManipulationUtil.addDependencies).toHaveBeenCalledTimes(
+                7
+            );
+            expect(
+                pomManipulationUtil.removeDuplicatesDependencies
+            ).toHaveBeenCalledTimes(4);
+            expect(
+                pomManipulationUtil.embeddedArtifactsToFileVaultPlugin
+            ).toHaveBeenCalledWith(
+                uiAppsPomFile,
+                pluginObj.filevaultPluginEmbeddedList,
+                expect.anything()
+            );
+            expect(
+                pomManipulationUtil.removeDuplicatesPlugins
+            ).toHaveBeenCalledTimes(4);
             expect(
                 pomManipulationUtil.embeddArtifactsUsingTemplate
             ).toHaveBeenCalledTimes(1);

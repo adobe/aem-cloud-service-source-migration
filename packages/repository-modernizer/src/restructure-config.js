@@ -42,39 +42,55 @@ var RestructureContent = {
                 "* Run mode - specific OSGi configuration folders that contains default OSGi configurations that apply to all target AEM as a Cloud Service deployment targets - `/apps/my-app/osgiconfig/config.<author|publish>.<dev|stage|prod>`."
         );
         for (let project of projects) {
-            let targetProjectPath = path.join(
-                commons_constants.TARGET_PROJECT_SRC_FOLDER,
-                path.basename(project.projectPath)
-            );
-            let uiAppsJcrRootPath = path.join(
-                targetProjectPath,
-                constants.UI_APPS,
-                constants.JCR_ROOT_PATH
-            );
-            if (project.appId == null) {
-                logger.error(
-                    `RestructureConfig: 'appId' not specified for project ${project.projectPath}.`
-                );
+            await restructureProject(null, project, conversionStep);
+            if (project.subProjects != null) {
+                for (const subProject of project.subProjects) {
+                    await restructureProject(
+                        project,
+                        subProject,
+                        conversionStep
+                    );
+                }
             }
-            if (
-                project.osgiFoldersToRename !== null &&
-                project.osgiFoldersToRename !== undefined
-            ) {
-                await renameConfigFolders(
-                    uiAppsJcrRootPath,
-                    project.osgiFoldersToRename,
-                    conversionStep
-                );
-            }
-            await migrateConfig(
-                uiAppsJcrRootPath,
-                project.appId,
-                conversionStep
-            );
         }
         conversionSteps.push(conversionStep);
     },
 };
+
+async function restructureProject(parentProject, project, conversionStep) {
+    let targetProjectPath = path.join(
+        commons_constants.TARGET_PROJECT_SRC_FOLDER,
+        path.basename(project.projectPath)
+    );
+    if (parentProject != null) {
+        targetProjectPath = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(project.projectPath),
+            project.projectPath.replace(parentProject.projectPath, "")
+        );
+    }
+    let uiAppsJcrRootPath = path.join(
+        targetProjectPath,
+        constants.UI_APPS,
+        constants.JCR_ROOT_PATH
+    );
+    if (project.appId == null) {
+        logger.error(
+            `RestructureConfig: 'appId' not specified for project ${project.projectPath}.`
+        );
+    }
+    if (
+        project.osgiFoldersToRename !== null &&
+        project.osgiFoldersToRename !== undefined
+    ) {
+        await renameConfigFolders(
+            uiAppsJcrRootPath,
+            project.osgiFoldersToRename,
+            conversionStep
+        );
+    }
+    await migrateConfig(uiAppsJcrRootPath, project.appId, conversionStep);
+}
 
 /**
  *

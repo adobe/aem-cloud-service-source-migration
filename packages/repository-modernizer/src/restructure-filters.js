@@ -35,103 +35,35 @@ var RestructureFilterPaths = {
             "`ui.apps` package should contains all the code to be deployed `/apps` or `/oak:index`, " +
                 "whereas `ui.content` package should contains all content and configuration not in `/apps` or `/oak:index`."
         );
-        let projectRootPath = commons_constants.TARGET_PROJECT_SRC_FOLDER;
         let allFilterPaths = [];
         // create the base packages for all projects
         projects.forEach((project) => {
-            let targetProjectPath = path.join(
-                commons_constants.TARGET_PROJECT_SRC_FOLDER,
-                path.basename(project.projectPath)
-            );
-            if (projects.length === 1) {
-                projectRootPath = targetProjectPath;
-            }
-            let uiAppsFilterPath = path.join(
-                targetProjectPath,
-                constants.UI_APPS,
-                constants.FILTER_PATH
-            );
-            let uiContentFilterPath = path.join(
-                targetProjectPath,
-                constants.UI_CONTENT,
-                constants.FILTER_PATH
-            );
-            let uiConfigFilterPath = path.join(
-                targetProjectPath,
-                constants.UI_CONFIG,
-                constants.FILTER_PATH
-            );
-            let uiAppsStructurePom = path.join(
-                targetProjectPath,
-                constants.UI_APPS_STRUCTURE,
-                constants.POM_XML
-            );
-            const filterPaths = {
-                uiAppsFilters: [],
-                uiContentFilters: [],
-            };
-            let srcContentPackages = project.existingContentPackageFolder;
-            srcContentPackages.forEach((contentPackage) => {
-                let contentPackageFilterPath = path.join(
-                    project.projectPath,
-                    contentPackage,
-                    project.relativePathToExistingFilterXml != null
-                        ? project.relativePathToExistingFilterXml
-                        : constants.FILTER_PATH
-                );
-                if (!contentPackageFilterPath.endsWith("pom.xml")) {
-                    if (fs.existsSync(contentPackageFilterPath)) {
-                        // read the project's filter.xml and separate the mutable and immutable filter paths
-                        segregateFilterPaths(
-                            util.getXMLContentSync(contentPackageFilterPath),
-                            filterPaths
-                        );
-                    } else {
-                        logger.error(
-                            `RestructureFilterPaths: Filter file at ${contentPackageFilterPath} not found!.`
-                        );
-                    }
-                } else {
-                    segregateFilterPaths(
-                        getFiltersFromPomFile(contentPackageFilterPath),
-                        filterPaths
-                    );
-                }
-            });
-            writeFilterPathsToFilterXml(
-                filterPaths.uiAppsFilters,
-                uiAppsFilterPath,
-                conversionStep
-            );
-            writeFilterPathsToFilterXml(
-                filterPaths.uiContentFilters,
-                uiContentFilterPath,
-                conversionStep
-            );
-            let enumeratedAppsFilterPaths = getEnumeratedAppsFilters(
-                filterPaths.uiAppsFilters,
-                project.appId
-            );
-            addUiAppsStructureFilters(
-                uiAppsStructurePom,
-                enumeratedAppsFilterPaths,
-                conversionStep
-            );
-            replaceAppIdInFilterXml(
-                uiConfigFilterPath,
-                project.appId,
+            restructureProject(
+                projects,
                 null,
+                project,
+                allFilterPaths,
                 conversionStep
             );
-            // since different projects will have different appId
-            // i.e. would require diff package installation folders in all package
-            allFilterPaths.push(
-                constants.DEFAULT_ALL_FILTER_PATH_TEMPLATE.replace(
-                    constants.DEFAULT_APP_ID,
-                    project.appId
-                )
-            );
+            if (project.subProjects != null) {
+                project.subProjects.forEach((subProject) => {
+                    restructureProject(
+                        projects,
+                        project,
+                        subProject,
+                        allFilterPaths,
+                        conversionStep
+                    );
+                });
+            }
         });
+        let projectRootPath = commons_constants.TARGET_PROJECT_SRC_FOLDER;
+        if (projects.length === 1) {
+            projectRootPath = path.join(
+                commons_constants.TARGET_PROJECT_SRC_FOLDER,
+                path.basename(projects[0].projectPath)
+            );
+        }
         // add filters to all's filter.xml
         let allPackageFilterPath = path.join(
             projectRootPath,
@@ -147,6 +79,116 @@ var RestructureFilterPaths = {
         conversionSteps.push(conversionStep);
     },
 };
+
+function restructureProject(
+    projects,
+    parentProject,
+    project,
+    allFilterPaths,
+    conversionStep
+) {
+    let projectRootPath = commons_constants.TARGET_PROJECT_SRC_FOLDER;
+    let targetProjectPath = path.join(
+        projectRootPath,
+        path.basename(project.projectPath)
+    );
+    if (parentProject != null) {
+        targetProjectPath = path.join(
+            projectRootPath,
+            path.basename(parentProject.projectPath),
+            project.projectPath.replace(parentProject.projectPath, "")
+        );
+    }
+    if (projects.length === 1 || parentProject != null) {
+        projectRootPath = targetProjectPath;
+    }
+    let uiAppsFilterPath = path.join(
+        targetProjectPath,
+        constants.UI_APPS,
+        constants.FILTER_PATH
+    );
+    let uiContentFilterPath = path.join(
+        targetProjectPath,
+        constants.UI_CONTENT,
+        constants.FILTER_PATH
+    );
+    let uiConfigFilterPath = path.join(
+        targetProjectPath,
+        constants.UI_CONFIG,
+        constants.FILTER_PATH
+    );
+    let uiAppsStructurePom = path.join(
+        targetProjectPath,
+        constants.UI_APPS_STRUCTURE,
+        constants.POM_XML
+    );
+    const filterPaths = {
+        uiAppsFilters: [],
+        uiContentFilters: [],
+    };
+    let srcContentPackages = project.existingContentPackageFolder;
+    srcContentPackages.forEach((contentPackage) => {
+        let contentPackageFilterPath = path.join(
+            project.projectPath,
+            contentPackage,
+            project.relativePathToExistingFilterXml != null
+                ? project.relativePathToExistingFilterXml
+                : constants.FILTER_PATH
+        );
+        if (!contentPackageFilterPath.endsWith("pom.xml")) {
+            if (fs.existsSync(contentPackageFilterPath)) {
+                // read the project's filter.xml and separate the mutable and immutable filter paths
+                segregateFilterPaths(
+                    util.getXMLContentSync(contentPackageFilterPath),
+                    filterPaths
+                );
+            } else {
+                logger.error(
+                    `RestructureFilterPaths: Filter file at ${contentPackageFilterPath} not found!.`
+                );
+            }
+        } else {
+            segregateFilterPaths(
+                getFiltersFromPomFile(contentPackageFilterPath),
+                filterPaths
+            );
+        }
+    });
+    writeFilterPathsToFilterXml(
+        filterPaths.uiAppsFilters,
+        uiAppsFilterPath,
+        conversionStep
+    );
+    writeFilterPathsToFilterXml(
+        filterPaths.uiContentFilters,
+        uiContentFilterPath,
+        conversionStep
+    );
+    let enumeratedAppsFilterPaths = getEnumeratedAppsFilters(
+        filterPaths.uiAppsFilters,
+        project.appId
+    );
+    addUiAppsStructureFilters(
+        uiAppsStructurePom,
+        enumeratedAppsFilterPaths,
+        conversionStep
+    );
+    replaceAppIdInFilterXml(
+        uiConfigFilterPath,
+        project.appId,
+        null,
+        conversionStep
+    );
+    // since different projects will have different appId
+    // i.e. would require diff package installation folders in all package
+    allFilterPaths.push(
+        constants.DEFAULT_ALL_FILTER_PATH_TEMPLATE.replace(
+            constants.DEFAULT_APP_ID,
+            project.appId
+        )
+    );
+}
+
 /**
  *
  * @param String filePath path of pom.xml where content need to be written

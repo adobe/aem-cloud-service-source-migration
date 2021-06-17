@@ -23,7 +23,8 @@ const path = require("path");
 const fs = require("fs");
 const fsExtra = require("fs-extra");
 const pomParser = require("node-pom-parser");
-
+let allPackagePomFile = "",
+    analysePackagePomFile = "";
 var CreateBaseProjectStructure = {
     /**
      *
@@ -40,8 +41,6 @@ var CreateBaseProjectStructure = {
                 " Create an `all` container package for including the ui.apps and ui.content packages as embeds."
         );
         let projects = config.projects;
-        let allPackagePomFile = "",
-            analysePackagePomFile = "";
         // if there are more than one project, create the all package at the projects' root level
         if (projects.length > 1) {
             fsExtra.copySync(
@@ -117,208 +116,51 @@ var CreateBaseProjectStructure = {
                 "CreateBaseProjectStructure: Base parent pom.xml created at " +
                     commons_constants.TARGET_PROJECT_SRC_FOLDER
             );
-        }
-        // create the base packages for all projects
-        for (const project of projects) {
+        } else if (projects.length == 1) {
             let projectPath = path.join(
                 commons_constants.TARGET_PROJECT_SRC_FOLDER,
-                path.basename(project.projectPath)
+                path.basename(projects[0].projectPath)
             );
-            // recursively create the folders if not present
-            fs.mkdirSync(projectPath, { recursive: true });
-            if (projects.length == 1) {
-                // else create the all package at the same level
-                fsExtra.copySync(
-                    path.join(basePath, constants.BASE_ALL_PACKAGE),
-                    path.join(projectPath, constants.ALL)
-                );
-                conversionStep.addOperation(
-                    new ConversionOperation(
-                        commons_constants.ACTION_ADDED,
-                        path.join(projectPath, constants.ALL),
-                        "Created `all` container package"
-                    )
-                );
-                logger.info(
-                    `CreateBaseProjectStructure: Base all package created at ${projectPath}.`
-                );
-                allPackagePomFile = path.join(
-                    projectPath,
-                    constants.ALL,
-                    constants.POM_XML
-                );
-                // create the analyse package at the same level
-                fsExtra.copySync(
-                    path.join(basePath, constants.BASE_ANALYSE_PACKAGE),
-                    path.join(projectPath, constants.ANALYSE)
-                );
-                conversionStep.addOperation(
-                    new ConversionOperation(
-                        commons_constants.ACTION_ADDED,
-                        path.join(projectPath, constants.ANALYSE),
-                        "Created `analyse` package"
-                    )
-                );
-                logger.info(
-                    `CreateBaseProjectStructure: Base analyse package created at ${projectPath}.`
-                );
-                analysePackagePomFile = path.join(
-                    projectPath,
-                    constants.ANALYSE,
-                    constants.POM_XML
-                );
-                fs.copyFileSync(
-                    path.join(basePath, constants.BASE_PARENT_POM),
-                    path.join(projectPath, constants.POM_XML)
-                );
-                conversionStep.addOperation(
-                    new ConversionOperation(
-                        commons_constants.ACTION_ADDED,
-                        path.join(projectPath, constants.POM_XML),
-                        "Created base parent pom.xml"
-                    )
-                );
-                logger.info(
-                    `CreateBaseProjectStructure: Base parent pom.xml created at ${projectPath}`
-                );
-            }
-            if (projects.length > 1) {
-                fs.copyFileSync(
-                    path.join(basePath, constants.BASE_PARENT_POM),
-                    path.join(projectPath, constants.POM_XML)
-                );
-                conversionStep.addOperation(
-                    new ConversionOperation(
-                        commons_constants.ACTION_ADDED,
-                        path.join(projectPath, constants.POM_XML),
-                        "Created project's base reactor pom.xml"
-                    )
-                );
-                logger.info(
-                    `CreateBaseProjectStructure: Base reactor pom.xml created at ${projectPath}`
-                );
-            }
-            fsExtra.copySync(
-                path.join(basePath, constants.BASE_UI_APPS_PACKAGE),
-                path.join(projectPath, constants.UI_APPS)
-            );
-            conversionStep.addOperation(
-                new ConversionOperation(
-                    commons_constants.ACTION_ADDED,
-                    path.join(projectPath, constants.UI_APPS),
-                    "Created package `ui.apps` for immutable code to be deployed to `/apps` or `/oak:index`"
-                )
-            );
-            fsExtra.copySync(
-                path.join(basePath, constants.BASE_UI_APPS_STRUCTURE_PACKAGE),
-                path.join(projectPath, constants.UI_APPS_STRUCTURE)
-            );
-            conversionStep.addOperation(
-                new ConversionOperation(
-                    commons_constants.ACTION_ADDED,
-                    path.join(projectPath, constants.UI_APPS_STRUCTURE),
-                    "Created package `ui.apps.structure` to define the JCR repository roots in which the project’s code sub-packages deploy into"
-                )
-            );
-            fsExtra.copySync(
-                path.join(basePath, constants.BASE_UI_CONTENT_PACKAGE),
-                path.join(projectPath, constants.UI_CONTENT)
-            );
-            conversionStep.addOperation(
-                new ConversionOperation(
-                    commons_constants.ACTION_ADDED,
-                    path.join(projectPath, constants.UI_CONTENT),
-                    "Created package `ui.content` for mutable content/configuration"
-                )
-            );
-            fsExtra.copySync(
-                path.join(basePath, constants.BASE_UI_CONFIG_PACKAGE),
-                path.join(projectPath, constants.UI_CONFIG)
-            );
-            conversionStep.addOperation(
-                new ConversionOperation(
-                    commons_constants.ACTION_ADDED,
-                    path.join(projectPath, constants.UI_CONFIG),
-                    "Created package `ui.config` for OSGI configurations"
-                )
-            );
-            // incase of single project, the parent pom file will be 1 directory level above
-            // incase of multiple project, the parent pom file will be 2 directory level above
-            await setPackageArtifactAndGroupId(
+            allPackagePomFile = path.join(
                 projectPath,
-                project.artifactId,
-                project.appTitle,
-                project.version,
+                constants.ALL,
+                constants.POM_XML
+            );
+            analysePackagePomFile = path.join(
+                projectPath,
+                constants.ANALYSE,
+                constants.POM_XML
+            );
+        }
+        let allPackageDependencyList = [];
+        // create the base packages for all projects
+        for (const project of projects) {
+            await createProject(
                 config,
-                projects.length == 1
-                    ? constants.RELATIVE_PATH_ONE_LEVEL_UP
-                    : constants.RELATIVE_PATH_TWO_LEVEL_UP,
-                conversionStep
-            );
-            // copy other packages from source
-            copyOtherModules(project, conversionStep);
-            // copy core bundles from source
-            let allPackageDependencyList = [];
-            let artifactIdInfoList = copyCoreBundles(project, conversionStep);
-            artifactIdInfoList.forEach((artifactIdInfo) => {
-                allPackageDependencyList.push(
-                    constants.BUNDLE_DEPENDENCY_TEMPLATE.replace(
-                        constants.DEFAULT_ARTIFACT_ID,
-                        artifactIdInfo.artifactId
-                    )
-                        .replace(constants.DEFAULT_GROUP_ID, config.groupId)
-                        .replace(
-                            constants.DEFAULT_VERSION,
-                            typeof artifactIdInfo.version === "undefined"
-                                ? ""
-                                : artifactIdInfo.version
-                        )
-                );
-            });
-            logger.info(
-                `CreateBaseProjectStructure: Base packages created for ${projectPath}.`
-            );
-            //embed core bundles
-            await pomManipulationUtil.embeddArtifactsUsingTemplate(
-                allPackagePomFile,
-                artifactIdInfoList,
-                config.groupId,
-                conversionStep
-            );
-            await pomManipulationUtil.addDependencies(
-                allPackagePomFile,
+                basePath,
+                null,
+                project,
                 allPackageDependencyList,
                 conversionStep
             );
-            if (projects.length > 1) {
-                // if there are multiple project, populate reactor pom for each project.
-                await pomManipulationUtil.replaceVariables(
-                    path.join(projectPath, constants.POM_XML),
-                    {
-                        [constants.DEFAULT_GROUP_ID]: config.groupId,
-                        [constants.DEFAULT_ROOT_VERSION]:
-                            config.parentPom.version,
-                        [constants.DEFAULT_VERSION]:
-                            project.version != null
-                                ? project.version
-                                : config.all.version,
-                        [constants.DEFAULT_ARTIFACT_ID]:
-                            project.artifactId != null
-                                ? project.artifactId
-                                : config.all.artifactId,
-                        [constants.DEFAULT_APP_TITLE]:
-                            project.appTitle != null
-                                ? project.appTitle
-                                : config.all.appTitle,
-                        [constants.DEFAULT_ROOT_ARTIFACT_ID]:
-                            config.parentPom.artifactId,
-                        [constants.DEFAULT_RELATIVE_PATH]:
-                            constants.RELATIVE_PATH_ONE_LEVEL_UP,
-                    },
-                    conversionStep
-                );
+            if (project.subProjects != null) {
+                for (const subProject of project.subProjects) {
+                    await createProject(
+                        config,
+                        basePath,
+                        project,
+                        subProject,
+                        allPackageDependencyList,
+                        conversionStep
+                    );
+                }
             }
         }
+        await pomManipulationUtil.addDependencies(
+            allPackagePomFile,
+            allPackageDependencyList,
+            conversionStep
+        );
         await pomManipulationUtil.replaceVariables(
             allPackagePomFile,
             {
@@ -349,6 +191,216 @@ var CreateBaseProjectStructure = {
     },
 };
 
+async function createProject(
+    config,
+    basePath,
+    parentProject,
+    project,
+    allPackageDependencyList,
+    conversionStep
+) {
+    let projectPath = path.join(
+        commons_constants.TARGET_PROJECT_SRC_FOLDER,
+        path.basename(project.projectPath)
+    );
+    if (parentProject != null) {
+        projectPath = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(parentProject.projectPath),
+            project.projectPath.replace(parentProject.projectPath, "")
+        );
+    }
+    // recursively create the folders if not present
+    fs.mkdirSync(projectPath, { recursive: true });
+    if (config.projects.length == 1 && parentProject == null) {
+        // else create the all package at the same level
+        fsExtra.copySync(
+            path.join(basePath, constants.BASE_ALL_PACKAGE),
+            path.join(projectPath, constants.ALL)
+        );
+        conversionStep.addOperation(
+            new ConversionOperation(
+                commons_constants.ACTION_ADDED,
+                path.join(projectPath, constants.ALL),
+                "Created `all` container package"
+            )
+        );
+        logger.info(
+            `CreateBaseProjectStructure: Base all package created at ${projectPath}.`
+        );
+        allPackagePomFile = path.join(
+            projectPath,
+            constants.ALL,
+            constants.POM_XML
+        );
+        // create the analyse package at the same level
+        fsExtra.copySync(
+            path.join(basePath, constants.BASE_ANALYSE_PACKAGE),
+            path.join(projectPath, constants.ANALYSE)
+        );
+        conversionStep.addOperation(
+            new ConversionOperation(
+                commons_constants.ACTION_ADDED,
+                path.join(projectPath, constants.ANALYSE),
+                "Created `analyse` package"
+            )
+        );
+        logger.info(
+            `CreateBaseProjectStructure: Base analyse package created at ${projectPath}.`
+        );
+        analysePackagePomFile = path.join(
+            projectPath,
+            constants.ANALYSE,
+            constants.POM_XML
+        );
+        fs.copyFileSync(
+            path.join(basePath, constants.BASE_PARENT_POM),
+            path.join(projectPath, constants.POM_XML)
+        );
+        conversionStep.addOperation(
+            new ConversionOperation(
+                commons_constants.ACTION_ADDED,
+                path.join(projectPath, constants.POM_XML),
+                "Created base parent pom.xml"
+            )
+        );
+        logger.info(
+            `CreateBaseProjectStructure: Base parent pom.xml created at ${projectPath}`
+        );
+    }
+    if (config.projects.length > 1 || parentProject != null) {
+        fs.copyFileSync(
+            path.join(basePath, constants.BASE_PARENT_POM),
+            path.join(projectPath, constants.POM_XML)
+        );
+        conversionStep.addOperation(
+            new ConversionOperation(
+                commons_constants.ACTION_ADDED,
+                path.join(projectPath, constants.POM_XML),
+                "Created project's base reactor pom.xml"
+            )
+        );
+        logger.info(
+            `CreateBaseProjectStructure: Base reactor pom.xml created at ${projectPath}`
+        );
+    }
+    fsExtra.copySync(
+        path.join(basePath, constants.BASE_UI_APPS_PACKAGE),
+        path.join(projectPath, constants.UI_APPS)
+    );
+    conversionStep.addOperation(
+        new ConversionOperation(
+            commons_constants.ACTION_ADDED,
+            path.join(projectPath, constants.UI_APPS),
+            "Created package `ui.apps` for immutable code to be deployed to `/apps` or `/oak:index`"
+        )
+    );
+    fsExtra.copySync(
+        path.join(basePath, constants.BASE_UI_APPS_STRUCTURE_PACKAGE),
+        path.join(projectPath, constants.UI_APPS_STRUCTURE)
+    );
+    conversionStep.addOperation(
+        new ConversionOperation(
+            commons_constants.ACTION_ADDED,
+            path.join(projectPath, constants.UI_APPS_STRUCTURE),
+            "Created package `ui.apps.structure` to define the JCR repository roots in which the project’s code sub-packages deploy into"
+        )
+    );
+    fsExtra.copySync(
+        path.join(basePath, constants.BASE_UI_CONTENT_PACKAGE),
+        path.join(projectPath, constants.UI_CONTENT)
+    );
+    conversionStep.addOperation(
+        new ConversionOperation(
+            commons_constants.ACTION_ADDED,
+            path.join(projectPath, constants.UI_CONTENT),
+            "Created package `ui.content` for mutable content/configuration"
+        )
+    );
+    fsExtra.copySync(
+        path.join(basePath, constants.BASE_UI_CONFIG_PACKAGE),
+        path.join(projectPath, constants.UI_CONFIG)
+    );
+    conversionStep.addOperation(
+        new ConversionOperation(
+            commons_constants.ACTION_ADDED,
+            path.join(projectPath, constants.UI_CONFIG),
+            "Created package `ui.config` for OSGI configurations"
+        )
+    );
+    // incase of single project, the parent pom file will be 1 directory level above
+    // incase of multiple project, the parent pom file will be 2 directory level above
+    await setPackageArtifactAndGroupId(
+        projectPath,
+        config,
+        parentProject,
+        project,
+        config.projects.length == 1 || parentProject != null
+            ? constants.RELATIVE_PATH_ONE_LEVEL_UP
+            : constants.RELATIVE_PATH_TWO_LEVEL_UP,
+        conversionStep
+    );
+    // copy other packages from source
+    copyOtherModules(parentProject, project, conversionStep);
+    // copy core bundles from source
+    let artifactIdInfoList = copyCoreBundles(
+        parentProject,
+        project,
+        conversionStep
+    );
+    artifactIdInfoList.forEach((artifactIdInfo) => {
+        allPackageDependencyList.push(
+            constants.BUNDLE_DEPENDENCY_TEMPLATE.replace(
+                constants.DEFAULT_ARTIFACT_ID,
+                artifactIdInfo.artifactId
+            )
+                .replace(constants.DEFAULT_GROUP_ID, config.groupId)
+                .replace(
+                    constants.DEFAULT_VERSION,
+                    typeof artifactIdInfo.version === "undefined"
+                        ? ""
+                        : artifactIdInfo.version
+                )
+        );
+    });
+    logger.info(
+        `CreateBaseProjectStructure: Base packages created for ${projectPath}.`
+    );
+    //embed core bundles
+    await pomManipulationUtil.embeddArtifactsUsingTemplate(
+        allPackagePomFile,
+        artifactIdInfoList,
+        config.groupId,
+        conversionStep
+    );
+    if (config.projects.length > 1 || parentProject != null) {
+        // if there are multiple project, populate reactor pom for each project.
+        await pomManipulationUtil.replaceVariables(
+            path.join(projectPath, constants.POM_XML),
+            {
+                [constants.DEFAULT_GROUP_ID]: config.groupId,
+                [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+                [constants.DEFAULT_VERSION]:
+                    project.version != null
+                        ? project.version
+                        : config.all.version,
+                [constants.DEFAULT_ARTIFACT_ID]:
+                    project.artifactId != null
+                        ? project.artifactId
+                        : config.all.artifactId,
+                [constants.DEFAULT_APP_TITLE]:
+                    project.appTitle != null
+                        ? project.appTitle
+                        : config.all.appTitle,
+                [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+                    config.parentPom.artifactId,
+                [constants.DEFAULT_RELATIVE_PATH]:
+                    constants.RELATIVE_PATH_ONE_LEVEL_UP,
+            },
+            conversionStep
+        );
+    }
+}
 /**
  *
  * @param String projectPath  path of package
@@ -362,20 +414,23 @@ var CreateBaseProjectStructure = {
  */
 async function setPackageArtifactAndGroupId(
     projectPath,
-    artifactId,
-    appTitle,
-    version,
     config,
+    parentProject,
+    project,
     relativeParentPomPath,
     conversionStep
 ) {
     let uiAppsReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
-        [constants.DEFAULT_VERSION]: version,
-        [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
-        [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+        [constants.DEFAULT_ARTIFACT_ID]: project.artifactId,
+        [constants.DEFAULT_VERSION]: project.version,
+        [constants.DEFAULT_APP_TITLE]: project.appTitle,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+            parentProject != null
+                ? project.artifactId
+                : config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_VERSION]:
+            parentProject != null ? project.version : config.parentPom.version,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -385,11 +440,15 @@ async function setPackageArtifactAndGroupId(
     );
     let uiAppsStructureReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
-        [constants.DEFAULT_VERSION]: version,
-        [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
-        [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+        [constants.DEFAULT_ARTIFACT_ID]: project.artifactId,
+        [constants.DEFAULT_VERSION]: project.version,
+        [constants.DEFAULT_APP_TITLE]: project.appTitle,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+            parentProject != null
+                ? project.artifactId
+                : config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_VERSION]:
+            parentProject != null ? project.version : config.parentPom.version,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -399,11 +458,15 @@ async function setPackageArtifactAndGroupId(
     );
     let uiContentReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
-        [constants.DEFAULT_VERSION]: version,
-        [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
-        [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+        [constants.DEFAULT_ARTIFACT_ID]: project.artifactId,
+        [constants.DEFAULT_VERSION]: project.version,
+        [constants.DEFAULT_APP_TITLE]: project.appTitle,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+            parentProject != null
+                ? project.artifactId
+                : config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_VERSION]:
+            parentProject != null ? project.version : config.parentPom.version,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -413,11 +476,15 @@ async function setPackageArtifactAndGroupId(
     );
     let uiConfigReplacementObj = {
         [constants.DEFAULT_GROUP_ID]: config.groupId,
-        [constants.DEFAULT_ARTIFACT_ID]: artifactId,
-        [constants.DEFAULT_VERSION]: version,
-        [constants.DEFAULT_APP_TITLE]: appTitle,
-        [constants.DEFAULT_ROOT_ARTIFACT_ID]: config.parentPom.artifactId,
-        [constants.DEFAULT_ROOT_VERSION]: config.parentPom.version,
+        [constants.DEFAULT_ARTIFACT_ID]: project.artifactId,
+        [constants.DEFAULT_VERSION]: project.version,
+        [constants.DEFAULT_APP_TITLE]: project.appTitle,
+        [constants.DEFAULT_ROOT_ARTIFACT_ID]:
+            parentProject != null
+                ? project.artifactId
+                : config.parentPom.artifactId,
+        [constants.DEFAULT_ROOT_VERSION]:
+            parentProject != null ? project.version : config.parentPom.version,
         [constants.DEFAULT_RELATIVE_PATH]: relativeParentPomPath,
     };
     await pomManipulationUtil.replaceVariables(
@@ -433,13 +500,20 @@ async function setPackageArtifactAndGroupId(
  *
  * Copy all core bundles from source project to target project
  */
-function copyCoreBundles(project, conversionStep) {
+function copyCoreBundles(parentProject, project, conversionStep) {
     // the path.join() is to standardize the paths to use '\' irrespective of OS
     let source = path.join(project.projectPath);
     let destination = path.join(
         commons_constants.TARGET_PROJECT_SRC_FOLDER,
         path.basename(project.projectPath)
     );
+    if (parentProject != null) {
+        destination = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(parentProject.projectPath),
+            project.projectPath.replace(parentProject.projectPath, "")
+        );
+    }
     let artifactIdInfoList = [];
     project.coreBundles.forEach((bundle) => {
         let sourceBundlePath = path.join(project.projectPath, bundle);
@@ -466,16 +540,29 @@ function copyCoreBundles(project, conversionStep) {
  *
  * Copy all modules (expect bundles) from source project to target project
  */
-function copyOtherModules(project, conversionStep) {
+function copyOtherModules(parentProject, project, conversionStep) {
     let ignoredPaths = project.existingContentPackageFolder.map((folder) =>
         path.join(project.projectPath, folder)
     );
+    let subProjectPaths = [];
+    if (project.subProjects != null) {
+        subProjectPaths = project.subProjects.map((subProject) => {
+            path.join(subProject.projectPath);
+        });
+    }
     // the path.join() is to standardize the paths to use '\' irrespective of OS
     let source = path.join(project.projectPath);
     let destination = path.join(
         commons_constants.TARGET_PROJECT_SRC_FOLDER,
         path.basename(project.projectPath)
     );
+    if (parentProject != null) {
+        destination = path.join(
+            commons_constants.TARGET_PROJECT_SRC_FOLDER,
+            path.basename(parentProject.projectPath),
+            project.projectPath.replace(parentProject.projectPath, "")
+        );
+    }
     // get all pom files
     let allPomFiles = util.globGetFilesByName(source, constants.POM_XML);
     let artifactIdInfoList = [];
@@ -492,6 +579,9 @@ function copyOtherModules(project, conversionStep) {
             !fs.existsSync(destinationFolderPath) &&
             !ignoredPaths.includes(srcFolderPath) &&
             !srcFolderPath.includes("dispatcher") &&
+            subProjectPaths.filter((subProject) => {
+                srcFolderPath.includes(subProject);
+            }).length > 0 &&
             pomManipulationUtil.verifyArtifactPackagingType(
                 pomFile,
                 constants.CONTENT_PACKAGING_TYPES
