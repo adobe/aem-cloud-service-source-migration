@@ -68,6 +68,31 @@ class AEMDispatcherConfigConverter {
         );
     }
 
+    checkConfig(config) {
+        let valid = true;
+        if (config.sdkSrc == null) {
+            logger.error(
+                "Expected parameter 'sdkSrc' not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+
+        if (config.ams == null) {
+            logger.error(
+                "Expected parameter 'ams' not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+
+        if (config.ams.cfg == null) {
+            logger.error(
+                "Expected parameter 'ams.cfg' not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        return valid;
+    }
+
     removeUnusedFoldersFiles() {
         let conversionStep =
             this.__remove_unused_folders_files_summary_generator();
