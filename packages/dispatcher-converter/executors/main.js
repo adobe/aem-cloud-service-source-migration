@@ -53,13 +53,20 @@ let aemDispatcherConfigConverter = new AEMDispatcherConfigConverter(
     config.dispatcherConverter,
     constants.TARGET_DISPATCHER_SRC_FOLDER
 );
-aemDispatcherConfigConverter.transform();
-// log some final details
-console.log("\nTransformation Complete!\n");
-console.log(
-    `Please check ${constants.TARGET_DISPATCHER_SRC_FOLDER} folder for transformed configuration files.`
-);
-console.log(
-    `Please check ${constants.TARGET_DISPATCHER_FOLDER} for summary report.`
-);
-console.log(`Please check ${constants.LOG_FILE} for logs.`);
+if (aemDispatcherConfigConverter.checkConfig(config.dispatcherConverter)) {
+    aemDispatcherConfigConverter.transform();
+
+    // log some final details
+    console.log("\nTransformation Complete!\n");
+    console.log(
+        `Please check ${constants.TARGET_DISPATCHER_SRC_FOLDER} folder for transformed configuration files.`
+    );
+    console.log(
+        `Please check ${constants.TARGET_DISPATCHER_FOLDER} for summary report.`
+    );
+    console.log(`Please check ${constants.LOG_FILE} for logs.`);
+} else {
+    console.log(
+        `Missing configuration! Please check ${constants.LOG_FILE} for more information.`
+    );
+}

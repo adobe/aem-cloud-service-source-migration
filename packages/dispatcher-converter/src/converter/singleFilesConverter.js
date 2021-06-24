@@ -80,6 +80,31 @@ class SingleFilesConverter {
         );
     }
 
+    checkConfig(config) {
+        let valid = true;
+        if (config.sdkSrc == null) {
+            logger.error(
+                "Expected parameter 'sdkSrc' not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+
+        if (config.onPremise == null) {
+            logger.error(
+                "Expected parameter 'onPremise' not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+
+        if (config.onPremise.dispatcherAnySrc == null) {
+            logger.error(
+                "Expected parameter 'onPremise.dispatcherAnySrc' not defined in configuration file. Please add the missing parameter to execute the tool."
+            );
+            valid = false;
+        }
+        return valid;
+    }
+
     /**
      * Go through the copied SDK source files and delete the ones we wont be using in a client project.
      */
