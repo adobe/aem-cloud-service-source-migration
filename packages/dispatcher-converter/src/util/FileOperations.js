@@ -427,7 +427,7 @@ class FileOperations {
                 isConfString = isConfString[isConfString.length - 1].trim();
             }
             // replacing special characters from file name
-            isConfString = isConfString.toString().replace(/^"(.*)"$/g, "$1");
+            isConfString = isConfString.toString().replace(/^(.*)"$/g, "$1");
             line = this.getPathForDir(isConfString);
         }
         return line.toString();
@@ -447,7 +447,7 @@ class FileOperations {
         if (this.config.pathToPrepend) {
             let pathToPrepend = this.config.pathToPrepend;
             pathToPrepend.forEach((file) => {
-                let filePath = file + isConfString;
+                let filePath = path.join(file, isConfString);
                 let files = glob.sync(filePath) || [];
 
                 if (isConfString.includes("*") && files.length > 0) {
