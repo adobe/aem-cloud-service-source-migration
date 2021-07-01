@@ -1503,7 +1503,7 @@ class FileOperations {
             }
             if (nonWhiteListedDirectiveUsage.length > 0) {
                 console.log(
-                    "\nApache configuration uses non-allowlisted directives:"
+                    "\nApache configuration uses non-whitelisted directives:"
                 );
                 logger.error(
                     "FileOperationsUtility: Apache configuration uses non-whitelisted directives:"
