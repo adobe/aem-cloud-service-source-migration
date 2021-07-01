@@ -1465,10 +1465,14 @@ class FileOperations {
                                 }
                             } else {
                                 // if non-whitelisted directive is used, comment the line
-                                directive =
-                                    trimmedLine.indexOf("\t") > -1
-                                        ? trimmedLine.split("\t")[0]
-                                        : trimmedLine.split(" ")[0];
+                                // we need to to make sure both (\t & " ") are executed
+                                directive = trimmedLine;
+                                if (directive.indexOf("\t") > -1) {
+                                    directive = directive.split("\t")[0];
+                                }
+                                if (directive.indexOf(" ") > -1) {
+                                    directive = directive.split(" ")[0];
+                                }
                             }
                             if (
                                 !whitelistedDirectivesSet.includes(
@@ -1499,7 +1503,7 @@ class FileOperations {
             }
             if (nonWhiteListedDirectiveUsage.length > 0) {
                 console.log(
-                    "\nApache configuration uses non-whitelisted directives:"
+                    "\nApache configuration uses non-allowlisted directives:"
                 );
                 logger.error(
                     "FileOperationsUtility: Apache configuration uses non-whitelisted directives:"
