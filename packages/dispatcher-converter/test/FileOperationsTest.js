@@ -570,6 +570,10 @@ describe("FileOperations", function () {
         fs.appendFileSync(testFolder + "/newtestfile.vhost", "< TESTVAR3> \n");
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
+            "RewriteRule ^/terms/default.aspx$ http://abc.html \n"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
             "This is a test content \n"
         );
 
@@ -590,6 +594,10 @@ describe("FileOperations", function () {
             true
         );
         assert.include(content, "#");
+        assert.include(
+            content,
+            "RewriteRule ^/terms/default.aspx$ http://abc.html"
+        );
     });
 
     it("should successfully replace File Includes In Farm File And Vhost File", function () {
