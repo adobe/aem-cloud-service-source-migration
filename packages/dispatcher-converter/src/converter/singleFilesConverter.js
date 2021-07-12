@@ -251,6 +251,7 @@ class SingleFilesConverter {
         fileContentsArray = this.fileOpsUtil.getFileContentsArray(
             path.join(Constants.TARGET_DISPATCHER_SRC_FOLDER, TEMP_FILE)
         );
+        let farmsMap = new Map();
         // adding the required changes to the main farm file by reading content from temp file
         for (let i = 0; i < fileContentsArray.length; i++) {
             if (rootFlag && farmFlag) {
@@ -277,7 +278,7 @@ class SingleFilesConverter {
                                 )
                         );
 
-                        fs.appendFileSync(
+                        fs.writeFileSync(
                             path.join(
                                 commons_constants.TARGET_DISPATCHER_SRC_FOLDER,
                                 Constants.CONF_DISPATCHER_D,
@@ -334,6 +335,12 @@ class SingleFilesConverter {
                 newFileName === ""
             ) {
                 newFileName = fileContentsArray[i].trim().replace("/", "");
+                if (!farmsMap.get(newFileName)) {
+                    farmsMap.set(newFileName, 1);
+                } else {
+                    farmsMap.set(newFileName, farmsMap.get(newFileName) + 1);
+                    newFileName = newFileName + "-" + farmsMap.get(newFileName);
+                }
             }
         }
         fs.unlinkSync(
