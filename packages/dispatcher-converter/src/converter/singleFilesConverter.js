@@ -277,7 +277,7 @@ class SingleFilesConverter {
                                 )
                         );
 
-                        fs.writeFileSync(
+                        fs.appendFileSync(
                             path.join(
                                 commons_constants.TARGET_DISPATCHER_SRC_FOLDER,
                                 Constants.CONF_DISPATCHER_D,
