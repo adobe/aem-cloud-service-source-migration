@@ -1432,8 +1432,6 @@ class FileOperations {
                                         "FileOperationsUtility: Commenting non-whitelisted directive usage in ",
                                         filePathWithLine
                                     );
-                                } else {
-                                    returnContent += line + os.EOL;
                                 }
                             } else if (trimmedLine.startsWith("<")) {
                                 // check if start of section
@@ -1460,8 +1458,6 @@ class FileOperations {
                                         "FileOperationsUtility: Commenting non-whitelisted directive usage in ",
                                         filePathWithLine
                                     );
-                                } else {
-                                    returnContent += line + os.EOL;
                                 }
                             } else {
                                 // if non-whitelisted directive is used, comment the line

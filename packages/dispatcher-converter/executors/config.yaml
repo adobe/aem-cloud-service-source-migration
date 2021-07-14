@@ -4,6 +4,7 @@ dispatcherConverter:
     # Add information about on-premise dispatcher configuration here
     onPremise:
         # Absolute path to the dispatcher.any file
+        # farm files should have ".farm" extension for adding content of a farm file to the output directory.
         dispatcherAnySrc:
         # Path to the httpd.conf file (the main apache config file).
         # If `vhostsToConvert` is not specified you can use this property to find vhosts by parsing the main apache file
@@ -18,6 +19,8 @@ dispatcherConverter:
         appendToVhosts:
         # Array of paths to existing dispatcher configuration root folders to scan for the included files.
         # These paths help to map includes in the configurations to their current location in the provided folder structure.
+        # In case the files are distributed across all the folders use command `for i in $(find `pwd` -type d); do echo "- \"$i/\""; done` for unix based system
+        # and `dir /s /b /o:n /ad` for windows to generate folder/sub-folder and paste the output here.
         pathToPrepend:
         # Only port 80 is supported in AEM as a Cloud Service - if you were using a non standard port here and need it mapped
         # in AEM, provide it here - all other vhosts with non default ports will be removed.
