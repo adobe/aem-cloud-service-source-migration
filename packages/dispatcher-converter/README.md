@@ -130,7 +130,8 @@ As sample configuration is below:
 | onPremise/vhostsToConvert | Array of paths to vhosts files and/or vhost folders containing vhost files you wish to convert to cloud service configurations. |
 | onPremise/variablesToReplace | Array of mapped objects that replace existing variables with new variables. The original variable is first and the variable to replace is second. |
 | onPremise/appendToVhosts | This can be a file that you want to append to every vhost file in case you need logic added to all configurations. This is useful to replace logic that was once stored in your main apache config file. |
-| onPremise/pathToPrepend | Array of paths to existing dispatcher configuration root folders to scan for the included files. These paths help to map includes in the configurations to their current location in the provided folder structure. |
+| onPremise/pathToPrepend | Array of paths to existing dispatcher configuration root folders to scan for the included files. These paths help to map includes in the configurations to their current location in the provided folder structure.
+In case the files are distributed across all the folders use command `for i in $(find `pwd` -type d); do echo "- \"$i/\""; done` for unix based system and `dir /s /b /o:n /ad` for windows to generate folder/sub-folder and paste the output here.|
 | onPremise/portsToMap | Only port 80 is supported in AEM as a Cloud Service - if you were using a non standard port here and need it mapped in AEM, provide it here - all other vhosts with non default ports will be removed. |
 | ams/cfg* | Path to dispatcher configuration folder (expected immediate subfolders - `conf`, `conf.d`, `conf.dispatcher.d` and `conf.modules.d`) |
 | * denotes required field | |
@@ -161,6 +162,8 @@ dispatcherConverter:
             - "/Users/{username}/some/path/to/appendedContent.conf"
         # Array of paths to existing dispatcher configuration root folders to scan for the included files.
         # These paths help to map includes in the configurations to their current location in the provided folder structure.
+        # In case the files are distributed across all the folders use command `for i in $(find `pwd` -type d); do echo "- \"$i/\""; done` for unix based system
+        # and `dir /s /b /o:n /ad` for windows to generate folder/sub-folder and paste the output here.
         pathToPrepend:
             - "/Users/{username}/some/path/to/your/httpd/content/"
         # Only port 80 is supported in AEM as a Cloud Service - if you were using a non standard port here and need it mapped
