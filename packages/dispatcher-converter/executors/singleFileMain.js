@@ -16,6 +16,7 @@ const {
     constants,
     util,
 } = require("@adobe/aem-cs-source-migration-commons");
+const utilConstants = require("../src/util/constants");
 const fs = require("fs");
 const yaml = require("js-yaml");
 const path = require("path");
@@ -37,6 +38,12 @@ try {
     util.copyFolderSync(
         config.dispatcherConverter.sdkSrc,
         constants.TARGET_DISPATCHER_SRC_FOLDER
+    );
+    // creates marker file if not already present as part of dispatcher sdk
+    // marker file is used to validate the dispatcher configurations with latest checks
+    util.ensureFileExistsSync(
+        utilConstants.USE_SOURCES_DIRECTLY,
+        path.join(constants.TARGET_DISPATCHER_SRC_FOLDER, utilConstants.OPT_IN)
     );
     logger.info("Files successfully copied to target folder");
 } catch (err) {

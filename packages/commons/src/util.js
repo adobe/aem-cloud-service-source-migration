@@ -138,6 +138,19 @@ var Util = {
 
     /**
      *
+     * @param String fileName name of the file to create if it doesn't exist
+     * @param String parentPath path where file needs to be created
+     * Sync function to create a file with empty content
+     */
+    ensureFileExistsSync: (fileName, parentPath) => {
+        if (!fs.existsSync(path.join(parentPath, fileName))) {
+            fs.mkdirSync(parentPath, { recursive: true });
+            fs.writeFileSync(path.join(parentPath, fileName), "");
+        }
+    },
+
+    /**
+     *
      * @param String directoryPath path which need to be scanned
      * @param String fileExtension file extension which need to be search
      * @return {Array.<String>} list of all files

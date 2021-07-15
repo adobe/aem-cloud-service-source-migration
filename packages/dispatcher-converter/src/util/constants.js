@@ -79,6 +79,10 @@ module.exports = {
 
     WARNING: "WARNING",
 
+    OPT_IN: "opt-in",
+
+    USE_SOURCES_DIRECTLY: "USE_SOURCES_DIRECTLY",
+
     // whitelisted directives (in lower case for ease of comparision; directives can be case-insensitive)
     WHITELISTED_DIRECTIVES_LIST: [
         "<directory>",

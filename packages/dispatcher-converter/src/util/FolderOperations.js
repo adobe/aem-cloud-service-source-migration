@@ -17,6 +17,7 @@ const {
 } = require("@adobe/aem-cs-source-migration-commons");
 const path = require("path");
 const fs = require("fs");
+const rimraf = require("rimraf");
 
 class FolderOperationsUtility {
     constructor() {}
@@ -34,11 +35,7 @@ class FolderOperationsUtility {
         // if is directory
         if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isDirectory()) {
             try {
-                fs.rmdirSync(dirPath, { recursive: true }, (err) => {
-                    if (err) {
-                        logger.error("Error while deleting " + dirPath);
-                    }
-                });
+                rimraf.sync(dirPath);
                 conversionStep.addOperation(
                     new ConversionOperation(
                         commons_constants.ACTION_DELETED,
@@ -51,7 +48,7 @@ class FolderOperationsUtility {
                 );
             } catch (err) {
                 logger.error(
-                    "FolderOperationsUtility:  " +
+                    "FolderOperationsUtility: error while deleting file, " +
                         err.filename +
                         "-" +
                         err.stderr
