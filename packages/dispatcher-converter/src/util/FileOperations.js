@@ -138,7 +138,7 @@ class FileOperations {
      */
     deleteFilesWithExtension(directoryPath, extension, conversionStep) {
         if (fs.existsSync(directoryPath)) {
-            let globPattern = directoryPath + "/*" + extension;
+            let globPattern = directoryPath + "/**/*" + extension;
             this.doGlobDelete(globPattern, conversionStep);
         }
     }

@@ -19,7 +19,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
-
+const utilConstants = require("../src/util/constants");
 const yamlFile = fs.readFileSync(
     path.join(process.cwd(), "config.yaml"),
     "utf8"
@@ -38,6 +38,13 @@ try {
         config.dispatcherConverter.ams.cfg,
         constants.TARGET_DISPATCHER_SRC_FOLDER
     );
+    // ensures marker file is created if not present as part of dispatcher sdk
+    // marker file is used to validate the dispatcher configurations with latest checks
+    util.ensureFileExistsSync(
+        utilConstants.USE_SOURCES_DIRECTLY,
+        path.join(constants.TARGET_DISPATCHER_SRC_FOLDER, utilConstants.OPT_IN)
+    );
+    logger.info("Files successfully copied to target folder");
 } catch (err) {
     logger.error(
         "Error copying " +

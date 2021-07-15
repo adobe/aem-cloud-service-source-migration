@@ -14,6 +14,7 @@ const {
     logger,
     constants: commons_constants,
     ConversionOperation,
+    util,
 } = require("@adobe/aem-cs-source-migration-commons");
 const path = require("path");
 const fs = require("fs");
@@ -34,11 +35,7 @@ class FolderOperationsUtility {
         // if is directory
         if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isDirectory()) {
             try {
-                fs.rmdirSync(dirPath, { recursive: true }, (err) => {
-                    if (err) {
-                        logger.error("Error while deleting " + dirPath);
-                    }
-                });
+                util.deleteFolderRecursive(dirPath);
                 conversionStep.addOperation(
                     new ConversionOperation(
                         commons_constants.ACTION_DELETED,
@@ -51,7 +48,7 @@ class FolderOperationsUtility {
                 );
             } catch (err) {
                 logger.error(
-                    "FolderOperationsUtility:  " +
+                    "FolderOperationsUtility: error while deleting file, " +
                         err.filename +
                         "-" +
                         err.stderr
