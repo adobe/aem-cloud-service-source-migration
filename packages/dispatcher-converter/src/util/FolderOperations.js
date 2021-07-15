@@ -14,10 +14,10 @@ const {
     logger,
     constants: commons_constants,
     ConversionOperation,
+    util,
 } = require("@adobe/aem-cs-source-migration-commons");
 const path = require("path");
 const fs = require("fs");
-const rimraf = require("rimraf");
 
 class FolderOperationsUtility {
     constructor() {}
@@ -35,7 +35,7 @@ class FolderOperationsUtility {
         // if is directory
         if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isDirectory()) {
             try {
-                rimraf.sync(dirPath);
+                util.deleteFolderRecursive(dirPath);
                 conversionStep.addOperation(
                     new ConversionOperation(
                         commons_constants.ACTION_DELETED,
