@@ -1,5 +1,13 @@
 # @adobe/aem-cs-source-migration-repository-modernizer
 
+## 1.2.1
+
+### Patch Changes
+
+- dbd23f2: CQ-4326843 : null & undefined check rectification in the script.
+- Updated dependencies [dbd23f2]
+  - @adobe/aem-cs-source-migration-commons@0.0.4
+
 ## 1.2.0
 
 ### Minor Changes
