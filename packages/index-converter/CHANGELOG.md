@@ -1,5 +1,12 @@
 # @adobe/aem-cs-source-migration-index-converter
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [dbd23f2]
+  - @adobe/aem-cs-source-migration-commons@0.0.4
+
 ## 0.1.1
 
 ### Patch Changes
