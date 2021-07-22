@@ -221,13 +221,6 @@
             </slingevent:Job>
         </indexRules>
     </slingeventJob>
-    <jcrLanguage
-        jcr:primaryType="oak:QueryIndexDefinition"
-        declaringNodeTypes="{Name}[mix:language]"
-        propertyNames="{Name}[jcr:language]"
-        reindex="{Boolean}false"
-        reindexCount="{Long}1"
-        type="property"/>
     <fragments-3
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,nrt]"
@@ -281,6 +274,13 @@
             </dam:cfVariationNode>
         </indexRules>
     </fragments-3>
+    <jcrLanguage
+        jcr:primaryType="oak:QueryIndexDefinition"
+        declaringNodeTypes="{Name}[mix:language]"
+        propertyNames="{Name}[jcr:language]"
+        reindex="{Boolean}false"
+        reindexCount="{Long}1"
+        type="property"/>
     <slingeventJobStart
         jcr:primaryType="oak:QueryIndexDefinition"
         declaringNodeTypes="{Name}[slingevent:Job]"
@@ -857,87 +857,6 @@
             </dam:Asset>
         </indexRules>
     </damAssetLucene-6>
-    <damCollectionLucene-2
-        jcr:primaryType="oak:QueryIndexDefinition"
-        async="[async,nrt]"
-        compatVersion="{Long}2"
-        evaluatePathRestrictions="{Boolean}true"
-        includedPaths="[/content/dam/collections]"
-        queryPaths="[/content/dam/collections]"
-        reindex="{Boolean}false"
-        reindexCount="{Long}1"
-        seed="{Long}-5547483752611166125"
-        type="lucene">
-        <indexRules jcr:primaryType="nt:unstructured">
-            <nt:unstructured
-                jcr:primaryType="nt:unstructured"
-                indexNodeName="{Boolean}true">
-                <properties jcr:primaryType="nt:unstructured">
-                    <lastModified
-                        jcr:primaryType="nt:unstructured"
-                        index="{Boolean}false"
-                        name="cq:lastModified"/>
-                    <lastModifiedBy
-                        jcr:primaryType="nt:unstructured"
-                        index="{Boolean}false"
-                        name="cq:lastModifiedBy"/>
-                    <lastReplicated
-                        jcr:primaryType="nt:unstructured"
-                        index="{Boolean}false"
-                        name="cq:lastReplicated"/>
-                    <lastReplicatedBy
-                        jcr:primaryType="nt:unstructured"
-                        index="{Boolean}false"
-                        name="cq:lastReplicatedBy"/>
-                    <lastReplicationAction
-                        jcr:primaryType="nt:unstructured"
-                        index="{Boolean}false"
-                        name="cq:lastReplicationAction"/>
-                    <lastReplicationStatus
-                        jcr:primaryType="nt:unstructured"
-                        index="{Boolean}false"
-                        name="cq:lastReplicationStatus"/>
-                    <createdBy
-                        jcr:primaryType="nt:unstructured"
-                        index="{Boolean}false"
-                        name="jcr:createdBy"/>
-                    <resourceType
-                        jcr:primaryType="nt:unstructured"
-                        name="sling:resourceType"
-                        propertyIndex="{Boolean}true"/>
-                    <resourceSuperType
-                        jcr:primaryType="nt:unstructured"
-                        name="sling:resourceSuperType"
-                        propertyIndex="{Boolean}true"/>
-                    <jcrTitle
-                        jcr:primaryType="nt:unstructured"
-                        name="jcr:title"
-                        nodeScopeIndex="{Boolean}true"
-                        propertyIndex="{Boolean}true"/>
-                    <jcrDescription
-                        jcr:primaryType="nt:unstructured"
-                        name="jcr:description"
-                        nodeScopeIndex="{Boolean}true"/>
-                    <jcrLastModified
-                        jcr:primaryType="nt:unstructured"
-                        name="jcr:lastModified"
-                        propertyIndex="{Boolean}true"
-                        type="Date"/>
-                    <cqTags
-                        jcr:primaryType="nt:unstructured"
-                        name="cq:tags"
-                        nodeScopeIndex="{Boolean}true"
-                        propertyIndex="{Boolean}true"/>
-                    <props
-                        jcr:primaryType="nt:unstructured"
-                        analyzed="{Boolean}true"
-                        isRegexp="{Boolean}true"
-                        name="^[^\\/]*$"
-                        nodeScopeIndex="{Boolean}true"/>
-                </properties>
-            </nt:unstructured>
-        </indexRules>
-    </damCollectionLucene-2>
     <counter
         jcr:primaryType="oak:QueryIndexDefinition"
         async="async"
@@ -1260,6 +1179,129 @@
             </nt:base>
         </indexRules>
     </lucene-2>
+    <externalPrincipalNames
+        jcr:primaryType="oak:QueryIndexDefinition"
+        info="Oak index used by the principal management provided by the external authentication module."
+        propertyNames="{Name}[rep:externalPrincipalNames]"
+        reindex="{Boolean}false"
+        reindexCount="{Long}1"
+        type="property"/>
+    <damAssetStateIndex-3
+        jcr:primaryType="oak:QueryIndexDefinition"
+        async="[async,nrt]"
+        compatVersion="{Long}2"
+        evaluatePathRestrictions="{Boolean}true"
+        includedPaths="[/content/dam]"
+        queryPaths="[/content/dam]"
+        reindex="{Boolean}false"
+        reindexCount="{Long}1"
+        seed="{Long}-4548163701686450418"
+        type="lucene">
+        <indexRules jcr:primaryType="nt:unstructured">
+            <dam:Asset jcr:primaryType="nt:unstructured">
+                <properties jcr:primaryType="nt:unstructured">
+                    <assetState
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:content/dam:assetState"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
+                    <asyncJobId
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:content/dam:asyncJobId"
+                        nullCheckEnabled="{Boolean}true"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
+                    <jcrLastModified
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:content/jcr:lastModified"
+                        ordered="{Boolean}true"
+                        propertyIndex="{Boolean}true"
+                        type="Date"/>
+                </properties>
+            </dam:Asset>
+        </indexRules>
+    </damAssetStateIndex-3>
+    <damCollectionLucene-2
+        jcr:primaryType="oak:QueryIndexDefinition"
+        async="[async,nrt]"
+        compatVersion="{Long}2"
+        evaluatePathRestrictions="{Boolean}true"
+        includedPaths="[/content/dam/collections]"
+        queryPaths="[/content/dam/collections]"
+        reindex="{Boolean}false"
+        reindexCount="{Long}1"
+        seed="{Long}-5547483752611166125"
+        type="lucene">
+        <indexRules jcr:primaryType="nt:unstructured">
+            <nt:unstructured
+                jcr:primaryType="nt:unstructured"
+                indexNodeName="{Boolean}true">
+                <properties jcr:primaryType="nt:unstructured">
+                    <lastModified
+                        jcr:primaryType="nt:unstructured"
+                        index="{Boolean}false"
+                        name="cq:lastModified"/>
+                    <lastModifiedBy
+                        jcr:primaryType="nt:unstructured"
+                        index="{Boolean}false"
+                        name="cq:lastModifiedBy"/>
+                    <lastReplicated
+                        jcr:primaryType="nt:unstructured"
+                        index="{Boolean}false"
+                        name="cq:lastReplicated"/>
+                    <lastReplicatedBy
+                        jcr:primaryType="nt:unstructured"
+                        index="{Boolean}false"
+                        name="cq:lastReplicatedBy"/>
+                    <lastReplicationAction
+                        jcr:primaryType="nt:unstructured"
+                        index="{Boolean}false"
+                        name="cq:lastReplicationAction"/>
+                    <lastReplicationStatus
+                        jcr:primaryType="nt:unstructured"
+                        index="{Boolean}false"
+                        name="cq:lastReplicationStatus"/>
+                    <createdBy
+                        jcr:primaryType="nt:unstructured"
+                        index="{Boolean}false"
+                        name="jcr:createdBy"/>
+                    <resourceType
+                        jcr:primaryType="nt:unstructured"
+                        name="sling:resourceType"
+                        propertyIndex="{Boolean}true"/>
+                    <resourceSuperType
+                        jcr:primaryType="nt:unstructured"
+                        name="sling:resourceSuperType"
+                        propertyIndex="{Boolean}true"/>
+                    <jcrTitle
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:title"
+                        nodeScopeIndex="{Boolean}true"
+                        propertyIndex="{Boolean}true"/>
+                    <jcrDescription
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:description"
+                        nodeScopeIndex="{Boolean}true"/>
+                    <jcrLastModified
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:lastModified"
+                        propertyIndex="{Boolean}true"
+                        type="Date"/>
+                    <cqTags
+                        jcr:primaryType="nt:unstructured"
+                        name="cq:tags"
+                        nodeScopeIndex="{Boolean}true"
+                        propertyIndex="{Boolean}true"/>
+                    <props
+                        jcr:primaryType="nt:unstructured"
+                        analyzed="{Boolean}true"
+                        isRegexp="{Boolean}true"
+                        name="^[^\\/]*$"
+                        nodeScopeIndex="{Boolean}true"/>
+                </properties>
+            </nt:unstructured>
+        </indexRules>
+    </damCollectionLucene-2>
     <formsTemplateLucene
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,nrt]"
@@ -1286,13 +1328,6 @@
             </nt:unstructured>
         </indexRules>
     </formsTemplateLucene>
-    <externalPrincipalNames
-        jcr:primaryType="oak:QueryIndexDefinition"
-        info="Oak index used by the principal management provided by the external authentication module."
-        propertyNames="{Name}[rep:externalPrincipalNames]"
-        reindex="{Boolean}false"
-        reindexCount="{Long}1"
-        type="property"/>
     <cqProjectLucene
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,nrt]"
@@ -1362,47 +1397,6 @@
             </cq:Project>
         </indexRules>
     </cqProjectLucene>
-    <cqTagLucene-2
-        jcr:primaryType="oak:QueryIndexDefinition"
-        async="[async]"
-        compatVersion="{Long}2"
-        evaluatePathRestrictions="{Boolean}true"
-        excludedPaths="[/var,/etc/replication,/etc/workflow/instances,/jcr:system]"
-        reindex="{Boolean}false"
-        reindexCount="{Long}1"
-        seed="{Long}-421516898807690139"
-        type="lucene">
-        <indexRules jcr:primaryType="nt:unstructured">
-            <cq:Tag jcr:primaryType="nt:unstructured">
-                <properties jcr:primaryType="nt:unstructured">
-                    <nodeType
-                        jcr:primaryType="nt:unstructured"
-                        name="jcr:primaryType"
-                        propertyIndex="{Boolean}true"
-                        type="String"/>
-                    <jcrTitle
-                        jcr:primaryType="nt:unstructured"
-                        analyzed="{Boolean}true"
-                        name="jcr:title"
-                        nodeScopeIndex="{Boolean}true"
-                        propertyIndex="{Boolean}true"
-                        type="String"/>
-                    <cqMovedTo
-                        jcr:primaryType="nt:unstructured"
-                        name="cq:movedTo"
-                        propertyIndex="{Boolean}true"
-                        type="String"/>
-                    <jcrDescription
-                        jcr:primaryType="nt:unstructured"
-                        analyzed="{Boolean}true"
-                        name="jcr:description"
-                        nodeScopeIndex="{Boolean}true"
-                        propertyIndex="{Boolean}true"
-                        type="String"/>
-                </properties>
-            </cq:Tag>
-        </indexRules>
-    </cqTagLucene-2>
     <experienceFragmentsIndex-2
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,nrt]"
@@ -1468,41 +1462,6 @@
         reindex="{Boolean}false"
         reindexCount="{Long}1"
         type="property"/>
-    <damAssetStateIndex-3
-        jcr:primaryType="oak:QueryIndexDefinition"
-        async="[async,nrt]"
-        compatVersion="{Long}2"
-        evaluatePathRestrictions="{Boolean}true"
-        includedPaths="[/content/dam]"
-        queryPaths="[/content/dam]"
-        reindex="{Boolean}false"
-        reindexCount="{Long}1"
-        seed="{Long}-4548163701686450418"
-        type="lucene">
-        <indexRules jcr:primaryType="nt:unstructured">
-            <dam:Asset jcr:primaryType="nt:unstructured">
-                <properties jcr:primaryType="nt:unstructured">
-                    <assetState
-                        jcr:primaryType="nt:unstructured"
-                        name="jcr:content/dam:assetState"
-                        propertyIndex="{Boolean}true"
-                        type="String"/>
-                    <asyncJobId
-                        jcr:primaryType="nt:unstructured"
-                        name="jcr:content/dam:asyncJobId"
-                        nullCheckEnabled="{Boolean}true"
-                        propertyIndex="{Boolean}true"
-                        type="String"/>
-                    <jcrLastModified
-                        jcr:primaryType="nt:unstructured"
-                        name="jcr:content/jcr:lastModified"
-                        ordered="{Boolean}true"
-                        propertyIndex="{Boolean}true"
-                        type="Date"/>
-                </properties>
-            </dam:Asset>
-        </indexRules>
-    </damAssetStateIndex-3>
     <uuid
         jcr:primaryType="oak:QueryIndexDefinition"
         info="Oak index for UUID lookup (direct lookup of nodes with the mixin 'mix:referenceable')."
@@ -2410,6 +2369,47 @@
         reindexCount="{Long}1"
         type="property"
         unique="{Boolean}true"/>
+    <cqTagLucene-2
+        jcr:primaryType="oak:QueryIndexDefinition"
+        async="[async]"
+        compatVersion="{Long}2"
+        evaluatePathRestrictions="{Boolean}true"
+        excludedPaths="[/var,/etc/replication,/etc/workflow/instances,/jcr:system]"
+        reindex="{Boolean}false"
+        reindexCount="{Long}1"
+        seed="{Long}-421516898807690139"
+        type="lucene">
+        <indexRules jcr:primaryType="nt:unstructured">
+            <cq:Tag jcr:primaryType="nt:unstructured">
+                <properties jcr:primaryType="nt:unstructured">
+                    <nodeType
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:primaryType"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
+                    <jcrTitle
+                        jcr:primaryType="nt:unstructured"
+                        analyzed="{Boolean}true"
+                        name="jcr:title"
+                        nodeScopeIndex="{Boolean}true"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
+                    <cqMovedTo
+                        jcr:primaryType="nt:unstructured"
+                        name="cq:movedTo"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
+                    <jcrDescription
+                        jcr:primaryType="nt:unstructured"
+                        analyzed="{Boolean}true"
+                        name="jcr:description"
+                        nodeScopeIndex="{Boolean}true"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
+                </properties>
+            </cq:Tag>
+        </indexRules>
+    </cqTagLucene-2>
     <repTokenIndex
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async]"
