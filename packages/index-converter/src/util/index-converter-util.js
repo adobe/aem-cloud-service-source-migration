@@ -163,7 +163,7 @@ module.exports = {
      * @param basePathResources base path of resources folder
      * @param customIndexXMLPath path to source Custom indexes.
      *
-     * Migrates or create tika config mandatory for `damAssetLucene` on AEMaaCS.
+     * Migrates or create tika config required for the indexes
      * @returns the array of name of OOTB custom indexes for which the tika configs are migrated.
      *
      */
