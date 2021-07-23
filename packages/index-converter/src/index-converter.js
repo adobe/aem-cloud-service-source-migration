@@ -285,6 +285,22 @@ module.exports = {
             fileName + ": Custom Oak Indexes which need to be migrated manually"
         );
 
+        if (
+            indexMigration.migrateTikaConfigUnderDamAssetLucene(
+                transformationMap,
+                basePathResources,
+                customIndexXMLPath
+            )
+        ) {
+            writer_buffer.push(
+                "Output tika config for damAssetLucene after transformation can be found at " +
+                    path.join(
+                        process.cwd(),
+                        commons_constants.TARGET_INDEX_FOLDER
+                    )
+            );
+        }
+
         for (let index of allCustomIndexes) {
             if (!transformationMap.has(index)) {
                 detectionList5.addList(index);

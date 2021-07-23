@@ -95,4 +95,12 @@ module.exports = {
     JSON_DECLARATION_KEY: "_declaration",
 
     INDEX_ANALYZERS: "analyzers",
+
+    DAM_ASSET_LUCENE_INDEX: "damAssetLucene",
+
+    TIKA: "tika",
+
+    CONFIX_XML_NAME: "config.xml",
+
+    RESOURCES_FOLDER: "resources",
 };

@@ -14,7 +14,13 @@ const mergeJSON = require("merge-json");
 const diffPatch = jsonDiffPatch.create();
 const constants = require("./constants");
 const xmlUtil = require("./xml-processing-util");
-const { logger } = require("@adobe/aem-cs-source-migration-commons");
+const {
+    logger,
+    util,
+    constants: commons_constants,
+} = require("@adobe/aem-cs-source-migration-commons");
+
+const fs = require("fs");
 const path = require("path");
 
 let keysToBeDeleted = ["reindex", "seed", "costPerEntry", "reindexCount"];
@@ -149,6 +155,84 @@ module.exports = {
         logger.info(
             fileName + ": Migration of Custom Index Definitions is Completed "
         );
+    },
+
+    /**
+     *
+     * @param transformationMap json object of Custom Indexes xml.
+     * @param basePathResources base path of resources folder
+     * @param customIndexXMLPath path to source Custom indexes.
+     *
+     * Migrates or create tika config mandatory for `damAssetLucene` on AEMaaCS.
+     * @returns true if the `damAssetLucene` is part of transformationMap and tika config is migrated successfully otherwise false.
+     *
+     */
+
+    migrateTikaConfigUnderDamAssetLucene: (
+        transformationMap,
+        basePathResources,
+        customIndexXMLPath
+    ) => {
+        for (var key of transformationMap.keys()) {
+            if (key.startsWith(constants.DAM_ASSET_LUCENE_INDEX)) {
+                if (
+                    customIndexXMLPath != null &&
+                    fs.existsSync(
+                        path.join(
+                            customIndexXMLPath,
+                            key,
+                            constants.TIKA,
+                            constants.CONFIX_XML_NAME
+                        )
+                    )
+                ) {
+                    // copy the source tika config
+                    logger.info(
+                        fileName +
+                            ": Migrating tika config detected in source at " +
+                            path.join(
+                                customIndexXMLPath,
+                                key,
+                                constants.TIKA,
+                                constants.CONFIX_XML_NAME
+                            )
+                    );
+                    util.copyFolderSync(
+                        path.join(customIndexXMLPath, constants.TIKA),
+                        path.join(
+                            process.cwd(),
+                            commons_constants.TARGET_INDEX_FOLDER,
+                            transformationMap.get(key),
+                            constants.TIKA
+                        )
+                    );
+                } else {
+                    // copy the default tika config
+                    logger.info(fileName + ": Migrating default tika config");
+                    util.copyFolderSync(
+                        path.join(basePathResources, constants.TIKA),
+                        path.join(
+                            process.cwd(),
+                            commons_constants.TARGET_INDEX_FOLDER,
+                            transformationMap.get(key),
+                            constants.TIKA
+                        )
+                    );
+                }
+                logger.info(
+                    fileName +
+                        ": Tika config Migrated to " +
+                        path.join(
+                            process.cwd(),
+                            commons_constants.TARGET_INDEX_FOLDER,
+                            transformationMap.get(key),
+                            constants.TIKA
+                        )
+                );
+                return true;
+            }
+        }
+        return false;
     },
 };
 /**
