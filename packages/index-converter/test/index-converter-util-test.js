@@ -53,12 +53,11 @@ describe("index-converter-util", function () {
                 transformationMap
             );
 
-            assert.isTrue(
-                indexUtil.migrateTikaConfigUnderDamAssetLucene(
-                    transformationMap,
-                    path.join("", constants.RESOURCES_FOLDER)
-                )
+            let migratedTikaConfigs = indexUtil.migrateTikaConfig(
+                transformationMap,
+                path.join("", constants.RESOURCES_FOLDER)
             );
+            assert.isTrue(migratedTikaConfigs.length == 1);
             commons_util.deleteFolderRecursive(
                 common_constants.TARGET_INDEX_FOLDER
             );

@@ -96,7 +96,7 @@ module.exports = {
 
     INDEX_ANALYZERS: "analyzers",
 
-    DAM_ASSET_LUCENE_INDEX: "damAssetLucene",
+    TIKA_REQUIRED_INDEXES: ["lucene", "graphqlConfig", "damAssetLucene"],
 
     TIKA: "tika",
 

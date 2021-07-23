@@ -278,28 +278,39 @@ module.exports = {
             console.log(filterXMLMessage);
         }
 
+        let migratedTikaConfigs = [];
+        migratedTikaConfigs = indexMigration.migrateTikaConfig(
+            transformationMap,
+            basePathResources,
+            customIndexXMLPath
+        );
+
+        let detectionListTika = new DetectionList(
+            "### Tika Configs mentioned below are created/migrated as required on AEMaaCS"
+        );
+        migratedTikaConfigs.forEach((tikaConfig) => {
+            detectionListTika.addList(
+                "Migrated required tika config for " + tikaConfig
+            );
+            logger.info(
+                "Output tika config for " +
+                    tikaConfig +
+                    " after transformation can be found at " +
+                    path.join(
+                        process.cwd(),
+                        commons_constants.TARGET_INDEX_FOLDER,
+                        tikaConfig
+                    )
+            );
+        });
+        writer_buffer.push(detectionListTika);
+
         let detectionList5 = new DetectionList(
             "### Indexes as mentioned below need to be migrated manually (either these indexes are not Lucene, or customization is done for 'nt:Base')"
         );
         logger.info(
             fileName + ": Custom Oak Indexes which need to be migrated manually"
         );
-
-        if (
-            indexMigration.migrateTikaConfigUnderDamAssetLucene(
-                transformationMap,
-                basePathResources,
-                customIndexXMLPath
-            )
-        ) {
-            writer_buffer.push(
-                "Output tika config for damAssetLucene after transformation can be found at " +
-                    path.join(
-                        process.cwd(),
-                        commons_constants.TARGET_INDEX_FOLDER
-                    )
-            );
-        }
 
         for (let index of allCustomIndexes) {
             if (!transformationMap.has(index)) {
