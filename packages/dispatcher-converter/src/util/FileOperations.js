@@ -423,12 +423,15 @@ class FileOperations {
             }
 
             isConfString = stringAfterInclude.split("/");
-            if (isConfString.length > 1) {
+
+            if (isConfString.length > 0) {
+                // fetch the last element of non-empty array
                 isConfString = isConfString[isConfString.length - 1].trim();
             }
             // replacing special characters from file name
-            isConfString = isConfString.toString().replace(/^(.*)"$/g, "$1");
-            line = this.getPathForDir(isConfString);
+            isConfString = isConfString.toString().replace(/^(.*)$/g, "$1");
+
+            line = this.getPathForDir(isConfString.replace(/"/g, ""));
         }
         return line.toString();
     }

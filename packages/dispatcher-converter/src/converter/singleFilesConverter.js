@@ -488,7 +488,7 @@ class SingleFilesConverter {
             if (fs.lstatSync(file).isFile()) {
                 allFiles.push(file);
             } else if (fs.lstatSync(file).isDirectory()) {
-                let globPattern = path.join(file, "**", "*");
+                let globPattern = path.join(file, "**", "*.{conf,vhost}");
                 let files = glob.sync(globPattern);
 
                 files.forEach((fetchedFiles) => {
