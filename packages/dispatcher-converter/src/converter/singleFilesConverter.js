@@ -63,14 +63,16 @@ class SingleFilesConverter {
 
         // DISPATCHER.ANY METHODS
         this.createFarmFiles();
+        this.checkIncludesInFarms();
         this.checkFarmDocRoot();
         this.checkRenderers();
         this.checkCache();
         this.checkClientHeaders();
         this.checkDispatcherVirtualhosts();
-        this.createFarmSymLinks();
         this.checkFilter();
         this.checkRewrites();
+        // symlinks are created once all the content is finalized to ignore duplicate file being returned
+        this.createFarmSymLinks();
         this.removeNonPublishFarms();
         // create the summary report for the conversion performed
         SummaryReportWriter.writeSummaryReport(
@@ -1616,6 +1618,68 @@ class SingleFilesConverter {
                 "them in the virtual host files."
         );
     }
+
+    checkIncludesInFarms() {
+        let conversionStep = this.checkIncludesInFarmsSummaryGenerator();
+        let farmFiles = this.getAllAvailableFarmFiles();
+
+        farmFiles.forEach((farm) => {
+            logger.info(
+                "Single File Converter: Replacing $include file content in farm file : " +
+                    farm
+            );
+
+            let fileContentsArray = this.fileOpsUtil.getFileContentsArray(farm);
+            let returnContent = "";
+            fileContentsArray.forEach((line) => {
+                if (
+                    line
+                        .trim()
+                        .toLowerCase()
+                        .startsWith(Constants.INCLUDE_SYNTAX_IN_FARM)
+                ) {
+                    let isDefaultInclude = false;
+                    //check for default files and skip
+                    Constants.DEFAULT_INCLUES.forEach((defaultInclude) => {
+                        if (line.trim().indexOf(defaultInclude) > -1) {
+                            isDefaultInclude = true;
+                        }
+                    });
+                    if (!isDefaultInclude) {
+                        let readablePath =
+                            this.fileOpsUtil.getReadablePath(line);
+                        logger.info(
+                            "Single File Converter: Including content of file :" +
+                                readablePath
+                        );
+                        line =
+                            this.fileOpsUtil.getContentFromFile(readablePath);
+                    }
+                }
+                returnContent += line + os.EOL;
+            });
+            conversionStep.addOperation(
+                new ConversionOperation(
+                    commons_constants.ACTION_ADDED,
+                    farm,
+                    "Included content to the farm file"
+                )
+            );
+            fs.writeFileSync(farm, returnContent);
+        });
+        this.conversionSteps.push(conversionStep);
+    }
+
+    checkIncludesInFarmsSummaryGenerator() {
+        logger.info(
+            "Single File Converter: Executing Rule : Check $include in farms"
+        );
+        return new ConversionStep(
+            "Check Farm Files",
+            "Check Farm Files for lines starting with $include and replace the line with the file content."
+        );
+    }
+
     removeNonPublishFarms() {
         let conversionStep = this.removeNonPublishFarmsSummaryGenerator();
         let non_publish_keyword_list = [
