@@ -83,6 +83,12 @@ module.exports = {
 
     USE_SOURCES_DIRECTLY: "USE_SOURCES_DIRECTLY",
 
+    DEFAULT_INCLUES: [
+        "default_invalidate.any",
+        "default_filters.any",
+        "default_renders.any",
+    ],
+
     // whitelisted directives (in lower case for ease of comparision; directives can be case-insensitive)
     WHITELISTED_DIRECTIVES_LIST: [
         "<directory>",
