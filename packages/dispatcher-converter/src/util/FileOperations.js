@@ -1575,9 +1575,10 @@ class FileOperations {
      *
      * @param {array} files An array of all the files that will be parsed and combined.
      * @param {string} newFilePath The file that will be created to consolidate the variables.
+     * @param {doAppend} flag to append to the existing file or write to the file.
      * @returns {array} An array of variable names that were added to the new file.
      */
-    consolidateVariableFiles(files = [], newFilePath) {
+    consolidateVariableFiles(files = [], newFilePath, doAppend) {
         // list of defined variables (only the variable)
         let variablesList = [];
         // list of variable definitions
@@ -1590,12 +1591,29 @@ class FileOperations {
             fileContentsArray.forEach((line) => {
                 // split the lines on spaces to find the variable itself
                 let variableDefinition = line.split(" ");
-                // if the variable doesnt already exist - add it to the array.
-                if (!variablesList.includes(variableDefinition[0])) {
-                    // add the new variable to the new list
-                    variablesList.push(variableDefinition[0]);
-                    // add the variable and definition to the list to write to file.
-                    variableDefinitionList.push(line);
+                if (!line.trim().startsWith(Constants.COMMENT_ANNOTATION)) {
+                    // if the variable doesnt already exist - add it to the array.
+                    if (
+                        variableDefinition.length > 1 &&
+                        variableDefinition[0].trim().toLowerCase() !=
+                            "define" &&
+                        !variablesList.includes(variableDefinition[0])
+                    ) {
+                        // add the new variable to the new list
+                        variablesList.push(variableDefinition[0]);
+                        // add the variable and definition to the list to write to file.
+                        variableDefinitionList.push(line);
+                    } else if (
+                        variableDefinition.length > 2 &&
+                        variableDefinition[0].trim().toLowerCase() ==
+                            "define" &&
+                        !variableDefinitionList.includes(variableDefinition[1])
+                    ) {
+                        // add the new variable to the new list
+                        variablesList.push(variableDefinition[1]);
+                        // add the variable and definition to the list to write to file.
+                        variableDefinitionList.push(line);
+                    }
                 }
             });
         }
@@ -1607,8 +1625,11 @@ class FileOperations {
             returnContent += os.EOL;
         });
 
-        fs.writeFileSync(newFilePath, returnContent);
-
+        if (doAppend && fs.existsSync(newFilePath)) {
+            fs.appendFileSync(newFilePath, returnContent);
+        } else {
+            fs.writeFileSync(newFilePath, returnContent);
+        }
         return variablesList;
     }
 

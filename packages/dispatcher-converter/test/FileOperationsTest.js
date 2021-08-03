@@ -821,6 +821,16 @@ describe("FileOperations", function () {
             testFolder + "/newtestfile.vhost",
             "VirtualHost ${HOSTADDRESS} :80 \n"
         );
+
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "Define REWRITE_LOG_LEVEL Warn"
+        );
+        fs.appendFileSync(
+            testFolder + "/newtestfile.vhost",
+            "Define CONTENT_FOLDER_NAME test"
+        );
+
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
             "VirtualHost ${PORT} :80 \n"
@@ -844,6 +854,7 @@ describe("FileOperations", function () {
             true
         );
         assert.include(content, "HOSTADDRESS");
+        assert.include(content, "CONTENT_FOLDER_NAME");
     });
 
     it("should successfully check For Undefined Variables", function () {
