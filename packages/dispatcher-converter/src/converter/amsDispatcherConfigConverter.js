@@ -753,8 +753,9 @@ class AEMDispatcherConfigConverter {
                 "*.vars",
                 conversionStep
             );
+        let ams_default_vars_file = "ams_default.vars";
         files = files.filter((file) => {
-            return file.indexOf("ams_default.vars") === -1;
+            return file.indexOf(ams_default_vars_file) === -1;
         });
         // consolidate all variable file into once "custom.vars"
         if (files.length > 0) {
@@ -802,7 +803,6 @@ class AEMDispatcherConfigConverter {
 
         // Remove any file named ams_default.vars and remember to remove Include statements in the virtual host files
         // referring to them.
-        let ams_default_vars_file = "ams_default.vars";
         if (
             fs.existsSync(
                 path.join(variables_dir_path, ams_default_vars_file)
