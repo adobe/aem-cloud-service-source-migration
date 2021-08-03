@@ -746,33 +746,6 @@ class AEMDispatcherConfigConverter {
             Constants.CONF_D,
             "variables"
         );
-        // Remove any file named ams_default.vars and remember to remove Include statements in the virtual host files
-        // referring to them.
-        let ams_default_vars_file = "ams_default.vars";
-        if (
-            fs.existsSync(
-                path.join(variables_dir_path, ams_default_vars_file)
-            ) &&
-            fs
-                .lstatSync(path.join(variables_dir_path, ams_default_vars_file))
-                .isFile()
-        ) {
-            logger.debug(
-                "AMSDispatcherConfigConverter: Removing %s.",
-                ams_default_vars_file
-            );
-            this.FileOperationsUtility.removeIncludeStatementForSomeRule(
-                conf_d_dir_path,
-                Constants.INCLUDE_SYNTAX_IN_VHOST,
-                Constants.VHOST,
-                ams_default_vars_file,
-                conversionStep
-            );
-            this.FileOperationsUtility.deleteFile(
-                path.join(variables_dir_path, ams_default_vars_file),
-                conversionStep
-            );
-        }
 
         let files =
             this.FileOperationsUtility.deleteAllFilesNotConformingToPattern(
@@ -780,6 +753,9 @@ class AEMDispatcherConfigConverter {
                 "*.vars",
                 conversionStep
             );
+        files = files.filter((file) => {
+            return file.indexOf("ams_default.vars") === -1;
+        });
         // consolidate all variable file into once "custom.vars"
         if (files.length > 0) {
             let custom_vars_file = path.join(variables_dir_path, "custom.vars");
@@ -823,6 +799,40 @@ class AEMDispatcherConfigConverter {
             "AMSDispatcherConfigConverter: Copied file 'conf.d/variables/global.vars' from the standard dispatcher configuration to %s.",
             variables_dir_path
         );
+
+        // Remove any file named ams_default.vars and remember to remove Include statements in the virtual host files
+        // referring to them.
+        let ams_default_vars_file = "ams_default.vars";
+        if (
+            fs.existsSync(
+                path.join(variables_dir_path, ams_default_vars_file)
+            ) &&
+            fs
+                .lstatSync(path.join(variables_dir_path, ams_default_vars_file))
+                .isFile()
+        ) {
+            logger.debug(
+                "AMSDispatcherConfigConverter: Removing %s.",
+                ams_default_vars_file
+            );
+            this.FileOperationsUtility.removeIncludeStatementForSomeRule(
+                conf_d_dir_path,
+                Constants.INCLUDE_SYNTAX_IN_VHOST,
+                Constants.VHOST,
+                ams_default_vars_file,
+                conversionStep
+            );
+            this.FileOperationsUtility.consolidateVariableFiles(
+                [path.join(variables_dir_path, ams_default_vars_file)],
+                path.join(variables_dir_path, "global.vars"),
+                true
+            );
+            this.FileOperationsUtility.deleteFile(
+                path.join(variables_dir_path, ams_default_vars_file),
+                conversionStep
+            );
+        }
+
         this.conversionSteps.push(conversionStep);
     }
 
