@@ -34,6 +34,8 @@ module.exports = {
 
     COMPAT_VERSION: "compatVersion",
 
+    TAGS: "tags",
+
     FILTER_XML_NAME: "filter.xml",
 
     TYPE_OAK_QUERY_INDEX_DEFINITION: "oak:QueryIndexDefinition",

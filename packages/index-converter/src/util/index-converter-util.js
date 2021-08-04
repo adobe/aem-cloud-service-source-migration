@@ -24,6 +24,8 @@ const fs = require("fs");
 const path = require("path");
 
 let keysToBeDeleted = ["reindex", "seed", "costPerEntry", "reindexCount"];
+let mandatoryValues = new Map();
+mandatoryValues.set("tags", "visualSimilaritySearch");
 let updateValues = new Map();
 updateValues.set("compatVersion", "{Long}2");
 let fileName = path.basename(__filename);
@@ -87,6 +89,8 @@ module.exports = {
                 objectCloud,
                 objectDifference
             );
+            //update mandatory values in json Object
+            updateMandatoryValues(mergedObject, mandatoryValues);
             // Validate index json object after merging of customization to product index
             validateOakIndexDef(mergedObject);
             // Index name : corresponding product index name on cloud +"-custom-1"
@@ -322,5 +326,48 @@ function correctValuesOfKey(jsonObject, updateValues) {
             updateValues.get(constants.COMPAT_VERSION);
         logger.info(fileName + ": Adding property " + constants.COMPAT_VERSION);
     }
+    return jsonObject;
+}
+
+/**
+ *
+ * @param jsonObject jsonObject of specific oak index.
+ * @param mandatoryValues Map of key-value which needs to be updated in jsonObject .
+ *
+ * @returns jsonObject after updation.
+ */
+function updateMandatoryValues(jsonObject, mandatoryValues) {
+    if (
+        Object.prototype.hasOwnProperty.call(
+            jsonObject[constants.JSON_ATTRIBUTES_KEY],
+            constants.TAGS
+        )
+    ) {
+        let tags = jsonObject[constants.JSON_ATTRIBUTES_KEY][constants.TAGS];
+        if (
+            tags.indexOf(mandatoryValues.get(constants.TAGS) > -1) &&
+            tags.indexOf("[") > -1 &&
+            tags.indexOf("]") > -1
+        ) {
+            tags = tags.substring(tags.indexOf("[") + 1, tags.indexOf("]"));
+            tags = tags + "," + mandatoryValues.get(constants.TAGS);
+            logger.info(
+                fileName +
+                    ": Updating value of " +
+                    constants.TAGS +
+                    " from  " +
+                    jsonObject[constants.JSON_ATTRIBUTES_KEY][constants.TAGS] +
+                    " to " +
+                    tags
+            );
+            jsonObject[constants.JSON_ATTRIBUTES_KEY][constants.TAGS] =
+                "[" + tags + "]";
+        }
+    } else {
+        jsonObject[constants.JSON_ATTRIBUTES_KEY][constants.TAGS] =
+            "[" + mandatoryValues.get(constants.TAGS) + "]";
+        logger.info(fileName + ": Adding property " + constants.TAGS);
+    }
+
     return jsonObject;
 }

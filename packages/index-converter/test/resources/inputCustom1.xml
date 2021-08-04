@@ -10,6 +10,7 @@
         includedPaths="[/content/dam]"
         reindex="{Boolean}false"
         reindexCount="{Long}3"
+        tags="[customTag]"
         seed="{Long}-1325334961695406443"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
