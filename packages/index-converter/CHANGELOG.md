@@ -1,5 +1,12 @@
 # @adobe/aem-cs-source-migration-index-converter
 
+## 0.2.0
+
+### Minor Changes
+
+- fbad421: CQ-4325470 : Rebase .content_Cloud_Services.xml (AEMaaCS baseline xml) from the latest AEMaaCS sdk.
+  CQ-4324272 : Migrate tika config
+
 ## 0.1.2
 
 ### Patch Changes
