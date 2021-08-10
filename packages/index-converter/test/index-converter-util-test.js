@@ -12,8 +12,13 @@ const _ = require("lodash");
 const assert = require("chai").assert;
 const indexUtil = require("../src/util/index-converter-util.js");
 const xmlUtil = require("../src/util/xml-processing-util.js");
+const {
+    util: commons_util,
+    constants: common_constants,
+} = require("@adobe/aem-cs-source-migration-commons");
 const fs = require("fs");
 const path = require("path");
+const constants = require("../src/util/constants");
 
 describe("index-converter-util", function () {
     describe("Test migration Of Custom OOTB Indexes", function () {
@@ -46,6 +51,15 @@ describe("index-converter-util", function () {
                 indexOnCloudJsonObject,
                 onPremToCloudMap,
                 transformationMap
+            );
+
+            let migratedTikaConfigs = indexUtil.migrateTikaConfig(
+                transformationMap,
+                path.join("", constants.RESOURCES_FOLDER)
+            );
+            assert.isTrue(migratedTikaConfigs.length == 1);
+            commons_util.deleteFolderRecursive(
+                common_constants.TARGET_INDEX_FOLDER
             );
 
             let actualJson = JSON.stringify(finalJsonObject);

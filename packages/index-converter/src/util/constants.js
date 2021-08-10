@@ -34,6 +34,8 @@ module.exports = {
 
     COMPAT_VERSION: "compatVersion",
 
+    TAGS: "tags",
+
     FILTER_XML_NAME: "filter.xml",
 
     TYPE_OAK_QUERY_INDEX_DEFINITION: "oak:QueryIndexDefinition",
@@ -95,4 +97,12 @@ module.exports = {
     JSON_DECLARATION_KEY: "_declaration",
 
     INDEX_ANALYZERS: "analyzers",
+
+    TIKA_REQUIRED_INDEXES: ["lucene", "graphqlConfig", "damAssetLucene"],
+
+    TIKA: "tika",
+
+    CONFIX_XML_NAME: "config.xml",
+
+    RESOURCES_FOLDER: "resources",
 };

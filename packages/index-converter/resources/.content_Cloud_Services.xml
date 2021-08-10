@@ -2,49 +2,6 @@
 <jcr:root xmlns:oak="http://jackrabbit.apache.org/oak/ns/1.0" xmlns:slingevent="http://sling.apache.org/jcr/event/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cm="http://www.adobe.com/aemfd/cm/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:social="http://www.adobe.com/social/1.0" xmlns:dam="http://www.day.com/dam/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:rep="internal"
     jcr:mixinTypes="[rep:AccessControllable]"
     jcr:primaryType="nt:unstructured">
-    <screensDevicesLucene
-        jcr:primaryType="oak:QueryIndexDefinition"
-        async="[async,nrt]"
-        compatVersion="{Long}2"
-        evaluatePathRestrictions="{Boolean}true"
-        includedPaths="[/home/users/screens]"
-        queryPaths="[/home/users/screens]"
-        reindex="{Boolean}false"
-        reindexCount="{Long}2"
-        seed="{Long}4439530592786532206"
-        type="lucene">
-        <indexRules jcr:primaryType="nt:unstructured">
-            <rep:User jcr:primaryType="nt:unstructured">
-                <properties jcr:primaryType="nt:unstructured">
-                    <repPrincipalName
-                        jcr:primaryType="nt:unstructured"
-                        analyzed="{Boolean}true"
-                        name="rep:principalName"
-                        ordered="{Boolean}true"
-                        propertyIndex="{Boolean}true"
-                        type="String"/>
-                    <repAuthorizableId
-                        jcr:primaryType="nt:unstructured"
-                        analyzed="{Boolean}true"
-                        name="rep:authorizableId"
-                        nodeScopeIndex="{Boolean}true"
-                        ordered="{Boolean}true"
-                        propertyIndex="{Boolean}true"
-                        type="String"
-                        useInSuggest="{Boolean}true"/>
-                    <deviceTitle
-                        jcr:primaryType="nt:unstructured"
-                        analyzed="{Boolean}true"
-                        name="profile_screens/jcr:title"
-                        nodeScopeIndex="{Boolean}true"
-                        ordered="{Boolean}true"
-                        propertyIndex="{Boolean}true"
-                        type="String"
-                        useInSuggest="{Boolean}true"/>
-                </properties>
-            </rep:User>
-        </indexRules>
-    </screensDevicesLucene>
     <socialLucene
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,nrt]"
@@ -53,7 +10,7 @@
         name="socialLucene"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-149271136259389689"
+        seed="{Long}-8105100996853087046"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
             <social:asiResource
@@ -162,7 +119,7 @@
         evaluatePathRestrictions="{Boolean}true"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}8204318158873314792"
+        seed="{Long}3247368279561752191"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
             <cm:resource
@@ -232,7 +189,7 @@
         includedPaths="[/var/eventing]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-5427763085700938801"
+        seed="{Long}-5342998821661751520"
         supersedes="[/oak:index/slingeventJobStart]"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
@@ -264,44 +221,59 @@
             </slingevent:Job>
         </indexRules>
     </slingeventJob>
-    <screensNtUnstructuredLucene
+    <fragments-3
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,nrt]"
         compatVersion="{Long}2"
         evaluatePathRestrictions="{Boolean}true"
-        includedPaths="[/content/screens]"
-        queryPaths="[/content/screens]"
+        includedPaths="[/content/dam]"
+        queryPaths="[/content/dam]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}1186489934605105930"
+        seed="{Long}8106743083076174854"
+        tags="[fragments]"
         type="lucene">
-        <aggregates jcr:primaryType="nt:unstructured">
-            <nt:unstructured jcr:primaryType="nt:unstructured">
-                <include0
-                    jcr:primaryType="nt:unstructured"
-                    path="*"/>
-                <include1
-                    jcr:primaryType="nt:unstructured"
-                    path="*/*"/>
-            </nt:unstructured>
-        </aggregates>
+        <facets
+            jcr:primaryType="nt:unstructured"
+            secure="statistical"
+            topChildren="100"/>
         <indexRules jcr:primaryType="nt:unstructured">
-            <nt:base
-                jcr:primaryType="nt:unstructured"
-                includePropertyTypes="all">
+            <dam:Asset jcr:primaryType="nt:unstructured">
                 <properties jcr:primaryType="nt:unstructured">
-                    <prop0
+                    <dcFormat
                         jcr:primaryType="nt:unstructured"
-                        analyzed="{Boolean}true"
+                        facets="{Boolean}true"
+                        name="jcr:content/metadata/dc:format"
+                        propertyIndex="{Boolean}true"/>
+                    <damStatus
+                        jcr:primaryType="nt:unstructured"
+                        facets="{Boolean}true"
+                        name="jcr:content/metadata/dam:status"
+                        propertyIndex="{Boolean}true"/>
+                    <contentFragment
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:content/contentFragment"
+                        propertyIndex="{Boolean}true"
+                        type="Boolean"/>
+                    <model
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:content/data/cq:model"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
+                </properties>
+            </dam:Asset>
+            <dam:cfVariationNode jcr:primaryType="nt:unstructured">
+                <properties jcr:primaryType="nt:unstructured">
+                    <values
+                        jcr:primaryType="nt:unstructured"
                         isRegexp="{Boolean}true"
                         name="^[^\\/]*$"
-                        nodeScopeIndex="{Boolean}true"
-                        propertyIndex="{Boolean}false"
-                        useInExcerpt="{Boolean}true"/>
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
                 </properties>
-            </nt:base>
+            </dam:cfVariationNode>
         </indexRules>
-    </screensNtUnstructuredLucene>
+    </fragments-3>
     <jcrLanguage
         jcr:primaryType="oak:QueryIndexDefinition"
         declaringNodeTypes="{Name}[mix:language]"
@@ -325,7 +297,7 @@
         queryPaths="[/content/dam]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}6764679366648679030"
+        seed="{Long}7139413709390957781"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <nt:folder jcr:primaryType="nt:unstructured">
@@ -357,6 +329,37 @@
             </nt:folder>
         </indexRules>
     </ntFolderDamLucene-2>
+    <graphqlConfig-1
+        jcr:primaryType="oak:QueryIndexDefinition"
+        async="[async,nrt]"
+        compatVersion="{Long}2"
+        evaluatePathRestrictions="{Boolean}true"
+        includedPaths="[/conf]"
+        queryPaths="[/conf]"
+        reindex="{Boolean}false"
+        reindexCount="{Long}1"
+        seed="{Long}8283812261048698165"
+        tags="[graphqlConfig]"
+        type="lucene">
+        <aggregates jcr:primaryType="nt:unstructured">
+            <nt:unstructured jcr:primaryType="nt:unstructured">
+                <include0
+                    jcr:primaryType="nt:unstructured"
+                    path="jcr:content"/>
+            </nt:unstructured>
+        </aggregates>
+        <indexRules jcr:primaryType="nt:unstructured">
+            <nt:unstructured jcr:primaryType="nt:unstructured">
+                <properties jcr:primaryType="nt:unstructured">
+                    <data
+                        jcr:primaryType="nt:unstructured"
+                        analyzed="{Boolean}true"
+                        name="jcr:data"
+                        nodeScopeIndex="{Boolean}true"/>
+                </properties>
+            </nt:unstructured>
+        </indexRules>
+    </graphqlConfig-1>
     <versionStoreIndex
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,sync]"
@@ -365,7 +368,7 @@
         includedPaths="[/jcr:system/jcr:versionStorage]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-6909797724076421918"
+        seed="{Long}-5467940957521428348"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
             <nt:version jcr:primaryType="nt:unstructured">
@@ -422,6 +425,48 @@
         reindex="{Boolean}false"
         reindexCount="{Long}1"
         type="property"/>
+    <assetPrefixNodename-1
+        jcr:primaryType="oak:QueryIndexDefinition"
+        async="[async,nrt]"
+        compatVersion="{Long}2"
+        costPerEntry="{Double}100000.0"
+        costPerExecution="{Double}1.0E9"
+        evaluatePathRestrictions="{Boolean}true"
+        includedPaths="[/content]"
+        queryPaths="[/content]"
+        reindex="{Boolean}false"
+        reindexCount="{Long}1"
+        seed="{Long}8852673187105296056"
+        tags="[assetPrefixNodeNameSearch]"
+        type="lucene">
+        <analyzers jcr:primaryType="nt:unstructured">
+            <default jcr:primaryType="nt:unstructured">
+                <filters jcr:primaryType="nt:unstructured">
+                    <LowerCase jcr:primaryType="nt:unstructured"/>
+                </filters>
+                <tokenizer
+                    jcr:primaryType="nt:unstructured"
+                    name="keyword"/>
+            </default>
+        </analyzers>
+        <indexRules jcr:primaryType="nt:unstructured">
+            <dam:Asset jcr:primaryType="nt:unstructured">
+                <properties jcr:primaryType="nt:unstructured">
+                    <contentFragment
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:content/contentFragment"
+                        propertyIndex="{Boolean}true"
+                        type="Boolean"/>
+                    <nodeName
+                        jcr:primaryType="nt:unstructured"
+                        analyzed="{Boolean}true"
+                        name=":nodeName"
+                        nodeScopeIndex="{Boolean}true"
+                        propertyIndex="{Boolean}true"/>
+                </properties>
+            </dam:Asset>
+        </indexRules>
+    </assetPrefixNodename-1>
     <cqReportsLucene
         jcr:primaryType="oak:QueryIndexDefinition"
         async="async"
@@ -431,7 +476,7 @@
         queryPaths="[/home/users]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-8087884897481964225"
+        seed="{Long}1159666595337880300"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
             <nt:unstructured jcr:primaryType="nt:unstructured">
@@ -460,7 +505,7 @@
         queryPaths="[/var/commerce]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-5472991153016388186"
+        seed="{Long}2385361669871062150"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <nt:unstructured jcr:primaryType="nt:unstructured">
@@ -543,7 +588,7 @@
         includedPaths="[/content/dam]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-5973036709223118818"
+        seed="{Long}3510745067932502235"
         tags="[visualSimilaritySearch]"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
@@ -818,7 +863,7 @@
         info="Oak index that allows to estimate how many nodes are stored below a given path, to decide whether traversing or using an index is faster."
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}2269397965431131589"
+        seed="{Long}97210586890260181"
         type="counter"/>
     <authorizables
         jcr:primaryType="oak:QueryIndexDefinition"
@@ -828,7 +873,7 @@
         excludedPaths="[/var,/etc/replication,/etc/workflow/instances,/jcr:system]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}5935158886894817095"
+        seed="{Long}7740563146866312593"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
             <rep:Authorizable jcr:primaryType="nt:unstructured">
@@ -899,7 +944,7 @@
         queryPaths="[/tmp]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}4619887585234600325"
+        seed="{Long}-4200120809551673050"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
             <nt:base jcr:primaryType="nt:unstructured">
@@ -922,7 +967,7 @@
         queryPaths="[/content]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-4695586923965428143"
+        seed="{Long}-7680691424220266441"
         supersedes="[/content/oak:index/enablementResourceName]"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
@@ -946,7 +991,7 @@
         excludedPaths="[/var,/etc/replication,/etc/workflow/instances,/jcr:system]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-5068505725665850119"
+        seed="{Long}8610500460080746102"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <nt:file jcr:primaryType="nt:unstructured">
@@ -1141,7 +1186,7 @@
         reindex="{Boolean}false"
         reindexCount="{Long}1"
         type="property"/>
-    <damAssetStateIndex-2
+    <damAssetStateIndex-3
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,nrt]"
         compatVersion="{Long}2"
@@ -1150,7 +1195,7 @@
         queryPaths="[/content/dam]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-4737662698439423964"
+        seed="{Long}-4548163701686450418"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
             <dam:Asset jcr:primaryType="nt:unstructured">
@@ -1163,6 +1208,7 @@
                     <asyncJobId
                         jcr:primaryType="nt:unstructured"
                         name="jcr:content/dam:asyncJobId"
+                        nullCheckEnabled="{Boolean}true"
                         propertyIndex="{Boolean}true"
                         type="String"/>
                     <jcrLastModified
@@ -1174,8 +1220,8 @@
                 </properties>
             </dam:Asset>
         </indexRules>
-    </damAssetStateIndex-2>
-    <damCollectionLucene
+    </damAssetStateIndex-3>
+    <damCollectionLucene-2
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,nrt]"
         compatVersion="{Long}2"
@@ -1184,7 +1230,7 @@
         queryPaths="[/content/dam/collections]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-8277193479098250497"
+        seed="{Long}-5547483752611166125"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
             <nt:unstructured
@@ -1246,10 +1292,42 @@
                         name="cq:tags"
                         nodeScopeIndex="{Boolean}true"
                         propertyIndex="{Boolean}true"/>
+                    <props
+                        jcr:primaryType="nt:unstructured"
+                        analyzed="{Boolean}true"
+                        isRegexp="{Boolean}true"
+                        name="^[^\\/]*$"
+                        nodeScopeIndex="{Boolean}true"/>
                 </properties>
             </nt:unstructured>
         </indexRules>
-    </damCollectionLucene>
+    </damCollectionLucene-2>
+    <formsTemplateLucene
+        jcr:primaryType="oak:QueryIndexDefinition"
+        async="[async,nrt]"
+        compatVersion="{Long}2"
+        evaluatePathRestrictions="{Boolean}true"
+        includedPaths="[/etc/contentsync/templates]"
+        queryPaths="[/etc/contentsync/templates]"
+        reindex="{Boolean}false"
+        reindexCount="{Long}1"
+        seed="{Long}-214943958376495797"
+        type="lucene">
+        <indexRules jcr:primaryType="nt:unstructured">
+            <nt:unstructured
+                jcr:primaryType="nt:unstructured"
+                indexNodeName="{Boolean}true">
+                <properties jcr:primaryType="nt:unstructured">
+                    <prop
+                        jcr:primaryType="nt:unstructured"
+                        analyzed="{Boolean}true"
+                        isRegexp="{Boolean}true"
+                        name="^[^\\/]*$"
+                        nodeScopeIndex="{Boolean}true"/>
+                </properties>
+            </nt:unstructured>
+        </indexRules>
+    </formsTemplateLucene>
     <cqProjectLucene
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async,nrt]"
@@ -1258,7 +1336,7 @@
         excludedPaths="[/var,/etc/replication,/etc/workflow/instances,/jcr:system]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}6139455039583372010"
+        seed="{Long}-4812221410561995230"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <cq:Project jcr:primaryType="nt:unstructured">
@@ -1328,7 +1406,7 @@
         queryPaths="[/content/experience-fragments]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-3389881704208185444"
+        seed="{Long}-5895533125576210736"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <cq:Page jcr:primaryType="nt:unstructured">
@@ -1400,7 +1478,7 @@
         excludedPaths="[/oak:index]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-5527172290833528629"
+        seed="{Long}-5023744685101463246"
         supersedes="[/oak:index/cqDefaultFormFor,/oak:index/fpContentType,/oak:index/cqOwnerCanvasPage,/oak:index/cqVariantFamily,/oak:index/damStatus,/oak:index/campaignpath,/oak:index/slingVanityPath,/oak:index/type,/oak:index/contentPath,/oak:index/cq:masterBuildingBlockPath,/oak:index/containeeInstanceId,/oak:index/cqCloudServiceConfigs,/oak:index/slingAlias,/oak:index/cqCugEnabled,/oak:index/active,/oak:index/cq:masterBuildingBlock,/oak:index/cqAcUUID,/oak:index/cqKeywords,/oak:index/cqCloudServiceConfig,/oak:index/cqConf,/oak:index/cq:targetOfferId,/oak:index/postId,/oak:index/verb,/oak:index/extensionType,/oak:index/fpNodeType,/oak:index/guideComponentType,/oak:index/cqMaster,/oak:index/cqIsCommunitySite,/oak:index/deviceIdentificationMode,/oak:index/lockCreated,/oak:index/processingProfile,/oak:index/ec-uuid,/oak:index/slingResources,/oak:index/slingResourceType,/oak:index/subType,/oak:index/slingResourceSuperType,/oak:index/damS7watch,/oak:index/jcrLockOwner,/oak:index/cqTemplate,/oak:index/fragmentPath]"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
@@ -1687,6 +1765,42 @@
             </nt:base>
         </indexRules>
     </ntBaseLucene-2>
+    <ntFileFolderLucene
+        jcr:primaryType="oak:QueryIndexDefinition"
+        async="[fulltext-async]"
+        compatVersion="{Long}2"
+        evaluatePathRestrictions="{Boolean}true"
+        excludedPaths="[/var,/etc/replication,/etc/workflow/instances,/jcr:system]"
+        includedPaths="[/apps,/bin,/conf,/content,/etc,/home,/libs,/system,/tmp]"
+        reindex="{Boolean}false"
+        reindexCount="{Long}1"
+        seed="{Long}1957021819225130105"
+        type="lucene">
+        <aggregates jcr:primaryType="nt:unstructured">
+            <nt:file jcr:primaryType="nt:unstructured">
+                <include0
+                    jcr:primaryType="nt:unstructured"
+                    path="jcr:content"/>
+            </nt:file>
+        </aggregates>
+        <indexRules jcr:primaryType="nt:unstructured">
+            <nt:file
+                jcr:primaryType="nt:unstructured"
+                includePropertyTypes="[String]"/>
+            <nt:folder
+                jcr:primaryType="nt:unstructured"
+                includePropertyTypes="[String]">
+                <properties jcr:primaryType="nt:unstructured">
+                    <prop
+                        jcr:primaryType="nt:unstructured"
+                        analyzed="{Boolean}true"
+                        isRegexp="{Boolean}true"
+                        name="^[^\\/]*$"
+                        nodeScopeIndex="{Boolean}true"/>
+                </properties>
+            </nt:folder>
+        </indexRules>
+    </ntFileFolderLucene>
     <pathReference
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[fulltext-async]"
@@ -1697,7 +1811,7 @@
         excludedPaths="[/var,/etc/replication,/etc/workflow/instances,/jcr:system,/etc/packages]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-3633152675210245778"
+        seed="{Long}1327475658703848475"
         tags="[wcmReferenceSearch]"
         type="lucene"
         valueRegex="([&quot;']|^)/">
@@ -1933,7 +2047,7 @@
         evaluatePathRestrictions="{Boolean}true"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}2801935088826008485"
+        seed="{Long}-1979432564770062192"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <cq:WorkItem jcr:primaryType="nt:unstructured">
@@ -2113,7 +2227,7 @@
         queryPaths="[/apps,/libs]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}3932247877676581192"
+        seed="{Long}-5004413981179623026"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <nt:file jcr:primaryType="nt:unstructured">
@@ -2144,7 +2258,7 @@
         nodeTypeIndex="{Boolean}true"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}3752453726189142386"
+        seed="{Long}6882620415151915472"
         supersedes="[/oak:index/nodetype/@granite:CloudsettingsConfigType,/oak:index/nodetype/@granite:AuthenticationRequired,/oak:index/nodetype/@cq:BlueprintSyncConfig,/oak:index/nodetype/@slingevent:TimedEvent,/oak:index/nodetype/@cq:ContentSyncConfig,/oak:index/nodetype/@cq:ExporterConfig,/oak:index/nodetype/@cq:PollConfigFolder,/oak:index/nodetype/@sling:bgJobData,/oak:index/nodetype/@mix:language,/oak:index/nodetype/@granite:Task,/oak:index/nodetype/@sling:chunks,/oak:index/nodetype/@cq:Console,/oak:index/nodetype/@cq:ExporterConfigFolder,/oak:index/nodetype/@cq:Template,/oak:index/nodetype/@cq:PollConfig,/oak:index/nodetype/@sling:MessageEntry]"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
@@ -2216,25 +2330,16 @@
         type="reference"/>
     <screensSmartSyncJcrPrimaryType
         jcr:primaryType="oak:QueryIndexDefinition"
-        async="async"
+        async="[async]"
         compatVersion="{Long}2"
         evaluatePathRestrictions="{Boolean}true"
         includedPaths="[/var/contentsync/content/screens]"
         queryPaths="[/var/contentsync/content/screens]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}5851697413170610435"
+        seed="{Long}1314613098460434026"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
-            <nt:file jcr:primaryType="nt:unstructured">
-                <properties jcr:primaryType="nt:unstructured">
-                    <nodeType
-                        jcr:primaryType="nt:unstructured"
-                        name="jcr:primaryType"
-                        propertyIndex="{Boolean}true"
-                        type="String"/>
-                </properties>
-            </nt:file>
             <nt:linkedFile jcr:primaryType="nt:unstructured">
                 <properties jcr:primaryType="nt:unstructured">
                     <nodeType
@@ -2244,6 +2349,15 @@
                         type="String"/>
                 </properties>
             </nt:linkedFile>
+            <nt:file jcr:primaryType="nt:unstructured">
+                <properties jcr:primaryType="nt:unstructured">
+                    <nodeType
+                        jcr:primaryType="nt:unstructured"
+                        name="jcr:primaryType"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
+                </properties>
+            </nt:file>
         </indexRules>
     </screensSmartSyncJcrPrimaryType>
     <principalName
@@ -2255,7 +2369,7 @@
         reindexCount="{Long}1"
         type="property"
         unique="{Boolean}true"/>
-    <cqTagLucene
+    <cqTagLucene-2
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async]"
         compatVersion="{Long}2"
@@ -2263,7 +2377,7 @@
         excludedPaths="[/var,/etc/replication,/etc/workflow/instances,/jcr:system]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}8557533427597789281"
+        seed="{Long}-421516898807690139"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
             <cq:Tag jcr:primaryType="nt:unstructured">
@@ -2277,6 +2391,7 @@
                         jcr:primaryType="nt:unstructured"
                         analyzed="{Boolean}true"
                         name="jcr:title"
+                        nodeScopeIndex="{Boolean}true"
                         propertyIndex="{Boolean}true"
                         type="String"/>
                     <cqMovedTo
@@ -2284,10 +2399,17 @@
                         name="cq:movedTo"
                         propertyIndex="{Boolean}true"
                         type="String"/>
+                    <jcrDescription
+                        jcr:primaryType="nt:unstructured"
+                        analyzed="{Boolean}true"
+                        name="jcr:description"
+                        nodeScopeIndex="{Boolean}true"
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
                 </properties>
             </cq:Tag>
         </indexRules>
-    </cqTagLucene>
+    </cqTagLucene-2>
     <repTokenIndex
         jcr:primaryType="oak:QueryIndexDefinition"
         async="[async]"
@@ -2296,7 +2418,7 @@
         queryPaths="[/home/users]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}3211077786842516443"
+        seed="{Long}1939360350667556094"
         supersedes="[/oak:index/nodetype/@rep:Token]"
         type="lucene">
         <indexRules jcr:primaryType="nt:unstructured">
@@ -2339,7 +2461,7 @@
         excludedPaths="[/var,/etc/replication,/etc/workflow/instances,/jcr:system]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-5842439667900397246"
+        seed="{Long}5448705737325628734"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <cq:Page jcr:primaryType="nt:unstructured">
@@ -2433,7 +2555,7 @@
         queryPaths="[/etc/packages]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}8846267017195310310"
+        seed="{Long}-3040904266244470445"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <nt:file jcr:primaryType="nt:unstructured">
@@ -2459,19 +2581,19 @@
     </packageLucene>
     <screensContentJcrPrimaryType
         jcr:primaryType="oak:QueryIndexDefinition"
-        async="async"
+        async="[async]"
         compatVersion="{Long}2"
         evaluatePathRestrictions="{Boolean}true"
         includedPaths="[/content/screens]"
         queryPaths="[/content/screens]"
         reindex="{Boolean}false"
         reindexCount="{Long}1"
-        seed="{Long}-2994803490273932540"
+        seed="{Long}-8834438399150895294"
         type="lucene">
         <aggregates jcr:primaryType="nt:unstructured">
             <cq:Page jcr:primaryType="nt:unstructured">
                 <include0
-                    jcr:primaryType="cq:PageContent"
+                    jcr:primaryType="nt:unstructured"
                     path="jcr:content"
                     relativeNode="{Boolean}true"/>
             </cq:Page>
@@ -2482,19 +2604,22 @@
                 indexNodeName="{Boolean}true">
                 <properties jcr:primaryType="nt:unstructured">
                     <resourceSuperType
-                        jcr:primaryType="cq:PageContent"
+                        jcr:primaryType="nt:unstructured"
                         name="jcr:content/sling:resourceSuperType"
-                        propertyIndex="{Boolean}true"/>
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
                     <resourceType
-                        jcr:primaryType="cq:PageContent"
+                        jcr:primaryType="nt:unstructured"
                         name="jcr:content/sling:resourceType"
-                        propertyIndex="{Boolean}true"/>
+                        propertyIndex="{Boolean}true"
+                        type="String"/>
                     <title
-                        jcr:primaryType="cq:PageContent"
+                        jcr:primaryType="nt:unstructured"
                         analyzed="{Boolean}true"
-                        name="jcr:content/jcr:title"/>
+                        name="jcr:content/jcr:title"
+                        type="String"/>
                     <description
-                        jcr:primaryType="cq:PageContent"
+                        jcr:primaryType="nt:unstructured"
                         analyzed="{Boolean}true"
                         name="jcr:content/jcr:description"/>
                 </properties>

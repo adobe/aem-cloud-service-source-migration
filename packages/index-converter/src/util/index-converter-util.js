@@ -14,10 +14,18 @@ const mergeJSON = require("merge-json");
 const diffPatch = jsonDiffPatch.create();
 const constants = require("./constants");
 const xmlUtil = require("./xml-processing-util");
-const { logger } = require("@adobe/aem-cs-source-migration-commons");
+const {
+    logger,
+    util,
+    constants: commons_constants,
+} = require("@adobe/aem-cs-source-migration-commons");
+
+const fs = require("fs");
 const path = require("path");
 
 let keysToBeDeleted = ["reindex", "seed", "costPerEntry", "reindexCount"];
+let mandatoryValues = new Map();
+mandatoryValues.set("tags", "visualSimilaritySearch");
 let updateValues = new Map();
 updateValues.set("compatVersion", "{Long}2");
 let fileName = path.basename(__filename);
@@ -81,6 +89,8 @@ module.exports = {
                 objectCloud,
                 objectDifference
             );
+            //update mandatory values in json Object
+            updateMandatoryValues(mergedObject, mandatoryValues);
             // Validate index json object after merging of customization to product index
             validateOakIndexDef(mergedObject);
             // Index name : corresponding product index name on cloud +"-custom-1"
@@ -149,6 +159,90 @@ module.exports = {
         logger.info(
             fileName + ": Migration of Custom Index Definitions is Completed "
         );
+    },
+
+    /**
+     *
+     * @param transformationMap json object of Custom Indexes xml.
+     * @param basePathResources base path of resources folder
+     * @param customIndexXMLPath path to source Custom indexes.
+     *
+     * Migrates or create tika config required for the indexes
+     * @returns the array of name of OOTB custom indexes for which the tika configs are migrated.
+     *
+     */
+
+    migrateTikaConfig: (
+        transformationMap,
+        basePathResources,
+        customIndexXMLPath
+    ) => {
+        let migratedTikaConfigs = [];
+        constants.TIKA_REQUIRED_INDEXES.forEach((index) => {
+            for (var key of transformationMap.keys()) {
+                if (key.startsWith(index)) {
+                    if (
+                        customIndexXMLPath != null &&
+                        fs.existsSync(
+                            path.join(
+                                customIndexXMLPath,
+                                key,
+                                constants.TIKA,
+                                constants.CONFIX_XML_NAME
+                            )
+                        )
+                    ) {
+                        // copy the source tika config
+                        logger.info(
+                            fileName +
+                                ": Migrating tika config detected in source at " +
+                                path.join(
+                                    customIndexXMLPath,
+                                    key,
+                                    constants.TIKA,
+                                    constants.CONFIX_XML_NAME
+                                )
+                        );
+                        util.copyFolderSync(
+                            path.join(customIndexXMLPath, constants.TIKA),
+                            path.join(
+                                process.cwd(),
+                                commons_constants.TARGET_INDEX_FOLDER,
+                                transformationMap.get(key),
+                                constants.TIKA
+                            )
+                        );
+                    } else {
+                        // copy the default tika config
+                        logger.info(
+                            fileName + ": Migrating default tika config"
+                        );
+                        util.copyFolderSync(
+                            path.join(basePathResources, constants.TIKA),
+                            path.join(
+                                process.cwd(),
+                                commons_constants.TARGET_INDEX_FOLDER,
+                                transformationMap.get(key),
+                                constants.TIKA
+                            )
+                        );
+                    }
+                    logger.info(
+                        fileName +
+                            ": Tika config Migrated to " +
+                            path.join(
+                                process.cwd(),
+                                commons_constants.TARGET_INDEX_FOLDER,
+                                transformationMap.get(key),
+                                constants.TIKA
+                            )
+                    );
+                    //push the name of custom index
+                    migratedTikaConfigs.push(transformationMap.get(key));
+                }
+            }
+        });
+        return migratedTikaConfigs;
     },
 };
 /**
@@ -232,5 +326,48 @@ function correctValuesOfKey(jsonObject, updateValues) {
             updateValues.get(constants.COMPAT_VERSION);
         logger.info(fileName + ": Adding property " + constants.COMPAT_VERSION);
     }
+    return jsonObject;
+}
+
+/**
+ *
+ * @param jsonObject jsonObject of specific oak index.
+ * @param mandatoryValues Map of key-value which needs to be updated in jsonObject .
+ *
+ * @returns jsonObject after updation.
+ */
+function updateMandatoryValues(jsonObject, mandatoryValues) {
+    if (
+        Object.prototype.hasOwnProperty.call(
+            jsonObject[constants.JSON_ATTRIBUTES_KEY],
+            constants.TAGS
+        )
+    ) {
+        let tags = jsonObject[constants.JSON_ATTRIBUTES_KEY][constants.TAGS];
+        if (
+            tags.indexOf(mandatoryValues.get(constants.TAGS) > -1) &&
+            tags.indexOf("[") > -1 &&
+            tags.indexOf("]") > -1
+        ) {
+            tags = tags.substring(tags.indexOf("[") + 1, tags.indexOf("]"));
+            tags = tags + "," + mandatoryValues.get(constants.TAGS);
+            logger.info(
+                fileName +
+                    ": Updating value of " +
+                    constants.TAGS +
+                    " from  " +
+                    jsonObject[constants.JSON_ATTRIBUTES_KEY][constants.TAGS] +
+                    " to " +
+                    tags
+            );
+            jsonObject[constants.JSON_ATTRIBUTES_KEY][constants.TAGS] =
+                "[" + tags + "]";
+        }
+    } else {
+        jsonObject[constants.JSON_ATTRIBUTES_KEY][constants.TAGS] =
+            "[" + mandatoryValues.get(constants.TAGS) + "]";
+        logger.info(fileName + ": Adding property " + constants.TAGS);
+    }
+
     return jsonObject;
 }
