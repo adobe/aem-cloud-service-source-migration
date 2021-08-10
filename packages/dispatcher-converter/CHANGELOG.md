@@ -1,5 +1,13 @@
 # @adobe/aem-cs-source-migration-dispatcher-converter
 
+## 1.4.0
+
+### Minor Changes
+
+- fbad421: CQ-4328313 : Issue with vhostsToConvert & \$Include property
+  CQ-4328889 : Rules file inclusion issue.
+  CQ-4315907 : Customisation required for existing custom-variables into global.vars for AMS configs
+
 ## 1.3.0
 
 ### Minor Changes
