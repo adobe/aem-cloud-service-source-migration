@@ -910,37 +910,29 @@ class FileOperations {
                     let indentation = line.length - trimmedLine.length;
                     // replace the include statement with the rule file's content
                     if (ruleFileContent) {
-                        let ruleFileContentArray = ruleFileContent.split(
-                            os.EOL
-                        );
-                        ruleFileContentArray.forEach(
-                            (ruleFileContentArrayLine) => {
-                                // adjust the line to match the include statement's indentation
-                                returnContent +=
-                                    line.substring(0, indentation) +
-                                    ruleFileContentArrayLine +
-                                    os.EOL;
-                                logger.info(
-                                    "FileOperationsUtility: Replaced include statement " +
-                                        trimmedLine +
-                                        " in  file " +
-                                        filePath
-                                );
-                                let conversion_operation =
-                                    new ConversionOperation(
-                                        commons_constants.ACTION_REPLACED,
-                                        filePath,
-                                        "Replaced include statement '" +
-                                            trimmedLine +
-                                            " with content of file '" +
-                                            ruleFileToReplace +
-                                            "'"
-                                    );
-                                conversionStep.addOperation(
-                                    conversion_operation
-                                );
-                            }
-                        );
+                        ruleFileContent.forEach((ruleFileContentArrayLine) => {
+                            // adjust the line to match the include statement's indentation
+                            returnContent +=
+                                line.substring(0, indentation) +
+                                ruleFileContentArrayLine +
+                                os.EOL;
+                            logger.info(
+                                "FileOperationsUtility: Replaced include statement " +
+                                    trimmedLine +
+                                    " in  file " +
+                                    filePath
+                            );
+                            let conversion_operation = new ConversionOperation(
+                                commons_constants.ACTION_REPLACED,
+                                filePath,
+                                "Replaced include statement '" +
+                                    trimmedLine +
+                                    " with content of file '" +
+                                    ruleFileToReplace +
+                                    "'"
+                            );
+                            conversionStep.addOperation(conversion_operation);
+                        });
                     }
                     logger.info(
                         "FileOperationsUtility: Replaced include statement '%s' in file %s.",

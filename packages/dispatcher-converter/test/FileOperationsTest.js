@@ -543,7 +543,7 @@ describe("FileOperations", function () {
             testFolder,
             "vhost",
             "test",
-            "content",
+            ["content"],
             "Virtual",
             new ConversionStep()
         );
