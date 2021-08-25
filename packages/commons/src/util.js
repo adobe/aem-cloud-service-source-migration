@@ -125,7 +125,7 @@ var Util = {
      * @param String sourcePath path from where file need to be copied
      * @param String destinationPath path where file to be copied
      * @param String errorMsg error msg to log in case of failure/error
-     * @param {Array.<String>} name of folders to ignore
+     * @param {Array.<String>} ignoreFolders name of folders to ignore
      *
      * Sync function to write data (a string array) to a file
      */
