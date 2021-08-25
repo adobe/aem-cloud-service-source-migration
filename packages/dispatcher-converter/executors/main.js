@@ -36,7 +36,8 @@ if (fs.existsSync(constants.TARGET_FOLDER)) {
 try {
     util.copyFolderSync(
         config.dispatcherConverter.ams.cfg,
-        constants.TARGET_DISPATCHER_SRC_FOLDER
+        constants.TARGET_DISPATCHER_SRC_FOLDER,
+        ["enabled_farms", "enabled_vhosts"]
     );
     // ensures marker file is created if not present as part of dispatcher sdk
     // marker file is used to validate the dispatcher configurations with latest checks
