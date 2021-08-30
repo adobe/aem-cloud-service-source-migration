@@ -125,15 +125,22 @@ var Util = {
      * @param String sourcePath path from where file need to be copied
      * @param String destinationPath path where file to be copied
      * @param String errorMsg error msg to log in case of failure/error
+     * @param {Array.<String>} ignoreFolders name of folders to ignore
      *
      * Sync function to write data (a string array) to a file
      */
-    copyFolderSync: (sourcePath, destinationPath) => {
+    copyFolderSync: (sourcePath, destinationPath, ignoreFolders = []) => {
         // NOTE : In copySync method of fs-extra module, if src is a directory it will copy
         // everything inside of this directory, not the entire directory itself!!
         // Hence create the required folder structure in the destination
         fs.mkdirSync(destinationPath, { recursive: true });
-        fsExtra.copySync(sourcePath, destinationPath);
+        fsExtra.copySync(sourcePath, destinationPath, {
+            filter: (folder) => {
+                return ignoreFolders.indexOf(path.basename(folder)) > -1
+                    ? false
+                    : true;
+            },
+        });
     },
 
     /**

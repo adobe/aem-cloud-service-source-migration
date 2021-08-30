@@ -156,12 +156,6 @@ class AEMDispatcherConfigConverter {
                 conversionStep
             );
         });
-
-        this.FileOperationsUtility.removeNonMatchingFilesByName(
-            enabled_vhosts_dir_path,
-            available_vhosts_dir_path,
-            conversionStep
-        );
         this.conversionSteps.push(conversionStep);
     }
 
@@ -353,13 +347,13 @@ class AEMDispatcherConfigConverter {
             );
             this.FileOperationsUtility.renameFile(files[0], renamed_file_path);
             // adapt the Include statements referring to that file in the virtual host files as well.
-            this.FileOperationsUtility.removeIncludeStatementForSomeRule(
+            this.FileOperationsUtility.replaceIncludeStatementWithNewRule(
                 conf_d_dir_path,
-                Constants.INCLUDE_SYNTAX_IN_VHOST,
                 Constants.VHOST,
+                Constants.INCLUDE_SYNTAX_IN_VHOST,
                 old_file_name,
-                conversionStep,
-                new_file_name
+                "../rewrites/" + new_file_name,
+                conversionStep
             );
         } else if (fileCount > 1) {
             let availableVhostFiles = this.getAllAvailableVhostFiles();
@@ -917,11 +911,6 @@ class AEMDispatcherConfigConverter {
                 conversionStep
             );
         });
-        this.FileOperationsUtility.removeNonMatchingFilesByName(
-            enabled_farms_dir_path,
-            available_farms_dir_path,
-            conversionStep
-        );
         this.conversionSteps.push(conversionStep);
     }
 
@@ -985,7 +974,7 @@ class AEMDispatcherConfigConverter {
                 Constants.FARM,
                 Constants.INCLUDE_SYNTAX_IN_FARM,
                 old_file_name,
-                new_file_name,
+                '"../filters/' + new_file_name + '"',
                 conversionStep
             );
         } else if (file_count > 1) {
@@ -1848,6 +1837,7 @@ class AEMDispatcherConfigConverter {
             Constants.CONF_D,
             Constants.AVAILABLE_VHOSTS
         );
+        fs.mkdirSync(enabledVhostsPath);
         let conversionStep = this.createVhostSymLinksSummaryGenerator();
         let files = glob.sync(path.join(availableVhostsPath, "*.vhost")) || [];
         files.forEach((file) => {
@@ -1889,7 +1879,9 @@ class AEMDispatcherConfigConverter {
             Constants.AVAILABLE_FARMS
         );
         let conversionStep = this.createFarmSymLinksSummaryGenerator();
-        let files = glob.sync(path.join(availableFarmsPath, "*.farm")) || [];
+        fs.mkdirSync(enabledFarmsPath);
+        let files =
+            glob.sync(path.join(availableFarmsPath, "*.{farm,any}")) || [];
         files.forEach((file) => {
             logger.info(
                 "Creating Farm Symbolic Link in target folder for file : " +
