@@ -1,5 +1,12 @@
 # @adobe/aem-cs-source-migration-repository-modernizer
 
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies [a721a77]
+  - @adobe/aem-cs-source-migration-commons@0.0.5
+
 ## 1.2.1
 
 ### Patch Changes
