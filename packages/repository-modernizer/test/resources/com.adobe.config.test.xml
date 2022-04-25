@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
     jcr:primaryType="sling:OsgiConfig"
+    localeLangSettings="[
+	{
+		localeLanguage:'us-en_us'\u002c
+		destinationPath:'/content/hbtbt/us/en/products'\u002c
+		byCategoryPath:'/content/hbtbt/us/en/products/by-category'\u002c
+		categoryFragmentPath:'/content/experience-fragments/hbtbt/us/en/products'\u002c
+		alternativeProductsTitle:'Related Products'\u002c
+		productDocumentType:'Product'\u002c
+		navigationTitle:''\u002c
+		heroTitleField:'longLabel'
+	},
+	{
+		localeLanguage:'in-en'\u002c
+		destinationPath:'/content/hbtbt/in/en/products'\u002c
+		byCategoryPath:'/content/hbtbt/in/en/products/by-category'\u002c
+		categoryFragmentPath:'/content/experience-fragments/hbtbt/in/en/products'\u002c
+		alternativeProductsTitle:'Related Products'\u002c
+		productDocumentType:'Product'\u002c
+		navigationTitle:''\u002c
+		heroTitleField:'longLabel'
+	},
+	{
+		localeLanguage:'gb-en_gb'\u002c
+		destinationPath:'/content/hbtbt/gb/en/products'\u002c
+		byCategoryPath:'/content/hbtbt/gb/en/products/by-category'\u002c
+		categoryFragmentPath:'/content/experience-fragments/hbtbt/gb/en/products'\u002c
+		alternativeProductsTitle:'Related Products'\u002c
+		productDocumentType:'Product'\u002c
+		navigationTitle:''\u002c
+		heroTitleField:'longLabel'
+	},
+	{
+		localeLanguage:'de-de_de'\u002c
+		destinationPath:'/content/hbtbt/de/de/products'\u002c
+		byCategoryPath:'/content/hbtbt/de/de/products/by-category'\u002c
+		categoryFragmentPath:'/content/experience-fragments/hbtbt/de/de/products'\u002c
+		alternativeProductsTitle:'Related Products'\u002c
+		productDocumentType:'Product'\u002c
+		navigationTitle:''\u002c
+		heroTitleField:'longLabel'
+	}
+]"
     enabled="{Boolean}true"
     error-page.system-path="{String}/content/404"
     serve-authenticated-from-cache="{Boolean}true"
