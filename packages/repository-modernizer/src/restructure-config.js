@@ -508,6 +508,7 @@ function removeUnwantedChars(key, val, filePath) {
     let str = "";
     if (filePath.endsWith(constants.XML_EXTENSION)) {
         if (val.charAt(0) == "{") {
+            //json element logic
             val = val.replace(/\\/g, "");
             let type;
             if (
@@ -530,6 +531,7 @@ function removeUnwantedChars(key, val, filePath) {
                 str = '"' + key + ":" + type + '"' + ":" + val;
             }
         } else if (val.charAt(0) == "[") {
+            //json array logic
             str = '"' + key + '"' + ":" + "[";
             let tokens = val.substring(1, val.indexOf("]"));
 
@@ -541,10 +543,12 @@ function removeUnwantedChars(key, val, filePath) {
                             tokens[i].trim().charAt(0) == "{" ||
                             tokens[i].trim().charAt(0) == "["
                         ) {
+                            //remove \\ and \u002c which is encoded ','
                             const modifiedStr = tokens[i]
                                 .trim()
                                 .replace(/\\u002c/g, "")
                                 .replace(/\\/g, "");
+                            //remove errors from dirty json
                             const json = dJSON.parse(modifiedStr);
                             str = str + JSON.stringify(json);
                         } else {
