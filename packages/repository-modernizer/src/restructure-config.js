@@ -21,6 +21,7 @@ const constants = require("./util/constants");
 const fs = require("fs");
 const path = require("path");
 const xmljs = require("xml-js");
+const dJSON = require("dirty-json");
 
 var RestructureContent = {
     /**
@@ -504,10 +505,10 @@ async function formatConfig(osgiConfigFilePath, conversionStep) {
  */
 function removeUnwantedChars(key, val, filePath) {
     //replace \ with empty space
-    val = val.replace(/\\/g, "");
     let str = "";
     if (filePath.endsWith(constants.XML_EXTENSION)) {
         if (val.charAt(0) == "{") {
+            val = val.replace(/\\/g, "");
             let type;
             if (
                 constants.ALL_CONFIGS_TYPES.includes(
@@ -531,18 +532,45 @@ function removeUnwantedChars(key, val, filePath) {
         } else if (val.charAt(0) == "[") {
             str = '"' + key + '"' + ":" + "[";
             let tokens = val.substring(1, val.indexOf("]"));
+
             if (tokens.length > 0) {
                 tokens = tokens.split(",");
                 for (let i = 0; i < tokens.length; i++) {
                     if (i == tokens.length - 1) {
-                        str = str + '"' + tokens[i] + '"';
+                        if (
+                            tokens[i].trim().charAt(0) == "{" ||
+                            tokens[i].trim().charAt(0) == "["
+                        ) {
+                            const modifiedStr = tokens[i]
+                                .trim()
+                                .replaceAll("\\u002c", "")
+                                .replace(/\\/g, "");
+                            const json = dJSON.parse(modifiedStr);
+                            str = str + JSON.stringify(json);
+                        } else {
+                            str = str + '"' + tokens[i] + '"';
+                        }
                     } else {
-                        str = str + '"' + tokens[i] + '"' + ",";
+                        if (
+                            tokens[i].trim().charAt(0) == "{" ||
+                            tokens[i].trim().charAt(0) == "["
+                        ) {
+                            const modifiedStr = tokens[i]
+                                .trim()
+                                .replaceAll("\\u002c", "")
+                                .replace(/\\/g, "");
+                            const json = dJSON.parse(modifiedStr);
+                            str = str + JSON.stringify(json) + ",";
+                        } else {
+                            str = str + '"' + tokens[i] + '"' + ",";
+                        }
                     }
                 }
             }
+
             str = str + "]";
         } else {
+            val = val.replace(/\\/g, "");
             val = val.replace(/[^\x20-\x7E]/gim, "");
             str = '"' + key + '"' + ":" + '"' + val + '"';
         }
