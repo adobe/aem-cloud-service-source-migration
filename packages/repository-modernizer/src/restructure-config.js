@@ -543,7 +543,7 @@ function removeUnwantedChars(key, val, filePath) {
                         ) {
                             const modifiedStr = tokens[i]
                                 .trim()
-                                .replaceAll("\\u002c", "")
+                                .replace(/\\u002c/g, "")
                                 .replace(/\\/g, "");
                             const json = dJSON.parse(modifiedStr);
                             str = str + JSON.stringify(json);
@@ -557,7 +557,7 @@ function removeUnwantedChars(key, val, filePath) {
                         ) {
                             const modifiedStr = tokens[i]
                                 .trim()
-                                .replaceAll("\\u002c", "")
+                                .replace(/\\u002c/g, "")
                                 .replace(/\\/g, "");
                             const json = dJSON.parse(modifiedStr);
                             str = str + JSON.stringify(json) + ",";
