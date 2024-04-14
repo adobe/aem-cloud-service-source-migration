@@ -330,10 +330,10 @@ describe("FileOperations", function () {
         "Define SITESAUTHOR_URL sites-author.adobe.foo.com",
         "Define STATS_FILE_LEVEL 4"];
         let fileOneContent = `Define ASSETSAUTHOR_URL assets-author.adobe.foo.com
-        Define SITESAUTHOR_URL sites-author.adobe.foo.com`;
+Define SITESAUTHOR_URL sites-author.adobe.foo.com`;
         let fileTwoContent = `Define ASSETSAUTHOR_URL assets-author.adobe.foo.com
-        Define SITESAUTHOR_URL sites-author.adobe.foo.com
-        Define STATS_FILE_LEVEL 4`;
+Define SITESAUTHOR_URL sites-author.adobe.foo.com
+Define STATS_FILE_LEVEL 4`;
 
         fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
         fs.appendFileSync(testFolder + "/newtfile.vhost", "");
