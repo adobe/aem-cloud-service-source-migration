@@ -357,8 +357,9 @@ Define STATS_FILE_LEVEL 4`;
         let actualVars = fileOperation.getFileContentsArray(
             testFolder + "/newFile.vhost",
             true
-        );
-        assert.equal(actualVars, expectedVars, "Should not contain duplicate definitions");
+        ).filter(value => value.trim() !== '');
+        
+        assert.deepEqual(actualVars, expectedVars, "Should not contain duplicate definitions");
     });
 
     it("should successfully Remove Virtual Host Sections Not Port 80", function () {
