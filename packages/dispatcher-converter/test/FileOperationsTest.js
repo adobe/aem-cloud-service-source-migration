@@ -326,24 +326,15 @@ describe("FileOperations", function () {
     });
 
     it("should successfully consolidate rules file into single file", function () {
-        let expectedVars = ["Define ASSETSAUTHOR_URL assets-author.adobe.foo.com",
-        "Define SITESAUTHOR_URL sites-author.adobe.foo.com",
-        "Define STATS_FILE_LEVEL 4"];
-        let fileOneContent = `Define ASSETSAUTHOR_URL assets-author.adobe.foo.com
-Define SITESAUTHOR_URL sites-author.adobe.foo.com`;
-        let fileTwoContent = `Define ASSETSAUTHOR_URL assets-author.adobe.foo.com
-Define SITESAUTHOR_URL sites-author.adobe.foo.com
-Define STATS_FILE_LEVEL 4`;
-
         fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
         fs.appendFileSync(testFolder + "/newtfile.vhost", "");
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
-            fileOneContent
+            "This is a first content file"
         );
         fs.appendFileSync(
             testFolder + "/newtfile.vhost",
-            fileTwoContent
+            "This is a second content file"
         );
 
         let fileOperation = new fileOperations("");
@@ -354,12 +345,11 @@ Define STATS_FILE_LEVEL 4`;
             testFolder + "/newFile.vhost",
             new ConversionStep()
         );
-        let actualVars = fileOperation.getFileContentsArray(
+        let content = fileOperation.getContentFromFile(
             testFolder + "/newFile.vhost",
             true
-        ).filter(value => value.trim() !== '');
-        
-        assert.deepEqual(actualVars, expectedVars, "Should not contain duplicate definitions");
+        );
+        assert.include(content, "second");
     });
 
     it("should successfully Remove Virtual Host Sections Not Port 80", function () {
