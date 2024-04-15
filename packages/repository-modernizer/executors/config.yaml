@@ -97,4 +97,3 @@ repositoryModernizer:
                 #       generated in the summary report and result log file. User would need to manually evaluate
                 #       which config to persist
                 osgiFoldersToRename:
-            

@@ -1599,7 +1599,7 @@ class FileOperations {
                         variableDefinition.length > 2 &&
                         variableDefinition[0].trim().toLowerCase() ==
                             "define" &&
-                        !variableDefinitionList.includes(variableDefinition[1])
+                        !variablesList.includes(variableDefinition[1])
                     ) {
                         // add the new variable to the new list
                         variablesList.push(variableDefinition[1]);
