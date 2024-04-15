@@ -1,5 +1,11 @@
 # @adobe/aem-cs-source-migration-dispatcher-converter
 
+## 1.5.1
+
+### Patch Changes
+
+- a3a70fd: CQ-4357130 : [Dispatcher Converter] Duplicate variables present in consolidated custom vars file
+
 ## 1.5.0
 
 ### Minor Changes
