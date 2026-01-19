@@ -83,8 +83,12 @@ class SummaryReportWriter {
                     });
                 }
             } else {
-                fs.appendFileSync(file_path, LINE_SEP);
-                fs.appendFileSync(file_path, step);
+                if (step != null && step != undefined) {
+                    fs.appendFileSync(file_path, LINE_SEP);
+                    fs.appendFileSync(file_path, step);
+                } else {
+                    logger.warn("Skipping null or undefined step in writer_buffer");
+                }
             }
         });
         logger.info(report_name + " generation complete.");

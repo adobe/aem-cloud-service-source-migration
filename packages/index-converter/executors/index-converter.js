@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 const IndexConverter = require("..");
 const fs = require("fs");
 const yaml = require("js-yaml");
+const path = require("path");
 const {
     constants: commons_constants,
     logger,
@@ -35,5 +36,8 @@ if (fs.existsSync(commons_constants.TARGET_FOLDER)) {
 executeIndexConversion(config);
 
 async function executeIndexConversion(config) {
-    IndexConverter.performIndexConversion(config.indexConverter, "..");
+    // Use __dirname to get the directory of this executor script, then navigate to package root
+    // This ensures the path to resources folder is correct regardless of where the script is executed from
+    const packageBasePath = path.join(__dirname, "..");
+    IndexConverter.performIndexConversion(config.indexConverter, packageBasePath);
 }

@@ -96,6 +96,8 @@ module.exports = {
             // Index name : corresponding product index name on cloud +"-custom-1"
             let customOOTBKeyOnCloud =
                 keyOnCloud + constants.INDEX_CUSTOM_SUFFIX;
+            // Add tika node if required
+            addTikaNodeIfRequired(key, mergedObject);
             buildJson(customOOTBKeyOnCloud, mergedObject, finalJsonObject);
 
             transformationMap.set(key, customOOTBKeyOnCloud);
@@ -144,6 +146,8 @@ module.exports = {
             // Validate index json object as per cloud service oak index guidelines
             validateOakIndexDef(objectCustomIndex);
             let customKeyOnCloud = key + constants.INDEX_CUSTOM_SUFFIX;
+            // Add tika node if required
+            addTikaNodeIfRequired(key, objectCustomIndex);
             buildJson(customKeyOnCloud, objectCustomIndex, finalJsonObject);
             transformationMap.set(key, customKeyOnCloud);
             logger.info(
@@ -178,70 +182,68 @@ module.exports = {
         customIndexXMLPath
     ) => {
         let migratedTikaConfigs = [];
-        constants.TIKA_REQUIRED_INDEXES.forEach((index) => {
-            for (var key of transformationMap.keys()) {
-                if (key.startsWith(index)) {
-                    if (
-                        customIndexXMLPath != null &&
-                        fs.existsSync(
-                            path.join(
-                                customIndexXMLPath,
-                                key,
-                                constants.TIKA,
-                                constants.CONFIX_XML_NAME
-                            )
+        // Iterate through all indexes in the transformation map
+        // All lucene indexes on AEM Cloud Service require Tika configuration
+        for (var key of transformationMap.keys()) {
+            if (
+                customIndexXMLPath != null &&
+                fs.existsSync(
+                    path.join(
+                        customIndexXMLPath,
+                        key,
+                        constants.TIKA,
+                        constants.CONFIX_XML_NAME
+                    )
+                )
+            ) {
+                // copy the source tika config
+                logger.info(
+                    fileName +
+                        ": Migrating tika config detected in source at " +
+                        path.join(
+                            customIndexXMLPath,
+                            key,
+                            constants.TIKA,
+                            constants.CONFIX_XML_NAME
                         )
-                    ) {
-                        // copy the source tika config
-                        logger.info(
-                            fileName +
-                                ": Migrating tika config detected in source at " +
-                                path.join(
-                                    customIndexXMLPath,
-                                    key,
-                                    constants.TIKA,
-                                    constants.CONFIX_XML_NAME
-                                )
-                        );
-                        util.copyFolderSync(
-                            path.join(customIndexXMLPath, constants.TIKA),
-                            path.join(
-                                process.cwd(),
-                                commons_constants.TARGET_INDEX_FOLDER,
-                                transformationMap.get(key),
-                                constants.TIKA
-                            )
-                        );
-                    } else {
-                        // copy the default tika config
-                        logger.info(
-                            fileName + ": Migrating default tika config"
-                        );
-                        util.copyFolderSync(
-                            path.join(basePathResources, constants.TIKA),
-                            path.join(
-                                process.cwd(),
-                                commons_constants.TARGET_INDEX_FOLDER,
-                                transformationMap.get(key),
-                                constants.TIKA
-                            )
-                        );
-                    }
-                    logger.info(
-                        fileName +
-                            ": Tika config Migrated to " +
-                            path.join(
-                                process.cwd(),
-                                commons_constants.TARGET_INDEX_FOLDER,
-                                transformationMap.get(key),
-                                constants.TIKA
-                            )
-                    );
-                    //push the name of custom index
-                    migratedTikaConfigs.push(transformationMap.get(key));
-                }
+                );
+                util.copyFolderSync(
+                    path.join(customIndexXMLPath, key, constants.TIKA),
+                    path.join(
+                        process.cwd(),
+                        commons_constants.TARGET_INDEX_FOLDER,
+                        transformationMap.get(key),
+                        constants.TIKA
+                    )
+                );
+            } else {
+                // copy the default tika config for all indexes
+                logger.info(
+                    fileName + ": Migrating default tika config for " + key
+                );
+                util.copyFolderSync(
+                    path.join(basePathResources, constants.TIKA),
+                    path.join(
+                        process.cwd(),
+                        commons_constants.TARGET_INDEX_FOLDER,
+                        transformationMap.get(key),
+                        constants.TIKA
+                    )
+                );
             }
-        });
+            logger.info(
+                fileName +
+                    ": Tika config Migrated to " +
+                    path.join(
+                        process.cwd(),
+                        commons_constants.TARGET_INDEX_FOLDER,
+                        transformationMap.get(key),
+                        constants.TIKA
+                    )
+            );
+            //push the name of custom index
+            migratedTikaConfigs.push(transformationMap.get(key));
+        }
         return migratedTikaConfigs;
     },
 };
@@ -262,6 +264,34 @@ function mergeJsonDifferenceToCloudJson(cloudIndexJsonObject, jsonDifference) {
 
 function buildJson(key, value, finalJsonObject) {
     finalJsonObject[key] = value;
+}
+
+/**
+ * Add Tika node to index JSON object for lucene type indexes
+ * According to Adobe documentation, all lucene indexes on AEM Cloud Service require Tika configuration
+ * @param indexName name of the index
+ * @param indexJsonObject JSON object of the index
+ */
+function addTikaNodeIfRequired(indexName, indexJsonObject) {
+    // Check if this is a lucene type index
+    let indexType = indexJsonObject[constants.JSON_ATTRIBUTES_KEY]?.type;
+    
+    if (indexType === "lucene") {
+        // Add tika node to the index JSON
+        indexJsonObject.tika = {
+            [constants.JSON_ATTRIBUTES_KEY]: {
+                "jcr:primaryType": "nt:folder"
+            },
+            "config.xml": {
+                [constants.JSON_ATTRIBUTES_KEY]: {
+                    "jcr:primaryType": "nt:file"
+                }
+            }
+        };
+        logger.info(
+            fileName + ": Added tika node to index definition for " + indexName
+        );
+    }
 }
 
 function getJsonDifference(defaultJSON, customJSON) {
