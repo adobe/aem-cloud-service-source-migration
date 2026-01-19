@@ -98,7 +98,18 @@ module.exports = {
 
     INDEX_ANALYZERS: "analyzers",
 
-    TIKA_REQUIRED_INDEXES: ["lucene", "graphqlConfig", "damAssetLucene"],
+    TIKA_REQUIRED_INDEXES: [
+        "lucene",
+        "graphqlConfig", 
+        "damAssetLucene",
+        "cqPageLucene",
+        "cqTagLucene",
+        "ntBaseLucene",
+        "workflowDataLucene",
+        "commerceLucene",
+        "socialLucene",
+        "cqProjectLucene"
+    ],
 
     TIKA: "tika",
 
