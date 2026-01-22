@@ -2,26 +2,28 @@ name: Workflow for Codecov Action
 on: [push, pull_request]
 
 jobs:
-
   codecoverage:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js 10
-        uses: actions/setup-node@v1
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
         with:
-          node-version: 10
-          
+          node-version: 18
+          cache: yarn
+
       - name: Install Dependencies
-        run: yarn install --ignore-engines
-        
+        run: yarn install
+
       - name: Execute Tests & generate coverage
         run: yarn test
 
       - name: Execute lint check
         run: yarn lint
-        
-      - name: upload code coverage for all packages
-        run: bash <(curl -s https://codecov.io/bash)
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
