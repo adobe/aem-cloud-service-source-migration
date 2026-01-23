@@ -270,9 +270,7 @@ describe("FileOperations", function () {
     });
 
     it("should successfully replace Content Of Section", function () {
-        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
             "/publishfarm { \n"
@@ -353,9 +351,7 @@ describe("FileOperations", function () {
     });
 
     it("should successfully Remove Virtual Host Sections Not Port 80", function () {
-        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
 
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
@@ -385,9 +381,7 @@ describe("FileOperations", function () {
     });
 
     it("should successfully replace include statement with new rule", function () {
-        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
 
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
@@ -413,9 +407,7 @@ describe("FileOperations", function () {
     });
 
     it("should successfully replace include statement for some rule with new rule", function () {
-        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
 
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
@@ -523,9 +515,7 @@ describe("FileOperations", function () {
     });
 
     it("should successfully replace include statement with content of rule file", function () {
-        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
 
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
@@ -597,13 +587,9 @@ describe("FileOperations", function () {
     });
 
     it("should successfully replace File Includes In Farm File And Vhost File", function () {
-        fs.appendFile(testFolder + "/newtestfile.farm", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtestfile.farm", "");
 
-        fs.appendFile(testFolder + "/newtfile.any", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtfile.any", "");
 
         fs.appendFileSync(
             testFolder + "/newtfile.any",
@@ -660,9 +646,7 @@ describe("FileOperations", function () {
 
     it("should successfully remove Non Matching Files By Name", function () {
         if (!fs.existsSync("test/oldtest")) {
-            fs.mkdir("test/oldtest", (err) => {
-                if (err) throw err;
-            });
+            fs.mkdirSync("test/oldtest");
         }
 
         fs.openSync(testFolder + "/fileone.vhost", "a");
@@ -764,13 +748,9 @@ describe("FileOperations", function () {
     });
 
     it("should successfully get Names Of Rule Files Included", function () {
-        fs.appendFile(testFolder + "/newtestfile.farm", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtestfile.farm", "");
 
-        fs.appendFile(testFolder + "/newtfile.any", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtfile.any", "");
 
         fs.appendFileSync(
             testFolder + "/newtfile.any",
@@ -879,13 +859,9 @@ describe("FileOperations", function () {
     });
 
     it("should successfully get Names Of Rule Files Included in Vhost Files", function () {
-        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
 
-        fs.appendFile(testFolder + "/newtfile.any", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtfile.any", "");
 
         fs.appendFileSync(
             testFolder + "/newtfile.any",
@@ -994,9 +970,7 @@ describe("FileOperations", function () {
     });
 
     it("should successfully replace Content Of Section bracket in next line", function () {
-        fs.appendFile(testFolder + "/newtestfile.vhost", "", function (err) {
-            if (err) throw err;
-        });
+        fs.appendFileSync(testFolder + "/newtestfile.vhost", "");
         fs.appendFileSync(
             testFolder + "/newtestfile.vhost",
             "/publishfarm \n { \n"
