@@ -1,5 +1,13 @@
 # @adobe/aem-cs-source-migration-repository-modernizer
 
+## 1.2.3
+
+### Patch Changes
+
+- 650bcb8: Fix node-gyp build failures by replacing node-pom-parser with xml-js. Enables Node.js 20 compatibility by removing native dependencies.
+- Updated dependencies [650bcb8]
+  - @adobe/aem-cs-source-migration-commons@0.0.6
+
 ## 1.2.2
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @adobe/aem-cs-source-migration-dispatcher-converter
 
+## 1.5.2
+
+### Patch Changes
+
+- Updated dependencies [650bcb8]
+  - @adobe/aem-cs-source-migration-commons@0.0.6
+
 ## 1.5.1
 
 ### Patch Changes

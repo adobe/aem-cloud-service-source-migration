@@ -1,5 +1,11 @@
 # @adobe/aem-cs-source-migration-commons
 
+## 0.0.6
+
+### Patch Changes
+
+- 650bcb8: GRANITE-64086: Improve file reader in summary report writer
+
 ## 0.0.5
 
 ### Patch Changes
