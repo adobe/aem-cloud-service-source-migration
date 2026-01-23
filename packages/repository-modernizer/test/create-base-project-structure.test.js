@@ -13,12 +13,15 @@ jest.mock("@adobe/aem-cs-source-migration-commons");
 jest.mock("../src/util/pom-manipulation-util");
 jest.mock("fs");
 jest.mock("fs-extra");
-jest.mock("node-pom-parser", () => {
-    const pomObj = {
-        artifactId: "test.artifactId",
-        version: "1.0.0",
+jest.mock("xml-js", () => {
+    return {
+        xml2js: jest.fn(() => ({
+            project: {
+                artifactId: { _text: "test.artifactId" },
+                version: { _text: "1.0.0" },
+            },
+        })),
     };
-    return { parsePom: jest.fn(() => pomObj) };
 });
 
 const {
