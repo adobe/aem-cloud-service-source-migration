@@ -22,9 +22,25 @@ const constants = require("./util/constants");
 const path = require("path");
 const fs = require("fs");
 const fsExtra = require("fs-extra");
-const pomParser = require("node-pom-parser");
+const xmlJs = require("xml-js");
 let allPackagePomFile = "",
     analysePackagePomFile = "";
+
+/**
+ * Parse a POM file and extract artifactId and version
+ * @param {string} filePath - Path to the POM file
+ * @returns {object} Object containing artifactId and version
+ */
+function parsePomFile(filePath) {
+    const xmlContent = fs.readFileSync(filePath, "utf8");
+    const result = xmlJs.xml2js(xmlContent, { compact: true });
+    const project = result.project || {};
+
+    return {
+        artifactId: project.artifactId && project.artifactId._text,
+        version: project.version && project.version._text,
+    };
+}
 var CreateBaseProjectStructure = {
     /**
      *
@@ -629,7 +645,7 @@ function copyModuleFromSource(
                 destinationFolderPath
         )
     );
-    let pom = pomParser.parsePom({ filePath: pomFile });
+    let pom = parsePomFile(pomFile);
     if (typeof pom.version === "undefined") {
         logger.warn(
             pomFile +
