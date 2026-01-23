@@ -1,5 +1,13 @@
 # @adobe/aem-cs-source-migration-index-converter
 
+## 0.2.2
+
+### Patch Changes
+
+- 650bcb8: GRANITE-64086: Add tika configuration migration and improve Node.js 20 compatibility
+- Updated dependencies [650bcb8]
+  - @adobe/aem-cs-source-migration-commons@0.0.6
+
 ## 0.2.1
 
 ### Patch Changes
