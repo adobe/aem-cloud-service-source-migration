@@ -274,19 +274,21 @@ function buildJson(key, value, finalJsonObject) {
  */
 function addTikaNodeIfRequired(indexName, indexJsonObject) {
     // Check if this is a lucene type index
-    let indexType = indexJsonObject[constants.JSON_ATTRIBUTES_KEY]?.type;
-    
+    let indexType =
+        indexJsonObject[constants.JSON_ATTRIBUTES_KEY] &&
+        indexJsonObject[constants.JSON_ATTRIBUTES_KEY].type;
+
     if (indexType === "lucene") {
         // Add tika node to the index JSON
         indexJsonObject.tika = {
             [constants.JSON_ATTRIBUTES_KEY]: {
-                "jcr:primaryType": "nt:folder"
+                "jcr:primaryType": "nt:folder",
             },
             "config.xml": {
                 [constants.JSON_ATTRIBUTES_KEY]: {
-                    "jcr:primaryType": "nt:file"
-                }
-            }
+                    "jcr:primaryType": "nt:file",
+                },
+            },
         };
         logger.info(
             fileName + ": Added tika node to index definition for " + indexName

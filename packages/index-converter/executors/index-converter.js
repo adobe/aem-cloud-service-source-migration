@@ -39,5 +39,8 @@ async function executeIndexConversion(config) {
     // Use __dirname to get the directory of this executor script, then navigate to package root
     // This ensures the path to resources folder is correct regardless of where the script is executed from
     const packageBasePath = path.join(__dirname, "..");
-    IndexConverter.performIndexConversion(config.indexConverter, packageBasePath);
+    IndexConverter.performIndexConversion(
+        config.indexConverter,
+        packageBasePath
+    );
 }

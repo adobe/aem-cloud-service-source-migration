@@ -87,7 +87,9 @@ class SummaryReportWriter {
                     fs.appendFileSync(file_path, LINE_SEP);
                     fs.appendFileSync(file_path, step);
                 } else {
-                    logger.warn("Skipping null or undefined step in writer_buffer");
+                    logger.warn(
+                        "Skipping null or undefined step in writer_buffer"
+                    );
                 }
             }
         });

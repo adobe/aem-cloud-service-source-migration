@@ -100,7 +100,7 @@ module.exports = {
 
     TIKA_REQUIRED_INDEXES: [
         "lucene",
-        "graphqlConfig", 
+        "graphqlConfig",
         "damAssetLucene",
         "cqPageLucene",
         "cqTagLucene",
@@ -108,7 +108,7 @@ module.exports = {
         "workflowDataLucene",
         "commerceLucene",
         "socialLucene",
-        "cqProjectLucene"
+        "cqProjectLucene",
     ],
 
     TIKA: "tika",

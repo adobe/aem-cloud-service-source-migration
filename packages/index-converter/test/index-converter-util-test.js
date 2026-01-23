@@ -8,7 +8,6 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const _ = require("lodash");
 const assert = require("chai").assert;
 const indexUtil = require("../src/util/index-converter-util.js");
 const xmlUtil = require("../src/util/xml-processing-util.js");
@@ -22,7 +21,7 @@ const constants = require("../src/util/constants");
 
 describe("index-converter-util", function () {
     describe("Test migration Of Custom OOTB Indexes", function () {
-        it("should construct finalJsonObject", function () {
+        it("should construct finalJsonObject", function (done) {
             let finalJsonObject = {};
             let baseLineXMLPath = path.join("test/resources/.content_65.xml");
             let customIndexXMLPath = path.join(
@@ -62,30 +61,31 @@ describe("index-converter-util", function () {
                 common_constants.TARGET_INDEX_FOLDER
             );
 
-            let actualJson = JSON.stringify(finalJsonObject);
             let expectedFilePath = path.join(
                 "test/resources/expectedCustomOOTB.json"
             );
             fs.readFile(expectedFilePath, "utf8", (err, data) => {
+                if (err) {
+                    done(err);
+                    return;
+                }
                 try {
-                    if (err) {
-                        throw err;
-                    }
-                    assert.isTrue(
-                        _.isEqual(data.trim(), actualJson.trim()),
+                    let expectedJson = JSON.parse(data);
+                    assert.deepEqual(
+                        finalJsonObject,
+                        expectedJson,
                         "JSON Object constructed successfully and both are equal"
                     );
+                    done();
                 } catch (e) {
-                    assert.fail(
-                        "Not able to create Json Object or actual json object does not match to expected json object"
-                    );
+                    done(e);
                 }
             });
         });
     });
 
     describe("Test migration Of Custom Indexes", function () {
-        it("should construct finalJsonObject", function () {
+        it("should construct finalJsonObject", function (done) {
             let finalJsonObject = {};
             let customIndexXMLPath = path.join(
                 "test/resources/inputCustom1.xml"
@@ -102,24 +102,24 @@ describe("index-converter-util", function () {
                 transformationMap
             );
 
-            let actualJson = JSON.stringify(finalJsonObject);
             let expectedFilePath = path.join(
                 "test/resources/expectedCustomIndex.json"
             );
             fs.readFile(expectedFilePath, "utf8", (err, data) => {
+                if (err) {
+                    done(err);
+                    return;
+                }
                 try {
-                    if (err) {
-                        throw err;
-                    }
-                    assert.isTrue(
-                        _.isEqual(data.trim(), actualJson.trim()),
+                    let expectedJson = JSON.parse(data);
+                    assert.deepEqual(
+                        finalJsonObject,
+                        expectedJson,
                         "JSON Object constructed successfully and both are equal"
                     );
+                    done();
                 } catch (e) {
-                    assert.fail(
-                        "Not able to create Json Object or actual json object does not match to expected json object",
-                        e
-                    );
+                    done(e);
                 }
             });
         });

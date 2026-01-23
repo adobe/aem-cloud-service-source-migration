@@ -496,12 +496,10 @@ describe("FileOperations", function () {
             path.join(testFolder, "newtestfilesource.vhost"),
             new ConversionStep()
         );
-        fs.lstat(
-            path.join(testFolder, "newtestfilesource.vhost"),
-            function (err, stats) {
-                assert.equal(stats.isSymbolicLink(), true);
-            }
+        let stats = fs.lstatSync(
+            path.join(testFolder, "newtestfilesource.vhost")
         );
+        assert.equal(stats.isSymbolicLink(), true);
     });
 
     it("should successfully create a symlink from source to target when source doesn't exist", function () {
@@ -518,12 +516,10 @@ describe("FileOperations", function () {
             path.join(testFolder, "newtestfilesource2.vhost"),
             new ConversionStep()
         );
-        fs.lstat(
-            path.join(testFolder, "newtestfilesource2.vhost"),
-            function (err, stats) {
-                assert.equal(stats.isSymbolicLink(), true);
-            }
+        let stats = fs.lstatSync(
+            path.join(testFolder, "newtestfilesource2.vhost")
         );
+        assert.equal(stats.isSymbolicLink(), true);
     });
 
     it("should successfully replace include statement with content of rule file", function () {
