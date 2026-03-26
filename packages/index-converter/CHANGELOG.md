@@ -1,5 +1,11 @@
 # @adobe/aem-cs-source-migration-index-converter
 
+## 0.2.3
+
+### Patch Changes
+
+- acd4285: [Index Converter] Fix crashes when merging nested 'cqPageContent' customizations into cloud baseline indexes.
+
 ## 0.2.2
 
 ### Patch Changes
