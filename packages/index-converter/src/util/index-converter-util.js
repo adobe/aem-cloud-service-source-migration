@@ -258,7 +258,14 @@ function mergeJsonDifferenceToCloudJson(cloudIndexJsonObject, jsonDifference) {
     var cloudIndexJsonObjectClone = JSON.parse(
         JSON.stringify(cloudIndexJsonObject)
     );
-    diffPatch.patch(cloudIndexJsonObject, jsonDifference);
+    try {
+        diffPatch.patch(cloudIndexJsonObject, jsonDifference);
+    } catch (err) {
+        // Some customer deltas add nested nodes that are missing in the cloud
+        // baseline. jsondiffpatch throws in that case, so apply the delta
+        // recursively while creating intermediate objects as needed.
+        applyJsonDifference(cloudIndexJsonObject, jsonDifference);
+    }
     return mergeJSON.merge(cloudIndexJsonObjectClone, cloudIndexJsonObject);
 }
 
@@ -298,6 +305,57 @@ function addTikaNodeIfRequired(indexName, indexJsonObject) {
 
 function getJsonDifference(defaultJSON, customJSON) {
     return diffPatch.diff(defaultJSON, customJSON);
+}
+
+/**
+ * Apply a jsondiffpatch delta without assuming the full target path already
+ * exists.
+ *
+ * The normal jsondiffpatch patch flow works for most index merges, but some
+ * customer customizations add nested nodes that are absent in the cloud
+ * baseline. In that case jsondiffpatch throws while traversing the missing
+ * branch. This fallback walks the delta recursively and materializes
+ * intermediate objects so additive customizations can still be merged.
+ *
+ * Delta shapes handled here:
+ * - `[newValue]` for additions
+ * - `[oldValue, newValue]` for updates
+ * - `[oldValue, 0, 0]` for deletions
+ *
+ * @param {Object} target target JSON object being mutated in place.
+ * @param {Object} diff jsondiffpatch delta to apply to the target.
+ * @returns {Object} the mutated target object.
+ */
+function applyJsonDifference(target, diff) {
+    if (diff == null || typeof diff !== "object") {
+        return target;
+    }
+
+    Object.entries(diff).forEach(([key, value]) => {
+        if (key === "_t") {
+            return;
+        }
+
+        if (Array.isArray(value)) {
+            // jsondiffpatch encodes add/update/delete operations in arrays.
+            if (value.length === 1) {
+                target[key] = value[0];
+            } else if (value.length === 2) {
+                target[key] = value[1];
+            } else if (value.length === 3 && value[1] === 0 && value[2] === 0) {
+                delete target[key];
+            }
+            return;
+        }
+
+        if (target[key] == null || typeof target[key] !== "object") {
+            target[key] = {};
+        }
+
+        applyJsonDifference(target[key], value);
+    });
+
+    return target;
 }
 /**
  *
