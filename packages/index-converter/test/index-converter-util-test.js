@@ -82,6 +82,106 @@ describe("index-converter-util", function () {
                 }
             });
         });
+
+        it("should merge cqPageContent customization without crashing", function () {
+            let finalJsonObject = {};
+            let baseLineXMLPath = path.join("resources/.content_65.xml");
+            let indexOnCloudXMLPath = path.join(
+                "resources/.content_Cloud_Services.xml"
+            );
+            let baseLineJsonObject =
+                xmlUtil.buildJsonObjectFromXML(baseLineXMLPath);
+            let indexOnCloudJsonObject =
+                xmlUtil.buildJsonObjectFromXML(indexOnCloudXMLPath);
+            // Recreate the failing shape from the customer sample without
+            // depending on external workspace data in the test suite.
+            let customIndexJson = JSON.parse(
+                JSON.stringify(baseLineJsonObject["jcr:root"].cqPageLucene)
+            );
+            customIndexJson._attributes.type = "disabled";
+            customIndexJson._attributes.includedPaths = "[/content]";
+            customIndexJson._attributes.originalType = "lucene";
+            customIndexJson._attributes.queryPaths = "[/content]";
+            customIndexJson._attributes.selectionPolicy = "tag";
+            customIndexJson._attributes.tags = "[personalization,pages]";
+            customIndexJson.aggregates["cq:PageContent"].include4 = {
+                _attributes: {
+                    "jcr:primaryType": "nt:unstructured",
+                    path: "*/*/*/*/*",
+                },
+            };
+            customIndexJson.indexRules[
+                "cq:Page"
+            ]._attributes.includePropertyTypes = "[String]";
+            customIndexJson.indexRules["cq:Page"].properties.resourceType = {
+                _attributes: {
+                    "jcr:primaryType": "nt:unstructured",
+                    name: "jcr:content/sling:resourceType",
+                    propertyIndex: "{Boolean}true",
+                    type: "String",
+                },
+            };
+            customIndexJson.indexRules[
+                "cq:Page"
+            ].properties.cqLastReplicationActionPublish = {
+                _attributes: {
+                    "jcr:primaryType": "nt:unstructured",
+                    name: "jcr:content/cq:lastReplicationAction_publish",
+                    propertyIndex: "{Boolean}true",
+                    type: "String",
+                },
+            };
+            customIndexJson.indexRules[
+                "cq:Page"
+            ].properties.cqLastReplicationActionPreview = {
+                _attributes: {
+                    "jcr:primaryType": "nt:unstructured",
+                    name: "jcr:content/cq:lastReplicationAction_preview",
+                    propertyIndex: "{Boolean}true",
+                    type: "String",
+                },
+            };
+            let allCustomIndexJsonObject = {
+                "jcr:root": {
+                    "cqPageContent-1": customIndexJson,
+                },
+            };
+            let customOOTBIndexMap = new Map();
+            customOOTBIndexMap.set("cqPageContent-1", "cqPageLucene");
+            let onPremToCloudMap = new Map();
+            onPremToCloudMap.set("cqPageLucene", "cqPageLucene");
+            let transformationMap = new Map();
+
+            indexUtil.migrationOfCustomOOTBIndex(
+                finalJsonObject,
+                customOOTBIndexMap,
+                baseLineJsonObject,
+                allCustomIndexJsonObject,
+                indexOnCloudJsonObject,
+                onPremToCloudMap,
+                transformationMap
+            );
+
+            assert.deepEqual(
+                transformationMap.get("cqPageContent-1"),
+                "cqPageLucene-custom-1"
+            );
+            assert.deepEqual(
+                finalJsonObject["cqPageLucene-custom-1"]._attributes.type,
+                "disabled"
+            );
+            assert.deepEqual(
+                finalJsonObject["cqPageLucene-custom-1"].aggregates[
+                    "cq:PageContent"
+                ].include4._attributes.path,
+                "*/*/*/*/*"
+            );
+            assert.deepEqual(
+                finalJsonObject["cqPageLucene-custom-1"].indexRules["cq:Page"]
+                    .properties.resourceType._attributes.name,
+                "jcr:content/sling:resourceType"
+            );
+        });
     });
 
     describe("Test migration Of Custom Indexes", function () {
